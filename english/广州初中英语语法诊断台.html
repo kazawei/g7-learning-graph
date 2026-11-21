@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语法漏洞诊断台｜广州初中英语</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2317140f'/><path d='M20 50h60' stroke='%238a3f22' stroke-width='8'/><path d='M50 20v60' stroke='%238a3f22' stroke-width='8'/></svg>">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@300;400;500&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{
+--paper:#f7f4ec;--ink:#17140f;--ink2:#3d362b;--muted:#6f6657;--line:rgba(23,20,15,.13);
+--rule:#d8d0bf;--acc:#8a3f22;--sage:#4b5c46;--amber:#9a742e;--wash:#efe9db;
+--serif:"Noto Serif SC","Songti SC",Georgia,serif;
+--sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+--mono:"Roboto Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:var(--sans);font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.shell{display:grid;grid-template-columns:212px minmax(0,1fr);max-width:1240px;margin:0 auto}
+/* ===== 左索引 ===== */
+.rail{position:sticky;top:0;align-self:start;height:100vh;border-right:1px solid var(--line);padding:26px 0 20px;display:flex;flex-direction:column}
+.mark{padding:0 22px 22px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.mark .eyebrow{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.mark h1{font-family:var(--serif);font-size:19px;font-weight:700;margin:6px 0 2px;letter-spacing:.02em}
+.mark .sub{font-size:11px;color:var(--muted);line-height:1.55}
+.nav{list-style:none;margin:0;padding:0 0 6px}
+.nav li{padding:0}
+.nav a{display:flex;gap:12px;align-items:baseline;padding:9px 22px;text-decoration:none;font-size:13px;color:var(--ink2);border-left:2px solid transparent}
+.nav a .no{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em}
+.nav a:hover{color:var(--ink);background:rgba(23,20,15,.03)}
+.nav a.on{color:var(--ink);border-left-color:var(--acc);background:rgba(138,63,34,.045)}
+.nav a.on .no{color:var(--acc)}
+.railstats{margin-top:auto;padding:16px 22px 0;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted);line-height:1.9}
+.railstats b{font-family:var(--mono);font-size:12px;color:var(--ink2);font-weight:500}
+/* ===== 主列 ===== */
+main{padding:0 0 70px}
+.masthead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:end;padding:30px 34px 22px;border-bottom:1px solid var(--line)}
+.masthead .eyebrow{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.masthead h2{font-family:var(--serif);font-size:25px;font-weight:700;margin:7px 0 6px;letter-spacing:.01em;line-height:1.35}
+.masthead p{font-size:12.5px;color:var(--ink2);max-width:58ch;margin:0;line-height:1.75}
+figures{display:flex;gap:26px;text-align:right}
+figure{margin:0}
+figure figcaption{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+figure b{font-family:var(--mono);font-size:19px;font-weight:500;letter-spacing:-.01em}
+figure b i{font-style:normal;font-size:11px;color:var(--muted)}
+.sec{padding:26px 34px 30px;border-bottom:1px solid var(--line)}
+.sec:last-of-type{border-bottom:0}
+.sechead{display:flex;gap:12px;align-items:baseline;margin-bottom:4px}
+.sechead .no{font-family:var(--mono);font-size:10px;color:var(--acc);letter-spacing:.1em}
+.sechead h3{font-family:var(--serif);font-size:18px;font-weight:700;margin:0}
+.sechead .tag{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:12.5px;color:var(--ink2);max-width:66ch;margin:8px 0 18px;line-height:1.8}
+h4{font-family:var(--serif);font-size:14px;font-weight:700;margin:18px 0 8px}
+/* 表格（编辑体：只横线） */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{text-align:left;font-weight:400;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 10px 7px 0;border-bottom:1px solid var(--rule)}
+tbody td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+td.mut{color:var(--muted);font-size:11.5px}
+.mx{display:grid;grid-template-columns:196px repeat(3,46px) 1fr;gap:0;align-items:center}
+.cell{height:18px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--muted);width:40px;margin:3px 0}
+.cell.ok{background:#e3e8d8;border-color:#c3cdb3;color:var(--sage)}
+.cell.no{background:#f4ded4;border-color:#dcb9a8;color:var(--acc)}
+.cell.na{background:#eee8da;border-style:dashed}
+/* 综合应用：短文 */
+.passage{font-family:var(--serif);font-size:15px;line-height:2.05;max-width:none;color:var(--ink)}
+.passage .blank{display:inline-flex;align-items:baseline;gap:3px;border-bottom:1px solid var(--ink2);padding:0 2px;margin:0 2px}
+.passage .blank input{border:0;background:transparent;font-family:var(--sans);font-size:13px;color:var(--acc);width:78px;padding:0 1px;text-align:center}
+.passage .blank input:focus{outline:0;border-bottom:1px solid var(--acc)}
+.passage .blank i{font-style:normal;font-family:var(--mono);font-size:9px;color:var(--muted);align-self:flex-start;margin-top:1px}
+.passage .blank.ok{border-bottom-color:var(--sage)}
+.passage .blank.ok input{color:var(--sage)}
+.passage .blank.bad{border-bottom-color:var(--acc);background:rgba(138,63,34,.05)}
+.passage .hint{font-family:var(--sans);font-size:11.5px;color:var(--muted);margin-left:1px}
+/* 问题与选项 */
+.qrow{border-bottom:1px solid var(--line);padding:13px 0}
+.qrow:last-child{border-bottom:0}
+.qmeta{display:flex;gap:10px;align-items:baseline;margin-bottom:6px;flex-wrap:wrap}
+.qmeta .idx{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em}
+.qmeta .layer{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:0 5px}
+.stem{font-size:14px;line-height:1.75}
+.opts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:9px;border:1px solid var(--line)}
+.opt{text-align:left;padding:9px 11px;background:transparent;border:0;border-right:1px solid var(--line);font-size:13px;font-family:var(--sans);color:var(--ink);cursor:pointer;line-height:1.55}
+.opt:last-child{border-right:0}
+.opt:hover{background:var(--wash)}
+.opt.sel{background:rgba(138,63,34,.07);box-shadow:inset 2px 0 0 var(--acc)}
+.opt.ok{background:#e8eddc;box-shadow:inset 2px 0 0 var(--sage)}
+.opt.bad{background:#f7e4dc;box-shadow:inset 2px 0 0 var(--acc)}
+.opt em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--muted);margin-right:6px}
+.inline{display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.inline input{border:0;border-bottom:1px solid var(--ink2);background:transparent;font-size:14px;font-family:var(--sans);color:var(--ink);padding:5px 2px;width:190px}
+.inline input:focus{outline:0;border-bottom-color:var(--acc)}
+.fb{font-size:12px;color:var(--ink2);margin-top:8px;line-height:1.75}
+.fb b{font-family:var(--mono);font-weight:500}
+.fb .r{color:var(--sage);font-weight:500}
+.fb .w{color:var(--acc);font-weight:500}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);padding:8px 15px;font-size:12px;letter-spacing:.06em;cursor:pointer;font-family:var(--sans)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--acc);color:var(--acc)}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.note{font-size:11.5px;color:var(--muted);line-height:1.8}
+.reason{font-family:var(--mono);font-size:10px;letter-spacing:.04em;border:1px solid var(--line);padding:1px 5px;color:var(--ink2);white-space:nowrap}
+.big{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-.02em}
+.barlist{margin:6px 0 0}
+.bar{display:grid;grid-template-columns:96px 1fr 72px;gap:10px;align-items:center;font-size:11.5px;padding:4px 0}
+.track{height:6px;background:var(--wash);position:relative}
+.fill{position:absolute;left:0;top:0;bottom:0;background:var(--acc)}
+.fill.s{background:var(--sage)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.kv{border-top:1px solid var(--rule);padding-top:8px;font-size:12px}
+.kv b{font-family:var(--serif);font-size:13px;display:block;margin-bottom:2px}
+details{border-bottom:1px solid var(--line);padding:10px 0}
+summary{cursor:pointer;font-size:12.5px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+details[open] summary{color:var(--acc)}
+details p{font-size:12px;color:var(--ink2);margin:8px 0 0;line-height:1.8}
+.rule{font-size:12.5px;line-height:1.85;padding:7px 0 7px 14px;border-left:2px solid var(--acc);margin:8px 0;color:var(--ink2)}
+.copy{width:100%;border:1px solid var(--line);background:#fffdf6;font-family:var(--sans);font-size:12px;line-height:1.8;color:var(--ink2);padding:14px;height:210px;resize:vertical}
+.foot{padding:22px 34px 40px;font-size:10.5px;color:var(--muted);line-height:1.85;border-top:1px solid var(--line)}
+@media(max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:16px 0 0}
+  .mark{padding:0 16px 14px;border-bottom:0;margin:0}
+  .nav{display:flex;overflow-x:auto;padding:0 10px 10px;gap:2px}
+  .nav a{padding:7px 10px;border-left:0;border-bottom:2px solid transparent;white-space:nowrap}
+  .nav a.on{border-bottom-color:var(--acc);background:transparent}
+  .railstats{display:none}
+  .masthead{padding:18px 16px 16px;grid-template-columns:minmax(0,1fr)}
+  figures{text-align:left;gap:20px;flex-wrap:wrap}
+  .sec{padding:20px 16px 24px}
+  .two,.three{grid-template-columns:minmax(0,1fr);gap:16px}
+  .opts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mx{grid-template-columns:150px repeat(3,40px) minmax(76px,1fr);font-size:12px}
+  table{min-width:520px}
+  .tablewrap{overflow-x:auto}
+  .inline input{width:150px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="rail">
+  <div class="mark">
+    <div class="eyebrow">Grammar Diagnostic</div>
+    <h1>语法漏洞诊断台</h1>
+    <div class="sub">广州初中 · 沪教版牛津<br>三层诊断 · 按盲区推送训练</div>
+  </div>
+  <ul class="nav" id="nav">
+    <li><a href="#assess" data-nav="assess"><span class="no">01</span>评估</a></li>
+    <li><a href="#gaps" data-nav="gaps"><span class="no">02</span>漏洞</a></li>
+    <li><a href="#drill" data-nav="drill"><span class="no">03</span>训练</a></li>
+    <li><a href="#apply" data-nav="apply"><span class="no">04</span>综合</a></li>
+    <li><a href="#units" data-nav="units"><span class="no">05</span>专题</a></li>
+    <li><a href="#report" data-nav="report"><span class="no">06</span>报告</a></li>
+  </ul>
+  <div class="railstats" id="railstats">—</div>
+</aside>
+<main>
+<div class="masthead">
+  <div>
+    <div class="eyebrow">Diagnostic Workspace</div>
+    <h2 id="mt">先把漏洞找全，再谈考多少分</h2>
+    <p id="md">面向已经能考 80 分以上、能自己读规则的学生：先 42 题把盲区找全，再按盲区推训练，目标是把可能出错的位置逐个关掉，做到 100%。</p>
+  </div>
+  <figures>
+    <figure><figcaption>Passed</figcaption><b id="s-pass">0<i>/14</i></b></figure>
+    <figure><figcaption>Gaps</figcaption><b id="s-gap">—</b></figure>
+    <figure><figcaption>Closed</figcaption><b id="s-closed">0<i>/14</i></b></figure>
+  </figures>
+</div>
+<div id="app"></div>
+<p class="foot">题目、判卷、记录全在本机，换设备不同步。判断口径按中考常规；涉及语感差异、或某题你认为答案有问题的，回对话里说，别在这里改答案。</p>
+</main>
+</div>
+<script>
+const U=[
+{n:'名词',sub:'可数／不可数／复数／所有格',rules:['可数名词有单复数；以 s、x、ch、sh 结尾加 es；辅音字母加 y 结尾变 y 为 i 再加 es；f、fe 多数变 v 加 es。','不规则复数：man→men，woman→women，child→children，tooth→teeth，foot→feet，mouse→mice，sheep→sheep。','不可数名词不加 s、不加 a/an，用 much、a little、a piece of 计量：information、advice、news、bread、homework。','所有格：人加 ’s；以 s 结尾的复数只加 ’；两人共有只在最后加 ’s。'],items:[
+{cell:'A',q:'I need some ___ about the trip.',o:['information','informations','an information','information of'],a:0,x:'information 不可数，不加 s 也不加 a。',r:'rule'},
+{cell:'B',q:'There are three ___ on the table.（knife）',f:1,a:'knives',x:'knife 以 fe 结尾，变 v 加 es。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['I have two informations.','There are three children in the room.','He gave me some advices.','Two woman doctors are here.'],a:1,x:'children 是不规则复数；其余三句都错在复数或不可数。',r:'trap'},
+{cell:'D',q:'How many ___ are there in your school?',o:['woman doctors','women doctors','women doctor','woman doctor'],a:1,x:'woman 修饰复数名词时两个词都变复数。',r:'form'}]},
+{n:'冠词',sub:'a/an、the、零冠词',rules:['泛指可数单数用 a/an，看读音不看字母：an hour、an honest boy、a useful book。','特指用 the：双方知道的、上文提过的、独一无二、最高级、序数词、乐器。','零冠词：三餐、球类、学科、星期月份、by 加交通工具。'],items:[
+{cell:'A',q:'He is ___ honest boy.',o:['a','an','the','/'],a:1,x:'honest 的 h 不发音，以元音音素开头。',r:'rule'},
+{cell:'B',q:'I play ___ piano every day.（不需要冠词就填 /）',f:1,a:['the','/'],x:'乐器前用 the。',r:'pos'},
+{cell:'C',q:'下面哪一句正确？',o:['He is a honest boy.','I play piano every day.','The sun rises in the east.','We have a lunch at twelve.'],a:2,x:'其余三句分别错在 an、乐器前缺 the、三餐加了 a。',r:'trap'},
+{cell:'D',q:'We have ___ lunch at twelve.',o:['a','an','the','/'],a:3,x:'三餐前零冠词。',r:'rule'}]},
+{n:'代词',sub:'人称／物主／反身／指示',rules:['主格做主语，宾格做宾语；动词后、介词后一律宾格。','形容词性物主后面必须跟名词；名词性物主单独用，后面不能再接名词。','反身代词：主语和宾语同一人；enjoy oneself、by oneself、teach oneself。','her 三身份：help her（宾格）、her book（形容词性）、hers（名词性）；his、its 两种身份同形。'],items:[
+{cell:'A',q:'Can you help ___? I cannot do it.',o:['I','me','my','mine'],a:1,x:'help 后面是宾语，用宾格。',r:'pos'},
+{cell:'B',q:'This book is ___.（I）',f:1,a:'mine',x:'后面没有名词，用名词性物主 mine。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['Me is a student.','Please give it to she.','Her bike is new.','This book is my.'],a:2,x:'her 作定语修饰 bike；my 后面缺名词。',r:'trap'},
+{cell:'D',q:'Help ___ to some fish, children.',o:['yourself','yourselves','you','your'],a:1,x:'children 是复数，反身用 yourselves。',r:'form'}]},
+{n:'数词',sub:'基数／序数／hundred／时刻',rules:['hundred、thousand 前有具体数字时不加 s；笼统数量才加 s 并接 of。','序数词：first、second、third、fifth、eighth、ninth、twelfth、twentieth。','分数：分子基数词，分母序数词；分子大于 1 分母加 s。'],items:[
+{cell:'A',q:'There are ___ students in our school.',o:['two thousands','two thousand','two thousand of','thousands'],a:1,x:'前面有具体数字，不加 s。',r:'rule'},
+{cell:'B',q:'Today is my ___ birthday.（twelve）',f:1,a:'twelfth',x:'第十二是 twelfth，不是 twelveth。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['Two thousands students are here.','Thousands of people visit the park every year.','Today is my twelveth birthday.','Two third of the students are boys.'],a:1,x:'Thousands of 表笼统数量；其余错在 thousands 加复数、拼写、分母没加 s。',r:'trap'},
+{cell:'D',q:'He lives on ___ floor.',o:['five','the five','the fifth','fifth'],a:2,x:'楼层用序数词，前面加 the。',r:'pos'}]},
+{n:'形容词与副词',sub:'比较级／最高级／as…as',rules:['单音节加 er、est；多音节前加 more、most；good→better→best，bad→worse→worst。','比较级前可加 much、even；最高级前必须 the，后接 in 或 of 表范围。','形容词修饰名词或放系动词后；副词修饰动词。','as 加原级加 as，中间不用比较级。'],items:[
+{cell:'A',q:'This book is ___ than that one.',o:['interesting','more interesting','most interesting','the most interesting'],a:1,x:'多音节比较级用 more，不加 the。',r:'rule'},
+{cell:'B',q:'Please listen ___ .（careful）',f:1,a:'carefully',x:'修饰动词 listen 用副词。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['He runs more fast than his brother.','She is tallest girl in her class.','He runs faster than his brother.','English is as more important as Chinese.'],a:2,x:'fast 的比较级是 faster；最高级缺 the；as 中间不加比较级。',r:'trap'},
+{cell:'D',q:'Which is ___, the sun, the moon or the earth?',o:['big','bigger','biggest','the biggest'],a:3,x:'三者比较用最高级，前面加 the。',r:'pos'}]},
+{n:'介词',sub:'时间／地点／方式／搭配',rules:['大于一天用 in（年、月、季节、上下午）；具体某天用 on；钟点用 at。','交通工具 by 加名词，不加冠词；步行 on foot。','材料看得出用 of，看不出用 from。','固定搭配：be good at、be interested in、thank you for。'],items:[
+{cell:'A',q:'We have an English class ___ Monday morning.',o:['in','on','at','for'],a:1,x:'具体某天的上午用 on。',r:'rule'},
+{cell:'B',q:'The box is made ___ paper.（看得出材料）',f:1,a:'of',x:'看得出材料用 be made of。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['He was born in 2011.','The film begins in seven thirty.','I go to school by the bus.','Thank you to your help.'],a:0,x:'钟点用 at、by 后不加冠词、thank you for。',r:'trap'},
+{cell:'D',q:'The film begins ___ seven thirty.',o:['in','on','at','for'],a:2,x:'钟点用 at。',r:'rule'}]},
+{n:'连词',sub:'并列／转折／因果／关联词',rules:['and 并列、but 转折、or 选择或“否则”、so 结果。','because 原因；although 让步，不能与 but 连用。','both…and、either…or、neither…nor（谓语就近）。'],items:[
+{cell:'A',q:'___ he is young, he knows a lot.',o:['Although','Because','So','But'],a:0,x:'两个半句是让步关系。',r:'pos'},
+{cell:'B',q:'He did not come ___ he was ill.（原因）',f:1,a:'because',x:'后面是原因，用 because。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['Although he is young, but he knows a lot.','Because he was ill, so he did not come.','Neither he nor I am free today.','Both Tom or Jim like it.'],a:2,x:'neither…nor 谓语就近；其余两句都是“二选一”重复。',r:'trap'},
+{cell:'D',q:'Hurry up, ___ you will be late.',o:['and','or','so','but'],a:1,x:'祈使句加 or 表示“否则”。',r:'pos'}]},
+{n:'一般现在时与现在进行时',sub:'习惯动作／正在发生',rules:['一般现在：第三人称单数加 s/es；否定用 does not 加原形；疑问用 Does。','现在进行：be 加 ing，表示此刻正在发生。','know、like、want 这类状态动词一般不用进行时。'],items:[
+{cell:'A',q:'Look! The children ___ football.',o:['play','plays','are playing','played'],a:2,x:'Look 提示正在进行。',r:'pos'},
+{cell:'B',q:'Listen! Someone ___ in the next room.（sing）',f:1,a:'is singing',x:'Listen 提示进行时，someone 用 is。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['My father watch TV every evening.','He is liking coffee.','She goes to school by bus every day.','Look! They play football.'],a:2,x:'第三人称加 es 正确；like 不用进行时；Look 后要用进行时。',r:'trap'},
+{cell:'D',q:'He ___ coffee.（not like）',f:1,a:["doesn't like",'does not like'],x:'第三人称否定用 does not 或 doesn’t 加原形。',r:'form'}]},
+{n:'一般过去时与过去进行时',sub:'过去发生／动词过去式',rules:['一般过去：动词用过去式；否定 did not 加原形；疑问用 Did。','时间提示词：yesterday、last week、two days ago、in 2010。','不规则动词：go→went，see→saw，buy→bought。'],items:[
+{cell:'A',q:'While I ___ , he came in.',o:['read','was reading','reads','have read'],a:1,x:'while 引导的从句用过去进行。',r:'pos'},
+{cell:'B',q:'He ___ to Beijing last week.（go）',f:1,a:'went',x:'last week 提示一般过去。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['Did you saw the film last night?','I did my homework yesterday.','He goes to Beijing last week.','They was playing at four.'],a:1,x:'Did 后接原形；时间状语与动词时态要一致；主语复数用 were。',r:'trap'},
+{cell:'D',q:'They ___ basketball at four yesterday afternoon.',o:['play','played','were playing','have played'],a:2,x:'过去某个时刻正在进行。',r:'pos'}]},
+{n:'一般将来时',sub:'will／be going to／主将从现',rules:['will 加原形，所有人称相同；be going to 加原形。','有迹象的预测用 be going to；临时决定用 will。','if 条件句主将从现：主句将来，从句一般现在。','There be 的将来：is going to be / will be。'],items:[
+{cell:'A',q:'Look at the clouds! It ___ rain.',o:['is going to','will','is','was'],a:0,x:'有迹象的预测用 be going to。',r:'pos'},
+{cell:'B',q:'If it ___ tomorrow, we will stay at home.（rain）',f:1,a:'rains',x:'if 从句用一般现在。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['There will have a sports meeting next month.','She will comes back in two days.','I am going to visit my grandma next Sunday.','If it will rain, we stay at home.'],a:2,x:'There be 不能换成 have；will 后接原形；if 从句不用 will。',r:'trap'},
+{cell:'D',q:'There ___ a sports meeting next month.',o:['is going to have','will have','is going to be','will be have'],a:2,x:'There be 的将来用 is going to be。',r:'rule'}]},
+{n:'现在完成时',sub:'have／has done・since／for',rules:['have/has 加过去分词；第三人称单数用 has。','since 加时间点，for 加时间段；already 用于肯定，yet 用于否定和疑问。','have been to 去过（已回来），have gone to 去了（未回来）。'],items:[
+{cell:'A',q:'I ___ this book twice.',o:['read','have read','am reading','reads'],a:1,x:'twice 表到现在为止的次数。',r:'pos'},
+{cell:'B',q:'My father ___ in this school for ten years.（work）',f:1,a:'has worked',x:'for 加时间段，用现在完成。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['I have seen him yesterday.','He has lived here since ten years.','Have you finished your homework yet?','She has went to Shanghai.'],a:2,x:'yet 用于疑问正确；yesterday 要用一般过去；since 接时间点；过去分词不是 went。',r:'trap'},
+{cell:'D',q:'He ___ here since 2010.',o:['lives','has lived','lived','is living'],a:1,x:'since 加时间点，用现在完成。',r:'rule'}]},
+{n:'情态动词',sub:'can／must／may／should',rules:['can 能力或许可；could 过去能力或更客气。','must 主观必须；Must I…? 的否定回答是 needn’t。','may 许可或可能；should 建议。情态动词后接原形。'],items:[
+{cell:'A',q:'You ___ be careful when crossing the road.',o:['must','may','can','need'],a:0,x:'必须，用 must。',r:'pos'},
+{cell:'B',q:'You look tired. You ___ have a rest.（should）',f:1,a:'should',x:'给建议用 should，后接原形。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['He can speaks English well.','No, you needn’t.','You should to have a rest.','May I finished it?'],a:1,x:'情态动词后接原形；否定回答用 needn’t。',r:'trap'},
+{cell:'D',q:'He ___ speak English well when he was five.',o:['can','could','may','must'],a:1,x:'过去的能力用 could。',r:'pos'}]},
+{n:'被动语态',sub:'be 加过去分词',rules:['一般现在被动 am/is/are 加 done；过去被动 was/were 加 done；将来被动 will be 加 done。','执行者用 by 引出，不重要可省略。','happen、appear、rise 这类不及物动词没有被动。'],items:[
+{cell:'A',q:'English ___ in many countries.',o:['speaks','is spoken','spoke','is speaking'],a:1,x:'英语是被说的。',r:'pos'},
+{cell:'B',q:'The classroom ___ every day.（clean）',f:1,a:'is cleaned',x:'一般现在被动，主语单数用 is。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['The bridge was build last year.','The accident was happened yesterday.','This book was written by Lu Xun.','The homework will finished tomorrow.'],a:2,x:'过去分词不是 build；happen 无被动；将来被动要 will be done。',r:'trap'},
+{cell:'D',q:'The homework ___ tomorrow.',o:['will finish','will be finished','finishes','is finishing'],a:1,x:'将来被动 will be done。',r:'rule'}]},
+{n:'非谓语动词',sub:'to do 与 doing',rules:['只接 to do：want、hope、decide、plan、would like、ask sb to do。','只接 doing：enjoy、finish、mind、practise、keep。','句型：It is 加形容词加 to do；否定不定式 not to do。'],items:[
+{cell:'A',q:'He enjoys ___ football.',o:['play','to play','playing','played'],a:2,x:'enjoy 后接 doing。',r:'pos'},
+{cell:'B',q:'My mother asked me ___ computer games.（not play）',f:1,a:'not to play',x:'不定式的否定是 not to do。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['He finished to do his homework.','I want being a doctor.','Would you like to go with us?','It is important learn English.'],a:2,x:'would like to do 正确；finish 接 doing；want 接 to do；It is adj to do。',r:'trap'},
+{cell:'D',q:'It is important ___ English well.',o:['learn','to learn','learning','learned'],a:1,x:'It is 加形容词加 to do。',r:'rule'}]},
+{n:'主谓一致',sub:'each／everyone／There be 就近',rules:['each、every、everyone 作主语用单数。','There be 就近：There is a book and two pens。','with 短语不影响主语数：Tom with his friends goes…。'],items:[
+{cell:'A',q:'Neither Tom nor his friends ___ interested in it.',o:['is','are','was','has'],a:1,x:'谓语就近 friends。',r:'rule'},
+{cell:'B',q:'Each of the students ___ a book.（have）',f:1,a:'has',x:'each 作主语用单数。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['The number of students are five hundred.','There is a pen and two books on the desk.','Each of the students have a book.','My family are going to travel next week.'],a:1,x:'There be 就近 a pen 正确；其余三句单复数都错。',r:'trap'},
+{cell:'D',q:'The number of students ___ about five hundred.',o:['are','is','have','were'],a:1,x:'the number of 用单数。',r:'rule'}]},
+{n:'从句',sub:'宾语／定语／状语从句',rules:['宾语从句用陈述语序：主语在前、谓语在后。','引导词：that 陈述、if 或 whether 是否、特殊疑问词。','定语从句：人用 who 或 that，物用 which 或 that。','状语从句：when 时间、if 条件、because 原因。'],items:[
+{cell:'A',q:'Could you tell me ___?',o:['where is the post office','where the post office is','where was the post office','the post office where is'],a:1,x:'宾语从句用陈述语序。',r:'rule'},
+{cell:'B',q:'He asked me ___ I had finished my homework.（是否）',f:1,a:['if','whether'],x:'“是否”用 if 或 whether。',r:'form'},
+{cell:'C',q:'下面哪一句正确？',o:['Could you tell me where is the post office?','This is the boy which helped me.','I do not know if he will come.','The book who I bought is good.'],a:2,x:'宾语从句不倒装；先行词人用 who、物用 which。',r:'trap'},
+{cell:'D',q:'This is the boy ___ helped me.',o:['which','who','whom','whose'],a:1,x:'先行词是人且在从句作主语，用 who。',r:'rule'}]},
+{n:'特殊句型',sub:'疑问词／感叹句／How 系列',rules:['感叹句看中心词：名词用 What，形容词或副词用 How。','How long 问时长、How often 问频率、How far 问距离、How soon 问多久以后。','What is … like 问情况；What is the weather like 固定问法。'],items:[
+{cell:'A',q:'___ beautiful the flowers are!',o:['What','What a','How','How a'],a:2,x:'中心词是形容词 beautiful。',r:'pos'},
+{cell:'B',q:'There ___ some milk in the glass.（be）',f:1,a:'is',x:'milk 不可数，用 is。',r:'form'},
+{cell:'D',q:'Let us go home, ___?',o:['will you','shall we','do we','do not we'],a:0,x:'Let us 用 will you，Let’s 才用 shall we。',r:'rule'}]}
+];
+
+const EXTRA={
+'名词':[{cell:'E',q:'There are many ___ in the box.',o:['tomato','tomatos','tomatoes','tomatoe'],a:2,x:'以 o 结尾的 tomato 加 es。',r:'form'},
+        {cell:'F',q:'My father bought two ___ of bread.（piece）',f:1,a:'pieces',x:'不可数名词用 piece 计量，复数加 s。',r:'form'}],
+'冠词':[{cell:'E',q:'She is ___ university student.',o:['a','an','the','/'],a:0,x:'university 读 /juː/，辅音音素开头用 a。',r:'trap'},
+        {cell:'F',q:'We often play ___ basketball after school.（不需要冠词填 /）',f:1,a:'/',x:'球类前零冠词。',r:'pos'}],
+'代词':[{cell:'E',q:'The pen is not ___. It is ___.',o:['my; her','mine; hers','mine; her','my; hers'],a:1,x:'两处后面都没有名词，都用名词性物主。',r:'rule'},
+        {cell:'F',q:'They enjoyed ___ at the party.（they）',f:1,a:'themselves',x:'enjoy oneself，主语是 they。',r:'form'}],
+'数词':[{cell:'E',q:'September is the ___ month of the year.',o:['nine','ninth','nineth','nineteen'],a:1,x:'第九是 ninth。',r:'form'},
+        {cell:'F',q:'About two ___ of the students come from Guangdong.（three）',f:1,a:'thirds',x:'分子大于 1，分母加 s。',r:'form'}],
+'形容词与副词':[{cell:'E',q:'He speaks English ___ than his sister.',o:['good','well','better','best'],a:2,x:'well 的比较级是 better。',r:'form'},
+        {cell:'F',q:'Of all the boys, Tom runs ___.（fast）',f:1,a:'fastest',x:'of all 表范围，用最高级。',r:'pos'}],
+'介词':[{cell:'E',q:'The book is ___ the desk.（在桌面上）',o:['on','in','at','to'],a:0,x:'表面接触用 on。',r:'rule'},
+        {cell:'F',q:'I am good ___ maths.（填介词）',f:1,a:'at',x:'be good at 固定搭配。',r:'form'}],
+'连词':[{cell:'E',q:'___ you work hard, you will fail.',o:['If','Unless','Although','Because'],a:1,x:'unless 等于 if not。',r:'pos'},
+        {cell:'F',q:'Both Tom ___ Jim are from Guangzhou.（填连词）',f:1,a:'and',x:'both…and 固定搭配。',r:'form'}],
+'一般现在时与现在进行时':[{cell:'E',q:'He usually ___ up at six, but today he ___ up late.',o:['gets; gets','get; is getting','gets; is getting','is getting; gets'],a:2,x:'usually 用一般现在，today 与 now 语境用进行。',r:'rule'},
+        {cell:'F',q:'She ___ her teeth twice a day.（brush）',f:1,a:'brushes',x:'第三人称单数加 es。',r:'form'}],
+'一般过去时与过去进行时':[{cell:'E',q:'I ___ my key while I ___ in the park.',o:['lost; walked','lost; was walking','was losing; walked','lose; walk'],a:1,x:'while 从句用进行，主句用一般过去。',r:'rule'},
+        {cell:'F',q:'They ___ to the zoo last Sunday.（not go）',f:1,a:["didn't go",'did not go'],x:'过去否定用 did not 加原形。',r:'form'}],
+'一般将来时':[{cell:'E',q:'— I am hungry. — I ___ you some bread.',o:['will bring','am bringing','bring','brought'],a:0,x:'当场决定用 will。',r:'trap'},
+        {cell:'F',q:'He ___ back in an hour.（be）',f:1,a:'will be',x:'in an hour 表将来。',r:'form'}],
+'现在完成时':[{cell:'E',q:'He ___ in Guangzhou since he ___ a child.',o:['lived; was','has lived; was','has lived; has been','lives; is'],a:1,x:'主句现在完成，since 从句一般过去。',r:'rule'},
+        {cell:'F',q:'She has ___ to Shanghai twice.（be）',f:1,a:'been',x:'have been to 去过。',r:'form'}],
+'情态动词':[{cell:'E',q:'— May I use your pen? — Yes, you ___ .',o:['must','may','need','should'],a:1,x:'may 提问用 may 作答。',r:'pos'},
+        {cell:'F',q:'You ___ swim in this river. It is dangerous.（must not）',f:1,a:["mustn't",'must not'],x:'禁止用 mustn’t。',r:'form'}],
+'被动语态':[{cell:'E',q:'The trees ___ by the students last week.',o:['planted','were planted','are planted','have planted'],a:1,x:'过去被动 were planted。',r:'rule'},
+        {cell:'F',q:'A new library ___ in our school next year.（build）',f:1,a:'will be built',x:'将来被动 will be done。',r:'form'}],
+'非谓语动词':[{cell:'E',q:'He kept ___ the same question.',o:['ask','to ask','asking','asked'],a:2,x:'keep 后接 doing。',r:'pos'},
+        {cell:'F',q:'I am sorry for ___ late.（be）',f:1,a:'being',x:'介词后接 doing。',r:'form'}],
+'主谓一致':[{cell:'E',q:'Not only Tom but also his parents ___ the film.',o:['enjoys','enjoy','enjoying','is enjoying'],a:1,x:'not only…but also 就近 parents。',r:'rule'},
+        {cell:'F',q:'Ten years ___ a long time.（be）',f:1,a:'is',x:'时间、金钱作整体用单数。',r:'form'}],
+'从句':[{cell:'E',q:'I do not know ___ he will come or not.',o:['if','whether','that','what'],a:1,x:'whether…or not 固定，if 不接 or not。',r:'trap'},
+        {cell:'F',q:'The girl ___ is singing is my sister.（先行词是人，作主语）',f:1,a:'who',x:'人作主语用 who 或 that。',r:'form'}],
+'特殊句型':[{cell:'E',q:'___ delicious the soup is!',o:['What','What a','How','How a'],a:2,x:'中心词是形容词，用 How。',r:'pos'},
+        {cell:'F',q:'There ___ two books and a pen on the desk.（be）',f:1,a:'are',x:'There be 就近 two books。',r:'form'}]
+};
+U.forEach(u=>{(EXTRA[u.n]||[]).forEach(it=>u.items.push(it))});
+
+
+const PASS=[
+{n:'校园社团',sub:'一般现在 · 名词复数 · 代词 · 定语从句',text:'Our school has many clubs. The reading club is the most {{1}} one in our school. We meet in the library {{2}} Friday afternoon. Last term I read {{3}} books than my friend, so I became the club leader. There are twenty {{4}} in our club now. Each of us {{5}} a small notebook. We write down good sentences and share {{6}} with others. My favourite book is about a boy {{7}} lives on a small farm. Reading {{8}} me learn new words every day.',
+blanks:[{h:'(interest)',a:'interesting',u:'形容词与副词',r:'form',x:'the most 后接形容词原级，多音节用 most 加原级。'},
+{h:'填介词',a:'on',u:'介词',r:'rule',x:'具体某天的上下午用 on。'},
+{h:'(many)',a:'more',u:'形容词与副词',r:'form',x:'than 提示比较级，many 的比较级是 more。'},
+{h:'(member)',a:'members',u:'名词',r:'form',x:'twenty 后接可数名词复数。'},
+{h:'(have)',a:'has',u:'主谓一致',r:'rule',x:'each of 作主语用单数。'},
+{h:'填代词',a:'them',u:'代词',r:'pos',x:'share 后接宾格，指前面的 good sentences。'},
+{h:'填关系词',a:'who',u:'从句',r:'rule',x:'先行词 a boy 是人，从句缺主语，用 who 或 that。'},
+{h:'(help)',a:'helps',u:'一般现在时与现在进行时',r:'form',x:'动名词 Reading 作主语按单数处理，加 s。'}],
+qs:[{q:'What can we know about the writer?',o:['He is the club leader now.','He meets the club every day.','He has twenty books.','He wrote the book about a boy.'],a:0,x:'第二句说 so I became the club leader。',u:'代词',r:'read'},
+{q:'The word "them" in the passage refers to ___.',o:['the clubs','good sentences','the notebooks','new words'],a:1,x:'前一句是 write down good sentences，them 指复数名词 good sentences。',u:'代词',r:'trap'},
+{q:'The word "who" in the passage refers to ___.',o:['the writer','the boy in the book','the friend','the club leader'],a:1,x:'定语从句修饰 a boy。',u:'从句',r:'trap'},
+{q:'Which of the following is TRUE?',o:['Reading helps the writer learn new words.','The club meets on Sunday morning.','The writer reads fewer books than his friend.','There are twelve members in the club.'],a:0,x:'末句 Reading helps me learn new words every day。',u:'一般现在时与现在进行时',r:'read'}]},
+{n:'博物馆之行',sub:'一般过去 · 被动语态 · 比较级 · 连词',text:'Last Saturday my class {{1}} the Science Museum. It was {{2}} than I thought, so we {{3}} a bus. The museum {{4}} in 1998 and it is one of the oldest buildings in our city. There {{5}} so many things to see that we stayed for four hours. I liked the robot show best {{6}} it was very exciting. My friend Tom is {{7}} in space than me. He {{8}} to visit the Space Museum next month.',
+blanks:[{h:'(visit)',a:'visited',u:'一般过去时与过去进行时',r:'form',x:'Last Saturday 提示一般过去。'},
+{h:'(far)',a:['farther','further'],u:'形容词与副词',r:'form',x:'than 提示比较级，far 的比较级是 farther 或 further。'},
+{h:'(take)',a:'took',u:'一般过去时与过去进行时',r:'form',x:'与前面 was 并列，都是过去。'},
+{h:'(build)',a:'was built',u:'被动语态',r:'form',x:'博物馆是被建的，过去被动 was 加过去分词。'},
+{h:'(be)',a:'were',u:'主谓一致',r:'rule',x:'There be 就近 so many things，用 were。'},
+{h:'填连词',a:'because',u:'连词',r:'pos',x:'后半句是原因。'},
+{h:'(interest)',a:'more interested',u:'形容词与副词',r:'form',x:'than 提示比较级，interested 是多音节，用 more。'},
+{h:'(plan)',a:'plans',u:'一般现在时与现在进行时',r:'form',x:'next month 是计划，主语第三人称单数，用一般现在表安排。'}],
+qs:[{q:'How did the class go to the museum?',o:['By bike.','By bus.','By train.','On foot.'],a:1,x:'so we took a bus。',u:'一般过去时与过去进行时',r:'read'},
+{q:'When was the museum built?',o:['In 1989.','In 1998.','In 2008.','Four years ago.'],a:1,x:'The museum was built in 1998。',u:'被动语态',r:'read'},
+{q:'Why did they stay for four hours?',o:['Because the museum was far.','Because there were so many things to see.','Because the robot show was long.','Because Tom was late.'],a:1,x:'so many things to see that we stayed for four hours。',u:'连词',r:'read'},
+{q:'Which is TRUE about Tom?',o:['He likes the robot show best.','He is more interested in space than the writer.','He visited the Space Museum last Saturday.','He took a bus alone.'],a:1,x:'Tom is more interested in space than me。',u:'形容词与副词',r:'read'}]},
+{n:'写给朋友的信',sub:'现在完成 · 将来 · 情态 · 宾语从句',text:'Dear Tom, How are you? I {{1}} busy these days because we are going to have a school trip next week. We {{2}} the Great Wall. I have {{3}} to Beijing twice, but I have never {{4}} the Great Wall. My mother says we {{5}} take enough water with us. Could you tell me {{6}} the weather will be like in Beijing? I hope it {{7}} rain. Write to me soon and I {{8}} forward to your reply. Yours, Li Ming',
+blanks:[{h:'(be)',a:'have been',u:'现在完成时',r:'form',x:'these days 表示最近一直，用现在完成。'},
+{h:'(visit)',a:['are going to visit','will visit'],u:'一般将来时',r:'form',x:'next week 表将来，两种都可以。'},
+{h:'(be)',a:'been',u:'现在完成时',r:'form',x:'have been to 表示去过。'},
+{h:'(see)',a:'seen',u:'现在完成时',r:'form',x:'never 后接过去分词。'},
+{h:'(should)',a:'should',u:'情态动词',r:'form',x:'给建议，情态动词后接原形。'},
+{h:'填疑问词',a:'what',u:'从句',r:'rule',x:'what … will be like 固定说法，宾语从句用陈述语序。'},
+{h:'(not rain)',a:["won't rain",'will not rain'],u:'一般将来时',r:'form',x:'hope 后接 will 的否定。'},
+{h:'(look)',a:'look',u:'一般现在时与现在进行时',r:'form',x:'look forward to 固定搭配，主语 I 用原形。'}],
+qs:[{q:'How many times has Li Ming been to Beijing?',o:['Once.','Twice.','Three times.','Never.'],a:1,x:'I have been to Beijing twice。',u:'现在完成时',r:'read'},
+{q:'What does Li Ming\'s mother advise him to do?',o:['To take enough water.','To visit the Great Wall.','To write to Tom.','To check the weather.'],a:0,x:'we should take enough water with us。',u:'情态动词',r:'read'},
+{q:'What does Li Ming want to know?',o:['When the trip will start.','What the weather will be like in Beijing.','How far the Great Wall is.','Who will go with him.'],a:1,x:'Could you tell me what the weather will be like。',u:'从句',r:'read'},
+{q:'From the passage, we know Li Ming hopes ___.',o:['the trip will be cancelled','it will not rain on the trip','Tom will visit Beijing too','his mother will go with him'],a:1,x:'I hope it won\'t rain 紧跟在问天气之后。',u:'一般将来时',r:'read'}]}
+];
+
+
+const EXTRA2={
+'名词':[{cell:'G',q:'There are many ___ in the fridge.',o:['bottle of milk','bottles of milk','bottles of milks','bottle of milks'],a:1,x:'量词短语变复数，只变 bottle。',r:'trap'},
+ {cell:'H',q:'Two ___ teachers are talking in the office.（woman）',f:1,a:'women',x:'woman 修饰复数名词要一起变。',r:'form'}],
+'冠词':[{cell:'G',q:'He is ___ tallest boy in our class.',o:['a','an','the','/'],a:2,x:'最高级前用 the。',r:'rule'},
+ {cell:'H',q:'She plays ___ violin well.（不需要冠词填 /）',f:1,a:'the',x:'乐器前用 the。',r:'pos'}],
+'代词':[{cell:'G',q:'These books are ___, not ___.',o:['ours; theirs','our; their','ours; their','our; theirs'],a:0,x:'两处都单独用，名词性物主。',r:'rule'},
+ {cell:'H',q:'The girl hurt ___.（she）',f:1,a:'herself',x:'主语和宾语同一人，用反身代词。',r:'form'}],
+'数词':[{cell:'G',q:'He was born on the ___ of May.',o:['three','third','threeth','thirty'],a:1,x:'日期用序数词 third。',r:'form'},
+ {cell:'H',q:'___ of students are playing on the playground.（hundred）',f:1,a:'hundreds',x:'笼统数量用 hundreds of。',r:'rule'}],
+'形容词与副词':[{cell:'G',q:'The weather today is even ___ than yesterday.',o:['bad','worse','worst','the worst'],a:1,x:'bad 的比较级是 worse。',r:'form'},
+ {cell:'H',q:'He is the ___ of the three boys.（tall）',f:1,a:'tallest',x:'三者比较用最高级。',r:'pos'}],
+'介词':[{cell:'G',q:'I will finish the work ___ two days.',o:['in','on','at','for'],a:0,x:'in 加时间段表示“之后”。',r:'rule'},
+ {cell:'H',q:'The story is written ___ English.（用某种语言）',f:1,a:'in',x:'用某种语言用 in。',r:'form'}],
+'连词':[{cell:'G',q:'___ he is poor, he is happy.',o:['Because','Although','So','If'],a:1,x:'让步关系用 although。',r:'pos'},
+ {cell:'H',q:'Either you ___ he is right.（填连词）',f:1,a:'or',x:'either…or 固定搭配。',r:'form'}],
+'一般现在时与现在进行时':[{cell:'G',q:'She ___ TV now, but she usually ___ TV after dinner.',o:['watches; watches','is watching; watches','watches; is watching','is watching; is watching'],a:1,x:'now 用进行，usually 用一般现在。',r:'rule'},
+ {cell:'H',q:'He ___ his homework now.（not do）',f:1,a:["isn't doing",'is not doing'],x:'now 提示进行时，主语 he 用 is。',r:'form'}],
+'一般过去时与过去进行时':[{cell:'G',q:'When I ___ home, my mother ___ dinner.',o:['got; cooked','got; was cooking','was getting; cooked','get; cooks'],a:1,x:'when 引导的短暂动作用过去式，主句正在进行。',r:'rule'},
+ {cell:'H',q:'She ___ a new bike last week.（buy）',f:1,a:'bought',x:'last week 用过去式，buy 的过去式是 bought。',r:'form'}],
+'一般将来时':[{cell:'G',q:'If it ___ fine tomorrow, we ___ to the park.',o:['is; will go','will be; go','is; go','will be; will go'],a:0,x:'主将从现。',r:'rule'},
+ {cell:'H',q:'They ___ for Beijing next Friday.（leave）',f:1,a:'will leave',x:'next Friday 用将来。',r:'form'}],
+'现在完成时':[{cell:'G',q:'He ___ the film twice, so he ___ to see it again.',o:['saw; does not want','has seen; does not want','has seen; did not want','sees; is not wanting'],a:1,x:'twice 到现在，用现在完成；后半句是现在的想法。',r:'rule'},
+ {cell:'H',q:'We ___ each other since 2018.（know）',f:1,a:'have known',x:'since 加时间点用现在完成。',r:'form'}],
+'情态动词':[{cell:'G',q:'You ___ talk in the library. It is a rule.',o:['must not','need not','may','could'],a:0,x:'禁止用 must not。',r:'rule'},
+ {cell:'H',q:'He ___ swim when he was six.（can）',f:1,a:'could',x:'过去能力用 could。',r:'form'}],
+'被动语态':[{cell:'G',q:'The room ___ every morning.',o:['cleans','is cleaned','cleaned','is cleaning'],a:1,x:'房间是被打扫的，一般现在被动。',r:'rule'},
+ {cell:'H',q:'These photos ___ by my father last year.（take）',f:1,a:'were taken',x:'过去被动，主语复数用 were。',r:'form'}],
+'非谓语动词':[{cell:'G',q:'Remember ___ the door when you leave.',o:['lock','to lock','locking','locked'],a:1,x:'remember to do 记得要去做。',r:'pos'},
+ {cell:'H',q:'He is good at ___.（draw）',f:1,a:'drawing',x:'介词后接 doing。',r:'form'}],
+'主谓一致':[{cell:'G',q:'Either you or he ___ right.',o:['are','is','were','be'],a:1,x:'either…or 就近 he，用单数。',r:'rule'},
+ {cell:'H',q:'The news ___ very exciting.（be）',f:1,a:'is',x:'news 不可数，按单数。',r:'form'}],
+'从句':[{cell:'G',q:'Do you know ___ he will come back?',o:['when','where','why','how'],a:0,x:'问时间用 when，宾语从句用陈述语序。',r:'rule'},
+ {cell:'H',q:'This is the book ___ I bought yesterday.（先行词是物）',f:1,a:['which','that'],x:'物作宾语用 which 或 that。',r:'form'}],
+'特殊句型':[{cell:'G',q:'___ interesting the story is!',o:['What','What an','How','How an'],a:2,x:'中心词是形容词 interesting。',r:'pos'},
+ {cell:'H',q:'She seldom goes out, ___ she?（反意疑问）',f:1,a:'does',x:'seldom 表否定，前否后肯，用 does。',r:'rule'}]
+};
+U.forEach(u=>{(EXTRA2[u.n]||[]).forEach(it=>u.items.push(it))});
+
+
+const EXTRA3={
+'名词':[{cell:'I',q:'The ___ fall from the trees in autumn.',h:'(leaf)',f:1,a:'leaves',x:'leaf 以 f 结尾变 v 加 es。',r:'form'},
+ {cell:'J',q:'After one ___ study, they make me feel relaxed.',o:["day","days","day's","days'"],a:2,x:'“一天的学习”用单数所有格 day’s。',r:'form'}],
+'冠词':[{cell:'I',q:'I have ___ pen pal. ___ name is Tom.',o:['a; He','a; His','an; His','the; His'],a:1,x:'泛指一个用 a；姓名前用形容词性物主 His。',r:'rule'},
+ {cell:'J',q:'Mary plays ___ violin in the morning and ___ tennis in the afternoon.',o:['/; the','/; /','the; /','the; the'],a:2,x:'乐器前用 the，球类前零冠词。',r:'rule'}],
+'代词':[{cell:'I',q:'It must be interesting for ___ to spend the holiday together.',o:['we','us','our','ours'],a:1,x:'介词 for 后接宾格。',r:'pos'},
+ {cell:'J',q:'Tom helps me with my English. ___ is friendly.',o:['He','His','Him','Himself'],a:0,x:'主语位置用主格。',r:'pos'}],
+'数词':[{cell:'I',q:'My name is Li Lei. I am ___ .',o:['15-year-old','15 year old','15 years old','15-years-old'],a:2,x:'作表语说年龄用 15 years old。',r:'rule'},
+ {cell:'J',q:'There are ___ students in our grade — about four ___ .',o:['hundred; hundreds','hundreds; hundred','hundred; hundred','hundreds; hundreds'],a:0,x:'具体数字用 hundred；笼统才 hundreds of。',r:'rule'}],
+'形容词与副词':[{cell:'I',q:'I will put it on my desk ___ .',o:['care','careful','careless','carefully'],a:3,x:'修饰动词 put 用副词。',r:'pos'},
+ {cell:'J',q:'The cake tastes ___ . Can you teach me?',o:['good','well','better','greatly'],a:0,x:'taste 是系动词，后接形容词。',r:'rule'},
+ {cell:'J',q:'You ___ know which doll you will get before opening the box.',o:['never','always','often','sometimes'],a:0,x:'副词表频率：开盒前完全不知道，用 never。',r:'trap'}],
+'介词':[{cell:'I',q:'I often fly kites ___ my friends in the park.',o:['without','at','for','with'],a:3,x:'和某人一起用 with。',r:'rule'},
+ {cell:'J',q:'It is ___ a game of luck.',o:['for','like','without','including'],a:1,x:'“像”用 like。',r:'rule'}],
+'连词':[{cell:'I',q:'I enjoy collecting blind boxes ___ it is full of surprises.',o:['if','because','when','so'],a:1,x:'后句是原因。',r:'pos'},
+ {cell:'J',q:'I ___ wear a warm coat, ___ I don’t mind.',o:['have to; so','have to; but','must; or','can; yet'],a:1,x:'前后转折用 but。',r:'pos'}],
+'一般现在时与现在进行时':[{cell:'I',q:'He often ___ in the sea in summer.',o:['swim','swims','swimming','swam'],a:1,x:'often 加第三人称单数。',r:'form'},
+ {cell:'J',q:'Tom ___ the piano every evening, but now he ___ TV.',o:['plays; watches','plays; is watching','is playing; watches','play; watch'],a:1,x:'every evening 用一般现在，now 用进行。',r:'rule'}],
+'一般将来时':[{cell:'I',q:'Next week, many shops ___ new boxes about space travel.',o:['sell','will sell','sold','are selling'],a:1,x:'Next week 用将来。',r:'form'},
+ {cell:'J',q:'If you practise speaking English, you ___ soon improve.',o:['will','would','are','have'],a:0,x:'主将从现，主句用 will。',r:'rule'}],
+'被动语态':[{cell:'I',q:'In each class, forty pupils are ___ into four groups.',h:'(divide)',f:1,a:'divided',x:'be divided into 被分成。',r:'form'},
+ {cell:'J',q:'The classroom ___ by the students every day.',o:['cleans','is cleaned','cleaned','is cleaning'],a:1,x:'一般现在被动。',r:'rule'}],
+'非谓语动词':[{cell:'I',q:'He enjoys ___ the piano and is good at ___ .',o:['playing; drawing','play; draw','to play; to draw','plays; draws'],a:0,x:'enjoy 和 be good at 后都接 doing。',r:'rule'},
+ {cell:'J',q:'We must learn ___ ourselves when buying toys.',h:'(control)',f:1,a:'to control',x:'learn to do 学会做某事。',r:'form'}],
+'情态动词':[{cell:'I',q:'I ___ wear a warm coat in winter.',o:['have to','need','may','could'],a:0,x:'客观需要 wear 用 have to。',r:'rule'},
+ {cell:'J',q:'— ___ I borrow your ruler? — Sure, here you are.',o:['Must','May','Need','Have to'],a:1,x:'请求许可用 May I…。',r:'pos'}],
+'主谓一致':[{cell:'I',q:'There ___ many different kinds of characters in the box.',o:['are','is','have','has'],a:0,x:'There be 就近 many kinds。',r:'rule'},
+ {cell:'J',q:'There ___ often thunder and lightning in Guangzhou in summer.',o:['is','are','have','has'],a:0,x:'thunder and lightning 指一种天气现象，看作单数，用 is。',r:'rule'}],
+'从句':[{cell:'I',q:'___ will I do next? I will put it on my desk.',o:['How','Why','What','Which'],a:2,x:'do 的宾语用 what。',r:'rule'},
+ {cell:'J',q:'___ he is here, I will take him to try different food.',o:['Because','So','But','When'],a:3,x:'时间状语从句用 when。',r:'pos'}],
+'特殊句型':[{cell:'I',q:'— ___ is the weather like in Guangzhou in spring? — It is warm and rainy.',o:['How','What','Which','Where'],a:1,x:'What is the weather like 固定问法。',r:'rule'},
+ {cell:'J',q:'— ___ I carry the box for you? — It is very kind of you.',o:['Can','Must','Should','Need'],a:0,x:'提出帮忙用 Can I…。',r:'pos'}]
+};
+U.forEach(u=>{(EXTRA3[u.n]||[]).forEach(it=>u.items.push(it))});
+
+const PASS2=[
+{n:'盲盒（真题改编）',src:'广州大学附属中学 2026-2027 七上期中·语法选择',sub:'主谓一致 · 连词 · 副词 · 所有格 · 将来 · 冠词 · 非谓语',
+text:'Blind boxes are very popular toys among students these days. There {{1}} many different kinds of characters inside. I enjoy collecting blind boxes {{2}} it is full of surprises. Before you open the box, you {{3}} know which doll you will get. It is {{4}} a game of luck. {{5}} will I do next? I will put the doll on my desk {{6}} and take a photo of it. After one {{7}} study, they make me feel happy. Next week, many shops {{8}} new boxes about space travel. I think it is one of {{9}} best ways to keep beautiful memories. However, we students must learn {{10}} ourselves when buying them.',
+blanks:[{h:'(be)',a:'are',u:'主谓一致',r:'form',x:'many kinds 是复数，用 are，且 There be 不与 have 连用。'},
+{h:'填连词',a:'because',u:'连词',r:'pos',x:'后句是原因。'},
+{h:'填副词',a:'never',u:'情态动词',r:'trap',x:'开盒前完全不知道，用 never。'},
+{h:'填介词',a:'like',u:'介词',r:'rule',x:'“像”用 like。'},
+{h:'填疑问词',a:'What',u:'从句',r:'rule',x:'do 的宾语，用 what。'},
+{h:'填副词',a:'carefully',u:'形容词与副词',r:'pos',x:'修饰 put 用副词。'},
+{h:'(day) 所有格',a:"day's",u:'名词',r:'form',x:'one day’s study，单数所有格。'},
+{h:'(sell)',a:'will sell',u:'一般将来时',r:'form',x:'Next week 用将来。'},
+{h:'填冠词',a:'the',u:'冠词',r:'rule',x:'one of the best ways，最高级前加 the。'},
+{h:'(control)',a:'to control',u:'非谓语动词',r:'form',x:'learn to do。'}],
+qs:[]},
+{n:'笔友与四季（真题改编）',src:'沪教版七上期中测验 A 卷（广州专用）·语法选择',sub:'冠词 · 代词 · 介词 · 名词复数 · 情态 · 连词 · 主谓一致',
+text:'I have {{1}} pen pal. {{2}} name is Tom. He lives in Sydney, Australia. In Beijing, spring is warm. I like to fly kites {{3}} my friends in the park. Autumn is cool and dry. The {{4}} fall from the trees. In winter, I {{5}} wear a warm coat, {{6}} I don’t mind because I can play in the snow. In Sydney, the seasons are different. Tom likes to go to the beach. He often {{7}} in the sea. There {{8}} many beautiful beaches in Sydney. Tom asks me, “{{9}} is your favourite season?” I say, “I like autumn best.” We are {{10}} to have each other as friends.',
+blanks:[{h:'填冠词',a:'a',u:'冠词',r:'rule',x:'泛指一个笔友用 a。'},
+{h:'填代词',a:'His',u:'代词',r:'pos',x:'姓名前用形容词性物主 His。'},
+{h:'填介词',a:'with',u:'介词',r:'rule',x:'和某人一起用 with。'},
+{h:'(leaf)',a:'leaves',u:'名词',r:'form',x:'leaf 变 v 加 es。'},
+{h:'填情态动词',a:'have to',u:'情态动词',r:'rule',x:'客观需要，用 have to。'},
+{h:'填连词',a:'but',u:'连词',r:'pos',x:'前后转折。'},
+{h:'(swim)',a:'swims',u:'一般现在时与现在进行时',r:'form',x:'often 加第三人称单数。'},
+{h:'(be)',a:'are',u:'主谓一致',r:'form',x:'就近 many beaches，用 are。'},
+{h:'填疑问词',a:'What',u:'特殊句型',r:'rule',x:'问“哪一个季节”用 What。'},
+{h:'填形容词',a:'happy',u:'形容词与副词',r:'pos',x:'be 后接形容词作表语。'}],
+qs:[]}
+];
+PASS.push(...PASS2);
+
+const EXTRA4={
+'名词':[
+ {cell:'D',q:"There are two ___ in the room.",o:["box","boxs","boxes","boxies"],a:2,x:"以 x 结尾加 es。",r:'form'},
+ {cell:'E',q:"The ___ books are on the shelf.",h:"（child）",f:1,a:"children's",x:"复数名词所有格在词尾加 ’s。",r:'form'},
+ {cell:'F',q:"This is my ___ bike.",h:"（brother）",f:1,a:"brother's",x:"单数名词所有格加 ’s。",r:'form'},
+ {cell:'G',q:"We sing songs on ___ Day.",h:"（Child）",f:1,a:"Children's",x:"儿童节是 Children’s Day，固定说法。",r:'form'},
+ {cell:'H',q:"I need two ___ of bread.",o:["loafs","loaves","loaf","loafes"],a:1,x:"loaf 变 f 为 v 加 es。",r:'form'},
+ {cell:'D',q:"There are many ___ in the zoo.",o:["wolfs","wolves","wolfes","wolf"],a:1,x:"wolf 变 f 为 v 加 es。",r:'form'},
+ {cell:'E',q:"Ten ___ walk is enough.",h:"（minute）",f:1,a:"minutes'",x:"以 s 结尾的复数名词所有格只加 ’。",r:'form'},
+ {cell:'F',q:"This is ___ room.（两人共有）",h:"（Lily and Lucy）",f:1,a:"Lily and Lucy's",x:"共有只给最后一个名词加 ’s。",r:'pos'}],
+'冠词':[
+ {cell:'D',q:"He plays ___ guitar, but he doesn’t play ___ basketball.",o:["the; /","/; the","the; the","/; /"],a:0,x:"乐器前 the，球类前零冠词。",r:'rule'},
+ {cell:'E',q:"There is ___ “h” in the word “hour”.",h:"（填冠词）",f:1,a:"an",x:"h 读 /eɪtʃ/，元音音素开头用 an。",r:'trap'},
+ {cell:'F',q:"I saw ___ old man. ___ old man was kind.",o:["a; An","an; The","an; An","the; The"],a:1,x:"第一次泛指用 an，再次提到用 the。",r:'rule'},
+ {cell:'G',q:"___ sun rises in the east.",h:"（填冠词）",f:1,a:"The",x:"独一无二的事物前用 the。",r:'rule'},
+ {cell:'H',q:"It took me ___ hour to finish the work.",h:"（填冠词）",f:1,a:"an",x:"hour 的 h 不发音，元音音素开头。",r:'trap'},
+ {cell:'D',q:"She is ___ honest girl.",h:"（填冠词）",f:1,a:"an",x:"honest 的 h 不发音。",r:'trap'},
+ {cell:'E',q:"We have ___ English class today. ___ class is interesting.",o:["an; The","a; The","an; A","the; The"],a:0,x:"元音音素开头用 an，第二次提到用 the。",r:'rule'},
+ {cell:'F',q:"___ Great Wall is famous all over the world.",h:"（填冠词）",f:1,a:"The",x:"专有名词中的普通名词组合加 the。",r:'rule'}],
+'代词':[
+ {cell:'D',q:"This is not my pen. ___ is blue.",h:"（I）",f:1,a:"Mine",x:"后面没有名词，用名词性物主代词。",r:'pos'},
+ {cell:'E',q:"The cat is licking ___ paws.",o:["it’s","its","it","itself"],a:1,x:"形容词性物主 its 修饰名词。",r:'trap'},
+ {cell:'F',q:"Help ___ to some fish, children.",h:"（you）",f:1,a:"yourselves",x:"children 是复数，用 yourselves。",r:'form'},
+ {cell:'G',q:"___ is important to learn English well.",h:"（填代词）",f:1,a:"It",x:"形式主语用 it。",r:'rule'},
+ {cell:'H',q:"I met Tom and gave ___ a book.",o:["he","his","him","himself"],a:2,x:"动词后接宾格。",r:'pos'},
+ {cell:'D',q:"These books are ___ .",h:"（we）",f:1,a:"ours",x:"名词性物主代词。",r:'pos'},
+ {cell:'E',q:"She taught ___ to swim last summer.",h:"（she）",f:1,a:"herself",x:"teach oneself 自学。",r:'form'},
+ {cell:'F',q:"Tom and I are friends. ___ often play together.",o:["Us","Our","We","Ours"],a:2,x:"主语位置用主格。",r:'pos'}],
+'数词':[
+ {cell:'D',q:"Today is my ___ birthday.",h:"（nine）",f:1,a:"ninth",x:"第九是 ninth，去 e 加 th。",r:'form'},
+ {cell:'E',q:"There are ___ months in a year.",h:"（twelve）",f:1,a:"twelve",x:"这里用基数词。",r:'rule'},
+ {cell:'F',q:"He lives on the ___ floor.",h:"（five）",f:1,a:"fifth",x:"楼层用序数词，five 变 fifth。",r:'form'},
+ {cell:'G',q:"___ of the students come from Guangzhou.",h:"（hundred）",f:1,a:"Hundreds",x:"笼统数量用 hundreds of。",r:'form'},
+ {cell:'H',q:"The station is about ___ walk from here.",o:["twenty minute's","twenty minutes'","twenty minutes","twenty minute"],a:1,x:"二十分钟的路程：twenty minutes’ walk。",r:'form'},
+ {cell:'D',q:"March is the ___ month of the year.",h:"（three）",f:1,a:"third",x:"第三是 third。",r:'form'},
+ {cell:'E',q:"Two ___ people came to the meeting.",h:"（hundred）",f:1,a:"hundred",x:"有具体数字时 hundred 不加 s。",r:'rule'},
+ {cell:'F',q:"It is ___ o’clock now.",h:"（eight）",f:1,a:"eight",x:"整点用基数词。",r:'rule'}],
+'形容词与副词':[
+ {cell:'D',q:"He speaks English very ___ .",h:"（good）",f:1,a:"well",x:"修饰动词 speak 用副词。",r:'pos'},
+ {cell:'E',q:"This is the ___ book in the shop.",h:"（interesting）",f:1,a:"most interesting",x:"多音节形容词最高级加 most。",r:'form'},
+ {cell:'F',q:"Tom runs ___ than Jim.",o:["fast","faster","fastest","more fast"],a:1,x:"than 提示比较级。",r:'form'},
+ {cell:'G',q:"She is ___ than her brother.",o:["careful","more careful","most careful","carefully"],a:1,x:"多音节形容词比较级加 more。",r:'form'},
+ {cell:'H',q:"The soup smells ___ .",h:"（delicious）",f:1,a:"delicious",x:"smell 是系动词，接形容词。",r:'rule'},
+ {cell:'D',q:"He always comes to school ___ .",h:"（early）",f:1,a:"early",x:"early 的副词形式还是 early。",r:'trap'},
+ {cell:'E',q:"I am ___ sorry for being late.",h:"（real）",f:1,a:"really",x:"修饰形容词用副词。",r:'form'},
+ {cell:'F',q:"Which is ___ , the sun or the moon?",o:["big","bigger","biggest","more big"],a:1,x:"两者比较用比较级。",r:'form'}],
+'介词':[
+ {cell:'D',q:"I was born ___ 2013.",h:"（填介词）",f:1,a:"in",x:"年份前用 in。",r:'rule'},
+ {cell:'E',q:"We have a party ___ Sunday evening.",h:"（填介词）",f:1,a:"on",x:"具体某天的上下午用 on。",r:'trap'},
+ {cell:'F',q:"The film begins ___ 7:30.",h:"（填介词）",f:1,a:"at",x:"具体时刻用 at。",r:'rule'},
+ {cell:'G',q:"Thank you ___ your help.",h:"（填介词）",f:1,a:"for",x:"thank sb for sth 固定搭配。",r:'rule'},
+ {cell:'H',q:"He is different ___ his brother.",h:"（填介词）",f:1,a:"from",x:"be different from 固定搭配。",r:'rule'},
+ {cell:'D',q:"Listen ___ me carefully, please.",h:"（填介词）",f:1,a:"to",x:"listen to 固定搭配。",r:'rule'},
+ {cell:'E',q:"I go to school ___ bike every day.",h:"（填介词）",f:1,a:"by",x:"交通方式 by bike。",r:'rule'},
+ {cell:'F',q:"She is good ___ maths.",h:"（填介词）",f:1,a:"at",x:"be good at 擅长。",r:'rule'}],
+'连词':[
+ {cell:'D',q:"___ he is young, he knows a lot.",h:"（填连词）",f:1,a:["Although","Though"],x:"让步状语从句，although 不与 but 连用。",r:'pos'},
+ {cell:'E',q:"Hurry up, ___ you will be late.",h:"（填连词）",f:1,a:"or",x:"祈使句加 or 表示“否则”。",r:'trap'},
+ {cell:'F',q:"I like both apples ___ pears.",h:"（填连词）",f:1,a:"and",x:"both…and 并列。",r:'rule'},
+ {cell:'G',q:"It was raining, ___ we stayed at home.",h:"（填连词）",f:1,a:"so",x:"前因后果用 so。",r:'pos'},
+ {cell:'H',q:"___ you don’t hurry, you will miss the bus.",h:"（填连词）",f:1,a:"If",x:"条件状语从句。",r:'rule'},
+ {cell:'D',q:"She was tired, ___ she kept working.",h:"（填连词）",f:1,a:"but",x:"转折。",r:'pos'},
+ {cell:'E',q:"___ it is fine tomorrow, we will go hiking.",h:"（填连词）",f:1,a:"If",x:"条件句，主将从现。",r:'rule'},
+ {cell:'F',q:"He didn’t come ___ he was ill.",h:"（填连词）",f:1,a:"because",x:"原因状语从句。",r:'pos'}],
+'一般现在时与现在进行时':[
+ {cell:'D',q:"My sister ___ her face every morning.",h:"（wash）",f:1,a:"washes",x:"every morning 用一般现在，第三人称单数加 es。",r:'form'},
+ {cell:'E',q:"Look! The children ___ football on the playground.",h:"（play）",f:1,a:"are playing",x:"Look 提示现在进行。",r:'rule'},
+ {cell:'F',q:"He ___ carrots. He only eats meat.",h:"（not like）",f:1,a:["doesn't like","does not like"],x:"第三人称单数否定用 doesn’t。",r:'form'},
+ {cell:'G',q:"It is 8 o’clock. They ___ a class now.",h:"（have）",f:1,a:"are having",x:"now 提示现在进行，have 变 having。",r:'form'},
+ {cell:'H',q:"She ___ to school by bus every day.",h:"（go）",f:1,a:"goes",x:"第三人称单数加 es。",r:'form'},
+ {cell:'D',q:"Listen! Someone ___ in the next room.",h:"（sing）",f:1,a:"is singing",x:"Listen 提示进行时，someone 用 is。",r:'rule'},
+ {cell:'E',q:"We ___ TV on school nights.",h:"（not watch）",f:1,a:["don't watch","do not watch"],x:"复数主语否定用 don’t。",r:'form'},
+ {cell:'F',q:"Where does your father ___ ?",h:"（work）",f:1,a:"work",x:"does 已提前，后面用动词原形。",r:'form'}],
+'一般过去时与过去进行时':[
+ {cell:'D',q:"I ___ a film with my parents last night.",h:"（see）",f:1,a:"saw",x:"last night 用一般过去。",r:'form'},
+ {cell:'E',q:"While I ___ my homework, my mother was cooking.",h:"（do）",f:1,a:"was doing",x:"while 从句常用过去进行。",r:'form'},
+ {cell:'F',q:"They ___ to the park yesterday.",h:"（not go）",f:1,a:["didn't go","did not go"],x:"过去否定用 didn’t 加原形。",r:'form'},
+ {cell:'G',q:"When the teacher came in, we ___ .",h:"（talk）",f:1,a:"were talking",x:"背景动作正在进行用过去进行。",r:'form'},
+ {cell:'H',q:"He ___ a new bike two days ago.",h:"（buy）",f:1,a:"bought",x:"two days ago 用一般过去。",r:'form'},
+ {cell:'D',q:"___ you finish your homework last night?",h:"（填助动词）",f:1,a:"Did",x:"过去一般疑问句用 Did 开头。",r:'form'},
+ {cell:'E',q:"At that time, she ___ a book in the library.",o:["reads","read","was reading","is reading"],a:2,x:"at that time 指过去某刻，用过去进行。",r:'rule'},
+ {cell:'F',q:"My father ___ back at nine last night.",h:"（come）",f:1,a:"came",x:"last night 用一般过去，come 变 came。",r:'form'}],
+'一般将来时':[
+ {cell:'D',q:"I ___ my grandma next Sunday.",h:"（visit）",f:1,a:["will visit","am going to visit"],x:"next Sunday 用将来。",r:'form'},
+ {cell:'E',q:"Look at the clouds! It ___ .",h:"（rain）",f:1,a:"is going to rain",x:"有迹象的预测用 be going to。",r:'rule'},
+ {cell:'F',q:"If it ___ fine tomorrow, we will go out.",h:"（be）",f:1,a:"is",x:"主将从现，if 从句用一般现在。",r:'rule'},
+ {cell:'G',q:"There ___ a sports meeting next week.",h:"（be）",f:1,a:["will be","is going to be"],x:"There be 的将来形式。",r:'form'},
+ {cell:'H',q:"He ___ tomorrow. He has to look after his sister.",h:"（not come）",f:1,a:["won't come","will not come","isn't going to come"],x:"将来否定用 won’t。",r:'form'},
+ {cell:'D',q:"We ___ a test in two days.",h:"（have）",f:1,a:["will have","are going to have"],x:"in two days 用将来。",r:'form'},
+ {cell:'E',q:"She ___ ten years old next year.",h:"（be）",f:1,a:["will be","is going to be"],x:"next year 用将来。",r:'form'},
+ {cell:'F',q:"I ___ you at the school gate at eight.",o:["meet","met","will meet","am meeting"],a:2,x:"约定将来用 will meet。",r:'rule'}],
+'现在完成时':[
+ {cell:'D',q:"I ___ here for five years.",h:"（live）",f:1,a:"have lived",x:"for 加时间段用现在完成。",r:'form'},
+ {cell:'E',q:"He ___ his homework yet.",h:"（not finish）",f:1,a:["hasn't finished","has not finished"],x:"yet 用于否定句，hasn’t 加过去分词。",r:'form'},
+ {cell:'F',q:"Have you ever ___ to Beijing?",h:"（be）",f:1,a:"been",x:"have been to 去过某地。",r:'form'},
+ {cell:'G',q:"She ___ ill since Monday.",h:"（be）",f:1,a:"has been",x:"since 加时间点用现在完成。",r:'form'},
+ {cell:'H',q:"They ___ the work already.",h:"（finish）",f:1,a:"have finished",x:"already 用于肯定句。",r:'form'},
+ {cell:'D',q:"My father ___ in this school since 2015.",h:"（work）",f:1,a:"has worked",x:"since 2015 用现在完成。",r:'form'},
+ {cell:'E',q:"I ___ a new pen. Look, it is here.",h:"（just buy）",f:1,a:"have just bought",x:"just 提示刚刚完成。",r:'form'},
+ {cell:'F',q:"How long has he ___ you?",h:"（know）",f:1,a:"known",x:"has 已提前，后面用过去分词。",r:'form'}],
+'情态动词':[
+ {cell:'D',q:"You ___ be careful when you cross the road.",h:"（填情态动词）",f:1,a:"must",x:"表示必须用 must。",r:'rule'},
+ {cell:'E',q:"___ I use your phone? — Sure, here it is.",o:["Must","May","Need","Should"],a:1,x:"请求许可用 May I…。",r:'pos'},
+ {cell:'F',q:"You ___ swim in this river. It is dangerous.",h:"（填情态动词）",f:1,a:["mustn't","must not"],x:"禁止用 mustn’t。",r:'rule'},
+ {cell:'G',q:"He ___ speak English well when he was five.",o:["can","could","must","should"],a:1,x:"过去的能力用 could。",r:'rule'},
+ {cell:'H',q:"We ___ finish the work today, because tomorrow is the deadline.",h:"（填情态动词）",f:1,a:["must","have to"],x:"客观必须用 must 或 have to。",r:'rule'},
+ {cell:'D',q:"You look tired. You ___ have a rest.",h:"（填情态动词）",f:1,a:"should",x:"给建议用 should。",r:'rule'},
+ {cell:'E',q:"— Must I finish it now? — No, you ___ .",o:["mustn’t","needn’t","can’t","shouldn’t"],a:1,x:"must 开头的疑问句否定回答用 needn’t。",r:'trap'},
+ {cell:'F',q:"___ you help me with my bag? It is too heavy.",o:["Must","Should","Could","Need"],a:2,x:"礼貌请求用 Could you…。",r:'pos'}],
+'被动语态':[
+ {cell:'D',q:"This kind of paper ___ from wood.",h:"（make）",f:1,a:"is made",x:"be made from 看不出原材料。",r:'form'},
+ {cell:'E',q:"The school ___ in 2010.",h:"（build）",f:1,a:"was built",x:"in 2010 用一般过去被动。",r:'form'},
+ {cell:'F',q:"A new library ___ next year.",h:"（build）",f:1,a:"will be built",x:"next year 用将来被动。",r:'form'},
+ {cell:'G',q:"English ___ in many countries.",h:"（speak）",f:1,a:"is spoken",x:"一般现在被动。",r:'form'},
+ {cell:'H',q:"The homework ___ today.",h:"（must finish）",f:1,a:"must be finished",x:"情态动词被动为 must be done。",r:'form'},
+ {cell:'D',q:"The trees ___ last spring.",h:"（plant）",f:1,a:"were planted",x:"过去被动，复数用 were。",r:'form'},
+ {cell:'E',q:"Our classroom ___ every day.",h:"（clean）",f:1,a:"is cleaned",x:"every day 一般现在被动。",r:'form'},
+ {cell:'F',q:"These photos ___ by my father last year.",o:["take","took","were taken","are taken"],a:2,x:"过去被动加 by 施动者。",r:'rule'}],
+'非谓语动词':[
+ {cell:'D',q:"I want ___ the music club.",h:"（join）",f:1,a:"to join",x:"want to do。",r:'form'},
+ {cell:'E',q:"___ is good for our health.",o:["Swim","Swims","Swimming","To swimming"],a:2,x:"动名词作主语。",r:'rule'},
+ {cell:'F',q:"He asked me ___ late.",h:"（not be）",f:1,a:"not to be",x:"不定式否定 not to do。",r:'form'},
+ {cell:'G',q:"Do you mind ___ the window?",h:"（open）",f:1,a:"opening",x:"mind doing。",r:'form'},
+ {cell:'H',q:"She is busy ___ her homework.",h:"（do）",f:1,a:"doing",x:"be busy doing。",r:'form'},
+ {cell:'D',q:"It is important ___ English well.",h:"（learn）",f:1,a:"to learn",x:"It is + adj + to do。",r:'form'},
+ {cell:'E',q:"My hobby is ___ books.",h:"（read）",f:1,a:"reading",x:"作表语用动名词。",r:'form'},
+ {cell:'F',q:"The teacher told us ___ hard.",h:"（study）",f:1,a:"to study",x:"tell sb to do。",r:'form'}],
+'主谓一致':[
+ {cell:'D',q:"Each of them ___ a pen.",h:"（have）",f:1,a:"has",x:"each 作主语用单数。",r:'rule'},
+ {cell:'E',q:"Neither Tom nor I ___ good at singing.",h:"（be）",f:1,a:"am",x:"neither…nor 就近原则，靠近 I 用 am。",r:'trap'},
+ {cell:'F',q:"There ___ a pen and two books on the desk.",h:"（be）",f:1,a:"is",x:"There be 就近 a pen 用 is。",r:'rule'},
+ {cell:'G',q:"The number of the students ___ fifty.",h:"（be）",f:1,a:"is",x:"the number of 作主语用单数。",r:'trap'},
+ {cell:'H',q:"Ten years ___ a long time.",h:"（be）",f:1,a:"is",x:"时间、距离作整体用单数。",r:'trap'},
+ {cell:'D',q:"Everyone in our class ___ the film.",h:"（like）",f:1,a:"likes",x:"everyone 用单数。",r:'rule'},
+ {cell:'E',q:"The students each ___ a dictionary.",o:["has","have","is","are"],a:1,x:"each 在主语后不影响主语数，students 用 have。",r:'trap'},
+ {cell:'F',q:"There ___ some milk and two eggs in the fridge.",h:"（be）",f:1,a:"is",x:"就近 milk 不可数用 is。",r:'rule'}],
+'从句':[
+ {cell:'D',q:"Do you know where he ___ ?",h:"（live）",f:1,a:"lives",x:"宾语从句用陈述语序，第三人称单数。",r:'rule'},
+ {cell:'E',q:"I don’t know ___ he will come or not.",o:["if","whether","that","what"],a:1,x:"whether…or not 固定，if 不接 or not。",r:'trap'},
+ {cell:'F',q:"Could you tell me ___ the museum is?",h:"（填疑问词）",f:1,a:"where",x:"问地点用 where。",r:'rule'},
+ {cell:'G',q:"I wonder ___ he is late again.",h:"（填疑问词）",f:1,a:"why",x:"问原因用 why。",r:'rule'},
+ {cell:'H',q:"She asked me ___ I had seen the film.",o:["that","if","what","which"],a:1,x:"一般疑问句变宾语从句用 if。",r:'rule'},
+ {cell:'D',q:"Do you know ___ he is?",h:"（填疑问词）",f:1,a:"who",x:"问人用 who。",r:'rule'},
+ {cell:'E',q:"Tell me ___ you will start.",h:"（填疑问词）",f:1,a:"when",x:"问时间用 when。",r:'rule'},
+ {cell:'F',q:"I don’t know ___ to do next.",h:"（填疑问词）",f:1,a:"what",x:"疑问词加不定式，do 的宾语用 what。",r:'rule'}],
+'特殊句型':[
+ {cell:'D',q:"___ fine weather it is today!",h:"（填 What 或 How）",f:1,a:"What",x:"weather 不可数，用 What 加形容词加不可数名词。",r:'rule'},
+ {cell:'E',q:"___ interesting book it is!",o:["What a","What an","How a","How an"],a:1,x:"book 可数单数，用 What an。",r:'rule'},
+ {cell:'F',q:"___ hard he works!",h:"（填 What 或 How）",f:1,a:"How",x:"How 加副词。",r:'rule'},
+ {cell:'G',q:"— ___ does he go to the library? — Twice a week.",h:"（填疑问词）",f:1,a:"How often",x:"问频率用 How often。",r:'rule'},
+ {cell:'H',q:"— ___ is the population of Guangzhou?",h:"（填疑问词）",f:1,a:"What",x:"问人口用 What。",r:'rule'},
+ {cell:'D',q:"___ does it take you to get to school?",h:"（填疑问词）",f:1,a:"How long",x:"问时长用 How long。",r:'rule'},
+ {cell:'E',q:"— ___ is your father? — He is a doctor.",h:"（填疑问词）",f:1,a:"What",x:"问职业用 What。",r:'rule'},
+ {cell:'F',q:"— ___ do you like the film? — Very much.",o:["What","How","Which","Why"],a:1,x:"问程度用 How。",r:'rule'}]
+};
+U.forEach(u=>{(EXTRA4[u.n]||[]).forEach(it=>u.items.push(it))});
+U.forEach(u=>{const seen={};u.items=u.items.filter(it=>{if(seen[it.q])return false;seen[it.q]=1;return true})});
+const EXTRA5={
+'名词':[
+ {cell:'D',q:"Three ___ are on the wall.",h:"（photo）",f:1,a:"photos",x:"以 o 结尾加 es。",r:'form'},
+ {cell:'E',q:"There are many ___ in the fridge.",o:["tomato","tomatos","tomatoes","tomatoe"],a:2,x:"以 o 结尾加 es。",r:'form'},
+ {cell:'F',q:"Two ___ ran into the hole.",h:"（mouse）",f:1,a:"mice",x:"mouse 的复数是 mice。",r:'form'},
+ {cell:'G',q:"I bought two ___ of shoes.",o:["pair","pair's","pairs'","pairs"],a:3,x:"two 后接复数 pairs。",r:'form'},
+ {cell:'H',q:"My ___ room is very big.",h:"（parent）",f:1,a:"parents'",x:"以 s 结尾的复数所有格只加 ’。",r:'form'},
+ {cell:'D',q:"The ___ room is clean and bright.",o:["teacher","teachers","teacher's","teachers'"],a:2,x:"一位老师的房间，单数所有格。",r:'pos'},
+ {cell:'E',q:"Look at the ___ on the hill.",h:"（sheep）",f:1,a:"sheep",x:"sheep 单复数同形。",r:'trap'},
+ {cell:'F',q:"There is some ___ on the plate.",o:["breads","bread","a bread","breades"],a:1,x:"bread 不可数。",r:'trap'},
+ {cell:'G',q:"Please give me two ___ of paper.",h:"（piece）",f:1,a:"pieces",x:"数量词可数，加 s。",r:'form'},
+ {cell:'H',q:"We had a lot of ___ last summer.",o:["fun","funs","a fun","funny"],a:0,x:"fun 不可数。",r:'trap'},
+ {cell:'D',q:"The ___ are playing in the garden.",h:"（child）",f:1,a:"children",x:"child 的复数是 children。",r:'form'},
+ {cell:'E',q:"He is one of my best ___ .",h:"（friend）",f:1,a:"friends",x:"one of 后接复数。",r:'form'},
+ {cell:'F',q:"It is about ten ___ ride from here.",h:"（minute）",f:1,a:"minutes'",x:"十分钟的车程：ten minutes’ ride。",r:'form'},
+ {cell:'G',q:"___ is my favourite food.",o:["Noodle","Noodles","Noodle's","Noodles'"],a:1,x:"noodles 常作复数。",r:'rule'},
+ {cell:'H',q:"There are five ___ in the box.",h:"（knife）",f:1,a:"knives",x:"knife 变 f 为 v 加 es。",r:'form'},
+ {cell:'D',q:"The ___ names are on the paper.",o:["student","students","student's","students'"],a:3,x:"多个学生的名字，复数所有格。",r:'pos'},
+ {cell:'E',q:"Beijing is one of the biggest ___ in China.",h:"（city）",f:1,a:"cities",x:"辅音字母加 y 结尾变 i 加 es。",r:'form'},
+ {cell:'F',q:"I have ___ homework today.",o:["a lot of","a lot","many","a few"],a:0,x:"homework 不可数，用 a lot of。",r:'trap'},
+ {cell:'G',q:"Those ___ bags are blue.",h:"（boy）",f:1,a:"boys'",x:"复数所有格加 ’。",r:'pos'},
+ {cell:'H',q:"There are two ___ in the picture.",o:["woman teacher","women teachers","woman teachers","women teacher"],a:1,x:"woman 作定语也要变复数。",r:'rule'}],
+'冠词':[
+ {cell:'D',q:"He is ___ honest boy.",h:"（填冠词）",f:1,a:"an",x:"honest 的 h 不发音，用 an。",r:'trap'},
+ {cell:'E',q:"I have ___ e-mail from Tom.",o:["a","an","the","/"],a:1,x:"e-mail 以元音音素开头。",r:'rule'},
+ {cell:'F',q:"We have ___ art lesson on Friday.",h:"（填冠词）",f:1,a:"an",x:"art 以元音音素开头。",r:'rule'},
+ {cell:'G',q:"___ Yellow River is long.",o:["A","An","The","/"],a:2,x:"江河名前用 the。",r:'rule'},
+ {cell:'H',q:"She is ___ tallest girl in our class.",h:"（填冠词）",f:1,a:"the",x:"最高级前用 the。",r:'rule'},
+ {cell:'D',q:"I like playing ___ football after school.",o:["a","an","the","/"],a:3,x:"球类运动前零冠词。",r:'rule'},
+ {cell:'E',q:"There is ___ “u” in the word “umbrella”.",h:"（填冠词）",f:1,a:"a",x:"字母 u 读 /juː/，辅音音素开头。",r:'trap'},
+ {cell:'F',q:"He is ___ European writer.",o:["a","an","the","/"],a:0,x:"European 读 /jʊərəˈpiːən/，用 a。",r:'trap'},
+ {cell:'G',q:"It took me half ___ hour to get there.",h:"（填冠词）",f:1,a:"an",x:"hour 的 h 不发音。",r:'trap'},
+ {cell:'H',q:"___ old man over there is my uncle.",o:["A","An","The","/"],a:2,x:"特指那一位，用 the。",r:'rule'},
+ {cell:'D',q:"I want to be ___ engineer.",h:"（填冠词）",f:1,a:"an",x:"engineer 以元音音素开头。",r:'rule'},
+ {cell:'E',q:"My mother is ___ teacher. She teaches in ___ school.",o:["a; a","a; the","the; a","the; the"],a:0,x:"第一次都泛指，用 a。",r:'rule'},
+ {cell:'F',q:"Look at ___ moon. It is bright tonight.",h:"（填冠词）",f:1,a:"the",x:"独一无二的事物用 the。",r:'rule'},
+ {cell:'G',q:"He plays ___ piano very well.",h:"（填冠词）",f:1,a:"the",x:"乐器前用 the。",r:'rule'},
+ {cell:'H',q:"Tom is ___ 11-year-old boy.",o:["a","an","the","/"],a:1,x:"11 读 eleven，元音音素开头。",r:'rule'},
+ {cell:'D',q:"___ China is a great country.",o:["A","An","The","/"],a:3,x:"国名前零冠词。",r:'rule'},
+ {cell:'E',q:"This is ___ useful book.",h:"（填冠词）",f:1,a:"a",x:"useful 读 /ˈjuːsfl/，辅音音素开头。",r:'trap'},
+ {cell:'F',q:"She has ___ orange and ___ apple.",o:["a; an","an; an","an; a","a; a"],a:1,x:"两个都以元音音素开头。",r:'rule'},
+ {cell:'G',q:"He was ___ first to arrive.",h:"（填冠词）",f:1,a:"the",x:"序数词前用 the。",r:'rule'},
+ {cell:'H',q:"It is ___ useful tool for us.",o:["a","an","the","/"],a:0,x:"useful 辅音音素开头。",r:'trap'}],
+'代词':[
+ {cell:'D',q:"These are ___ books.",h:"（they）",f:1,a:"their",x:"形容词性物主代词修饰名词。",r:'pos'},
+ {cell:'E',q:"___ is my brother. He is ten.",o:["He","Him","His","Himself"],a:0,x:"主语位置用主格。",r:'pos'},
+ {cell:'F',q:"I can do it by ___ .",h:"（I）",f:1,a:"myself",x:"by oneself 独自完成。",r:'form'},
+ {cell:'G',q:"This pen is ___ . Don’t take it.",o:["my","mine","me","I"],a:1,x:"后面没有名词，用名词性物主。",r:'pos'},
+ {cell:'H',q:"Give ___ a call, please.",h:"（we）",f:1,a:"us",x:"动词后接宾格。",r:'pos'},
+ {cell:'D',q:"The dog is wagging ___ tail.",o:["it’s","its","it","itself"],a:1,x:"形容词性物主 its。",r:'trap'},
+ {cell:'E',q:"___ books are on the desk.",h:"（you）",f:1,a:"Your",x:"形容词性物主 your。",r:'pos'},
+ {cell:'F',q:"Tom and ___ are classmates.",o:["I","me","my","mine"],a:0,x:"并列主语用主格。",r:'pos'},
+ {cell:'G',q:"She often helps ___ with English.",h:"（I）",f:1,a:"me",x:"help 后接宾格。",r:'pos'},
+ {cell:'H',q:"I have two pens. One is red, ___ is blue.",o:["other","the other","another","others"],a:1,x:"两者中的另一个用 the other。",r:'rule'},
+ {cell:'D',q:"The books are ___ .",h:"（we）",f:1,a:"ours",x:"名词性物主 ours。",r:'pos'},
+ {cell:'E',q:"He hurt ___ in the game.",o:["him","his","himself","he"],a:2,x:"hurt oneself 受伤。",r:'form'},
+ {cell:'F',q:"Please help ___ to the cake, Tom.",h:"（you）",f:1,a:"yourself",x:"help oneself 自便。",r:'form'},
+ {cell:'G',q:"___ is important to keep healthy.",o:["This","That","It","He"],a:2,x:"形式主语用 it。",r:'rule'},
+ {cell:'H',q:"My parents love ___ very much.",h:"（I）",f:1,a:"me",x:"love 后接宾格。",r:'pos'},
+ {cell:'D',q:"— Whose bag is this? — It’s ___ .",o:["she","her","hers","herself"],a:2,x:"名词性物主 hers。",r:'pos'},
+ {cell:'E',q:"He lives with ___ parents.",h:"（he）",f:1,a:"his",x:"形容词性物主 his。",r:'pos'},
+ {cell:'F',q:"We enjoyed ___ at the party.",o:["us","our","ourselves","ourself"],a:2,x:"enjoy oneself 玩得开心。",r:'form'},
+ {cell:'G',q:"___ name is Mimi.",h:"（it）",f:1,a:"Its",x:"形容词性物主 its。",r:'trap'},
+ {cell:'H',q:"Can you show ___ the way?",o:["I","me","my","mine"],a:1,x:"show sb sth，用宾格。",r:'pos'}],
+'数词':[
+ {cell:'D',q:"The ___ lesson is easy.",h:"（two）",f:1,a:"second",x:"第二用序数词 second。",r:'form'},
+ {cell:'E',q:"There are ___ days in a week.",o:["seven","seventh","seven's","sevens"],a:0,x:"数量用基数词。",r:'rule'},
+ {cell:'F',q:"He came ___ in the race.",h:"（one）",f:1,a:"first",x:"第一用 first。",r:'form'},
+ {cell:'G',q:"My birthday is on the ___ of May.",o:["twelve","twelfth","twelveth","twenties"],a:1,x:"第十二是 twelfth。",r:'form'},
+ {cell:'H',q:"There are ___ students in our class.",h:"（thirty）",f:1,a:"thirty",x:"数量用基数词。",r:'rule'},
+ {cell:'D',q:"___ of people visit the park every day.",o:["Hundred","Hundreds","Two hundreds","A hundred"],a:1,x:"hundreds of 表笼统数量。",r:'form'},
+ {cell:'E',q:"December is the ___ month of the year.",h:"（twelve）",f:1,a:"twelfth",x:"第十二用 twelfth。",r:'form'},
+ {cell:'F',q:"He is ___ years old.",o:["nine","ninth","nine's","nineth"],a:0,x:"年龄用基数词。",r:'rule'},
+ {cell:'G',q:"Today is her ___ birthday.",h:"（eight）",f:1,a:"eighth",x:"第八是 eighth，只加 h。",r:'form'},
+ {cell:'H',q:"There are ___ months in a year.",o:["twelve","twelfth","twelves","twenty"],a:0,x:"数量用基数词。",r:'rule'},
+ {cell:'D',q:"The meeting begins at ___ thirty.",h:"（nine）",f:1,a:"nine",x:"时刻用基数词。",r:'rule'},
+ {cell:'E',q:"She lives on the ___ floor.",o:["ten","tenth","tens","tenths"],a:1,x:"楼层用序数词。",r:'form'},
+ {cell:'F',q:"He got the ___ prize.",h:"（three）",f:1,a:"third",x:"第三是 third。",r:'form'},
+ {cell:'G',q:"___ students went to the museum.",o:["Forty","Fortieth","Forty's","Forties"],a:0,x:"数量用基数词。",r:'rule'},
+ {cell:'H',q:"The ___ question is difficult.",h:"（four）",f:1,a:"fourth",x:"第四是 fourth。",r:'form'},
+ {cell:'D',q:"We have ___ English classes every week.",o:["five","fifth","five's","fives"],a:0,x:"数量用基数词。",r:'rule'},
+ {cell:'E',q:"___ of years ago, people lived here.",h:"（hundred）",f:1,a:"Hundreds",x:"hundreds of 表笼统。",r:'form'},
+ {cell:'F',q:"It’s ___ past six now.",o:["half","a half","halves","halfs"],a:0,x:"half past six 六点半。",r:'rule'},
+ {cell:'G',q:"My office is on the ___ floor.",h:"（twenty）",f:1,a:"twentieth",x:"第二十是 twentieth。",r:'form'},
+ {cell:'H',q:"There are ___ seasons in a year.",o:["four","fourth","four's","fours"],a:0,x:"数量用基数词。",r:'rule'}],
+'形容词与副词':[
+ {cell:'D',q:"She sings very ___ .",h:"（beautiful）",f:1,a:"beautifully",x:"修饰动词 sing 用副词。",r:'pos'},
+ {cell:'E',q:"This is the ___ film of the three.",o:["bad","worse","worst","badly"],a:2,x:"the 加最高级。",r:'form'},
+ {cell:'F',q:"He is ___ than his father.",h:"（tall）",f:1,a:"taller",x:"than 提示比较级。",r:'form'},
+ {cell:'G',q:"The box is ___ than that one.",o:["heavy","heavier","heaviest","more heavy"],a:1,x:"heavy 变 y 为 i 加 er。",r:'form'},
+ {cell:'H',q:"She runs ___ than me.",h:"（slow）",f:1,a:"more slowly",x:"多音节副词比较级加 more。",r:'form'},
+ {cell:'D',q:"Tom is the ___ student in his class.",o:["clever","cleverer","cleverest","most clever"],a:2,x:"三者以上比较用最高级。",r:'form'},
+ {cell:'E',q:"Please speak ___ .",h:"（clear）",f:1,a:"clearly",x:"修饰动词用副词。",r:'pos'},
+ {cell:'F',q:"The flowers look ___ .",o:["beautiful","beautifully","beauty","beautify"],a:0,x:"look 是系动词，接形容词。",r:'rule'},
+ {cell:'G',q:"He works ___ every day.",h:"（hard）",f:1,a:"hard",x:"hard 的副词形式还是 hard。",r:'trap'},
+ {cell:'H',q:"She is ___ at English than me.",o:["good","better","best","well"],a:1,x:"be good at 的比较级。",r:'form'},
+ {cell:'D',q:"It is ___ today than yesterday.",h:"（hot）",f:1,a:"hotter",x:"双写 t 加 er。",r:'form'},
+ {cell:'E',q:"Of all the students, he runs ___ .",o:["fast","faster","fastest","most fast"],a:2,x:"of all 范围用最高级。",r:'form'},
+ {cell:'F',q:"My sister is two years ___ than me.",h:"（old）",f:1,a:"older",x:"比较级加 er。",r:'form'},
+ {cell:'G',q:"The weather is getting ___ .",o:["warmer and warmer","warm and warm","warmest","more warm"],a:0,x:"比较级 and 比较级 表越来越。",r:'rule'},
+ {cell:'H',q:"He answered the question ___ .",h:"（correct）",f:1,a:"correctly",x:"修饰动词用副词。",r:'pos'},
+ {cell:'D',q:"This book is ___ than that one.",o:["interesting","more interesting","most interesting","interestingest"],a:1,x:"多音节形容词加 more。",r:'form'},
+ {cell:'E',q:"She is ___ with her homework than her brother.",h:"（careful）",f:1,a:"more careful",x:"多音节形容词比较级加 more。",r:'form'},
+ {cell:'F',q:"The music sounds ___ .",o:["beautiful","beautifully","beauty","beautify"],a:0,x:"sound 是系动词。",r:'rule'},
+ {cell:'G',q:"He is the ___ player in our team.",h:"（good）",f:1,a:"best",x:"good 的最高级是 best。",r:'form'},
+ {cell:'H',q:"I got up ___ this morning.",o:["early","earlier","earliest","earlyly"],a:0,x:"early 的副词形式还是 early。",r:'trap'}],
+'介词':[
+ {cell:'D',q:"The book is ___ the desk.",h:"（填介词）",f:1,a:"on",x:"在……上面用 on。",r:'rule'},
+ {cell:'E',q:"He was born ___ May 1st.",o:["in","on","at","for"],a:1,x:"具体某一天用 on。",r:'trap'},
+ {cell:'F',q:"We usually have lunch ___ noon.",h:"（填介词）",f:1,a:"at",x:"at noon 固定搭配。",r:'rule'},
+ {cell:'G',q:"She goes to work ___ car.",o:["by","in","on","with"],a:0,x:"by car 乘汽车。",r:'rule'},
+ {cell:'H',q:"I am interested ___ music.",h:"（填介词）",f:1,a:"in",x:"be interested in。",r:'rule'},
+ {cell:'D',q:"He is afraid ___ dogs.",o:["of","for","at","with"],a:0,x:"be afraid of。",r:'rule'},
+ {cell:'E',q:"Thanks ___ your help.",h:"（填介词）",f:1,a:"for",x:"thanks for。",r:'rule'},
+ {cell:'F',q:"The film starts ___ ten o’clock.",o:["in","on","at","by"],a:2,x:"具体时刻用 at。",r:'rule'},
+ {cell:'G',q:"She is waiting ___ the bus.",h:"（填介词）",f:1,a:"for",x:"wait for。",r:'rule'},
+ {cell:'H',q:"I will be back ___ two hours.",o:["in","after","for","at"],a:0,x:"in 加时间段表将来。",r:'trap'},
+ {cell:'D',q:"Guangzhou is famous ___ its food.",h:"（填介词）",f:1,a:"for",x:"be famous for。",r:'rule'},
+ {cell:'E',q:"He arrived ___ Guangzhou last night.",o:["in","at","to","on"],a:0,x:"arrive in 大地点。",r:'rule'},
+ {cell:'F',q:"Look ___ the blackboard, please.",h:"（填介词）",f:1,a:"at",x:"look at。",r:'rule'},
+ {cell:'G',q:"The boy ___ glasses is my cousin.",o:["on","in","with","of"],a:2,x:"with 表伴随特征。",r:'rule'},
+ {cell:'H',q:"The cat is hiding ___ the door.",h:"（填介词）",f:1,a:"behind",x:"在门后。",r:'rule'},
+ {cell:'D',q:"We stayed in Beijing ___ ten days last summer.",o:["for","since","in","at"],a:0,x:"for 加时间段。",r:'rule'},
+ {cell:'E',q:"Please write ___ a pen.",h:"（填介词）",f:1,a:"with",x:"用工具用 with。",r:'rule'},
+ {cell:'F',q:"She is ___ holiday in Beijing.",o:["on","in","at","for"],a:0,x:"on holiday 度假。",r:'rule'},
+ {cell:'G',q:"The bank is next ___ the school.",h:"（填介词）",f:1,a:"to",x:"next to。",r:'rule'},
+ {cell:'H',q:"He usually goes to school ___ 7:20.",o:["at","in","on","by"],a:0,x:"时刻前用 at。",r:'rule'}],
+'连词':[
+ {cell:'D',q:"___ it rains, we will stay at home.",h:"（填连词）",f:1,a:"If",x:"条件状语从句。",r:'rule'},
+ {cell:'E',q:"He is rich, ___ he is not happy.",o:["and","but","or","so"],a:1,x:"转折用 but。",r:'pos'},
+ {cell:'F',q:"I was tired, ___ I went to bed early.",h:"（填连词）",f:1,a:"so",x:"前因后果用 so。",r:'pos'},
+ {cell:'G',q:"___ he is old, he works hard.",o:["Although","But","Because","So"],a:0,x:"让步从句用 Although。",r:'rule'},
+ {cell:'H',q:"She can sing ___ dance.",h:"（填连词）",f:1,a:"and",x:"并列用 and。",r:'rule'},
+ {cell:'D',q:"Would you like tea ___ coffee?",o:["and","or","but","so"],a:1,x:"选择用 or。",r:'rule'},
+ {cell:'E',q:"He didn’t go ___ he was busy.",h:"（填连词）",f:1,a:"because",x:"原因用 because。",r:'pos'},
+ {cell:'F',q:"___ it was late, we kept working.",o:["Although","But","Because","So"],a:0,x:"让步用 Although。",r:'rule'},
+ {cell:'G',q:"Take an umbrella, ___ you may get wet.",h:"（填连词）",f:1,a:"or",x:"祈使句加 or。",r:'trap'},
+ {cell:'H',q:"I like both English ___ maths.",o:["and","or","but","so"],a:0,x:"both…and。",r:'rule'},
+ {cell:'D',q:"___ you don’t hurry, you will be late.",h:"（填连词）",f:1,a:"If",x:"条件句。",r:'rule'},
+ {cell:'E',q:"He is young, ___ he knows a lot.",o:["but","and","so","or"],a:0,x:"转折用 but。",r:'pos'},
+ {cell:'F',q:"It was raining, ___ we stayed inside.",h:"（填连词）",f:1,a:"so",x:"因果用 so。",r:'pos'},
+ {cell:'G',q:"___ Tom nor Jim was at home.",o:["Neither","Either","Both","All"],a:0,x:"neither…nor。",r:'rule'},
+ {cell:'H',q:"She was ill, ___ she still went to school.",h:"（填连词）",f:1,a:"but",x:"转折。",r:'pos'},
+ {cell:'D',q:"He was reading ___ I was watching TV.",o:["when","while","because","so"],a:1,x:"while 表两个动作同时。",r:'rule'},
+ {cell:'E',q:"___ he came home, he had dinner.",h:"（填连词）",f:1,a:"When",x:"when 表当……时候。",r:'rule'},
+ {cell:'F',q:"He ran fast, ___ he missed the bus.",o:["but","and","so","or"],a:0,x:"转折。",r:'pos'},
+ {cell:'G',q:"Both Tom ___ I are students.",h:"（填连词）",f:1,a:"and",x:"both…and。",r:'rule'},
+ {cell:'H',q:"She stayed at home ___ it was raining.",o:["because","so","but","or"],a:0,x:"原因。",r:'pos'}],
+'一般现在时与现在进行时':[
+ {cell:'D',q:"She ___ English every day.",h:"（study）",f:1,a:"studies",x:"第三人称单数变 y 为 i 加 es。",r:'form'},
+ {cell:'E',q:"He ___ TV now.",o:["watch","watches","is watching","are watching"],a:2,x:"now 提示进行时。",r:'rule'},
+ {cell:'F',q:"They ___ football on Sundays.",h:"（not play）",f:1,a:["don't play","do not play"],x:"复数主语否定用 don’t。",r:'form'},
+ {cell:'G',q:"My mother ___ dinner at the moment.",o:["cook","cooks","is cooking","are cooking"],a:2,x:"at the moment 用进行时。",r:'rule'},
+ {cell:'H',q:"Tom ___ music very much.",h:"（like）",f:1,a:"likes",x:"第三人称单数加 s。",r:'form'},
+ {cell:'D',q:"Look, the bus ___ .",o:["come","comes","is coming","are coming"],a:2,x:"Look 提示现在进行。",r:'rule'},
+ {cell:'E',q:"We ___ four English classes a week.",h:"（have）",f:1,a:"have",x:"复数主语用原形。",r:'form'},
+ {cell:'F',q:"Where ___ your sister live?",o:["do","does","is","are"],a:1,x:"第三人称单数用 does。",r:'form'},
+ {cell:'G',q:"Listen, someone ___ at the door.",h:"（knock）",f:1,a:"is knocking",x:"Listen 提示进行时。",r:'rule'},
+ {cell:'H',q:"It often ___ in Guangzhou in summer.",o:["rain","rains","is raining","rained"],a:1,x:"often 用一般现在。",r:'rule'},
+ {cell:'D',q:"She ___ at home now.",h:"（be）",f:1,a:"is",x:"第三人称单数用 is。",r:'form'},
+ {cell:'E',q:"They ___ to the park every Sunday.",o:["go","goes","going","are go"],a:0,x:"复数主语用原形。",r:'form'},
+ {cell:'F',q:"I ___ TV now.",h:"（not watch）",f:1,a:"am not watching",x:"进行时否定。",r:'form'},
+ {cell:'G',q:"___ your father work in a hospital?",o:["Do","Does","Is","Are"],a:1,x:"第三人称单数用 Does。",r:'form'},
+ {cell:'H',q:"He ___ his homework after school.",h:"（do）",f:1,a:"does",x:"第三人称单数用 does。",r:'form'},
+ {cell:'D',q:"The students ___ in the classroom now.",o:["read","reads","are reading","is reading"],a:2,x:"now 加复数主语用 are reading。",r:'rule'},
+ {cell:'E',q:"My sister and I ___ in the same school.",h:"（be）",f:1,a:"are",x:"并列主语用复数。",r:'form'},
+ {cell:'F',q:"She ___ her teeth twice a day.",o:["brush","brushes","brushing","is brushing"],a:1,x:"第三人称单数加 es。",r:'form'},
+ {cell:'G',q:"What are you ___ now?",h:"（do）",f:1,a:"doing",x:"进行时用 doing。",r:'form'},
+ {cell:'H',q:"Tom usually ___ up at six.",o:["get","gets","getting","is getting"],a:1,x:"usually 用一般现在。",r:'rule'}],
+'一般过去时与过去进行时':[
+ {cell:'D',q:"I ___ to the zoo last Sunday.",h:"（go）",f:1,a:"went",x:"last Sunday 用一般过去。",r:'form'},
+ {cell:'E',q:"She ___ a book when I came in.",o:["reads","read","was reading","is reading"],a:2,x:"when 从句表过去某刻，主句用过去进行。",r:'rule'},
+ {cell:'F',q:"They ___ TV last night.",h:"（not watch）",f:1,a:["didn't watch","did not watch"],x:"过去否定用 didn’t 加原形。",r:'form'},
+ {cell:'G',q:"He ___ to Shanghai two years ago.",o:["go","goes","went","going"],a:2,x:"ago 用一般过去。",r:'form'},
+ {cell:'H',q:"While she ___ , her son was playing.",h:"（cook）",f:1,a:"was cooking",x:"while 从句用过去进行。",r:'form'},
+ {cell:'D',q:"___ you at home yesterday?",o:["Are","Were","Was","Did"],a:1,x:"you 用 Were。",r:'form'},
+ {cell:'E',q:"We ___ a good time last weekend.",h:"（have）",f:1,a:"had",x:"last weekend 用过去。",r:'form'},
+ {cell:'F',q:"I ___ my homework at eight last night.",o:["do","did","was doing","am doing"],a:2,x:"过去某刻正在做用过去进行。",r:'rule'},
+ {cell:'G',q:"He ___ at school yesterday.",h:"（not be）",f:1,a:["wasn't","was not"],x:"过去否定 was not。",r:'form'},
+ {cell:'H',q:"The students ___ when the teacher came.",o:["talk","talked","were talking","are talking"],a:2,x:"过去某刻正在做。",r:'rule'},
+ {cell:'D',q:"She ___ a new dress last week.",h:"（buy）",f:1,a:"bought",x:"buy 的过去式 bought。",r:'form'},
+ {cell:'E',q:"What ___ you do last Sunday?",o:["do","does","did","were"],a:2,x:"过去疑问用 did。",r:'form'},
+ {cell:'F',q:"At that time, they ___ basketball.",h:"（play）",f:1,a:"were playing",x:"at that time 指过去某刻。",r:'form'},
+ {cell:'G',q:"My father ___ back at nine last night.",o:["comes","came","was coming","come"],a:1,x:"过去事实用一般过去。",r:'form'},
+ {cell:'H',q:"I ___ him in the street yesterday.",h:"（see）",f:1,a:"saw",x:"see 的过去式 saw。",r:'form'},
+ {cell:'D',q:"She ___ TV at this time yesterday.",o:["watched","was watching","watches","is watching"],a:1,x:"this time yesterday 用过去进行。",r:'rule'},
+ {cell:'E',q:"They ___ in Beijing last Monday.",h:"（arrive）",f:1,a:"arrived",x:"规则动词加 ed。",r:'form'},
+ {cell:'F',q:"He ___ his leg when he was playing football.",o:["break","breaks","broke","was breaking"],a:2,x:"一次动作 break 的过去式。",r:'form'},
+ {cell:'G',q:"We ___ to school last Saturday.",h:"（not go）",f:1,a:["didn't go","did not go"],x:"过去否定。",r:'form'},
+ {cell:'H',q:"___ she at the party last night?",o:["Is","Was","Did","Does"],a:1,x:"she 用 Was。",r:'form'}],
+'一般将来时':[
+ {cell:'D',q:"They ___ a meeting tomorrow.",h:"（have）",f:1,a:["will have","are going to have"],x:"tomorrow 用将来。",r:'form'},
+ {cell:'E',q:"Look at the sky! It ___ .",o:["rains","will rain","is going to rain","rained"],a:2,x:"有迹象的预测用 be going to。",r:'rule'},
+ {cell:'F',q:"We ___ there next week.",h:"（not go）",f:1,a:["won't go","will not go","aren't going to go"],x:"将来否定。",r:'form'},
+ {cell:'G',q:"There ___ a football match next Friday.",o:["is","will be","will have","has"],a:1,x:"There be 的将来形式。",r:'rule'},
+ {cell:'H',q:"I think it ___ fine tomorrow.",h:"（be）",f:1,a:["will be","is going to be"],x:"表预测用 will be。",r:'form'},
+ {cell:'D',q:"She ___ a doctor when she grows up.",o:["is","will be","will","is being"],a:1,x:"将来事实用 will be。",r:'rule'},
+ {cell:'E',q:"He ___ back in two days.",h:"（come）",f:1,a:["will come","is going to come"],x:"in two days 用将来。",r:'form'},
+ {cell:'F',q:"If you ___ hard, you will pass the exam.",o:["work","works","will work","worked"],a:0,x:"主将从现。",r:'rule'},
+ {cell:'G',q:"Will you ___ free tomorrow?",h:"（be）",f:1,a:"be",x:"will 后用原形。",r:'form'},
+ {cell:'H',q:"My brother ___ ten next year.",o:["is","will be","is going","was"],a:1,x:"next year 用将来。",r:'rule'},
+ {cell:'D',q:"They ___ the museum next Saturday.",h:"（visit）",f:1,a:["will visit","are going to visit"],x:"next Saturday 用将来。",r:'form'},
+ {cell:'E',q:"I ___ you as soon as I arrive.",o:["call","called","will call","am calling"],a:2,x:"as soon as 主从句，主句用将来。",r:'rule'},
+ {cell:'F',q:"There ___ two concerts next month.",h:"（be）",f:1,a:"will be",x:"There be 将来用 will be。",r:'form'},
+ {cell:'G',q:"It ___ be cold tomorrow.",o:["will","is","was","does"],a:0,x:"将来用 will。",r:'rule'},
+ {cell:'H',q:"She ___ late again.",h:"（not be）",f:1,a:["won't be","will not be","isn't going to be"],x:"将来否定。",r:'form'},
+ {cell:'D',q:"We ___ a party this Saturday.",o:["have","had","will have","having"],a:2,x:"this Saturday 用将来。",r:'rule'},
+ {cell:'E',q:"The train ___ at eight tomorrow morning.",h:"（arrive）",f:1,a:["will arrive","is going to arrive"],x:"tomorrow 用将来。",r:'form'},
+ {cell:'F',q:"What ___ you do this weekend?",o:["do","did","will","are"],a:2,x:"this weekend 用 will。",r:'rule'},
+ {cell:'G',q:"I ___ to you next week.",h:"（write）",f:1,a:["will write","am going to write"],x:"next week 用将来。",r:'form'},
+ {cell:'H',q:"If it ___ tomorrow, we will stay at home.",o:["rain","rains","will rain","rained"],a:1,x:"主将从现。",r:'rule'}],
+'现在完成时':[
+ {cell:'D',q:"He ___ his homework already.",h:"（finish）",f:1,a:"has finished",x:"already 用现在完成。",r:'form'},
+ {cell:'E',q:"I ___ here since 2019.",o:["live","lived","have lived","am living"],a:2,x:"since 加时间点用现在完成。",r:'form'},
+ {cell:'F',q:"She ___ the film yet.",h:"（not see）",f:1,a:["hasn't seen","has not seen"],x:"yet 用否定完成。",r:'form'},
+ {cell:'G',q:"They have just ___ the room.",o:["clean","cleaned","cleaning","cleans"],a:1,x:"have 后用过去分词。",r:'form'},
+ {cell:'H',q:"Have you ever ___ to Shanghai?",h:"（be）",f:1,a:"been",x:"have been to 去过。",r:'form'},
+ {cell:'D',q:"He ___ in this school for three years.",o:["teach","taught","has taught","is teaching"],a:2,x:"for 加时间段用现在完成。",r:'form'},
+ {cell:'E',q:"My mother ___ dinner. It’s ready.",h:"（cook）",f:1,a:"has cooked",x:"动作已完成用现在完成。",r:'form'},
+ {cell:'F',q:"I ___ my keys. I can’t find them.",o:["lose","lost","have lost","am losing"],a:2,x:"过去动作对现在有影响用现在完成。",r:'rule'},
+ {cell:'G',q:"They ___ in Guangzhou since 2010.",h:"（live）",f:1,a:"have lived",x:"since 用现在完成。",r:'form'},
+ {cell:'H',q:"___ you finished your work yet?",o:["Do","Did","Have","Are"],a:2,x:"yet 用现在完成。",r:'form'},
+ {cell:'D',q:"She ___ ill for two days.",h:"（be）",f:1,a:"has been",x:"for 加时间段用现在完成。",r:'form'},
+ {cell:'E',q:"He ___ to Beijing twice.",o:["goes","went","has been","has gone"],a:2,x:"have been to 去过（已回来）。",r:'trap'},
+ {cell:'F',q:"We ___ the film already.",h:"（see）",f:1,a:"have seen",x:"already 用现在完成。",r:'form'},
+ {cell:'G',q:"How long have you ___ here?",o:["work","worked","working","works"],a:1,x:"have 后用过去分词。",r:'form'},
+ {cell:'H',q:"I ___ the book yet.",h:"（not read）",f:1,a:["haven't read","have not read"],x:"yet 用否定完成。",r:'form'},
+ {cell:'D',q:"The meeting ___ for half an hour.",o:["began","has begun","has been on","is on"],a:2,x:"短暂动词不能与 for 连用，用状态。",r:'trap'},
+ {cell:'E',q:"He ___ here for ten years.",h:"（work）",f:1,a:"has worked",x:"for 加时间段。",r:'form'},
+ {cell:'F',q:"It is the first time I ___ here.",o:["come","came","have come","am coming"],a:2,x:"It is the first time 后用现在完成。",r:'rule'},
+ {cell:'G',q:"She ___ English since she was six.",h:"（learn）",f:1,a:"has learned",x:"since 从句用现在完成。",r:'form'},
+ {cell:'H',q:"He has ___ finished his homework.",o:["yet","already","still","ever"],a:1,x:"肯定句用 already。",r:'rule'}],
+'情态动词':[
+ {cell:'D',q:"You ___ wear a helmet when riding.",h:"（填情态动词）",f:1,a:["must","have to"],x:"表示必须。",r:'rule'},
+ {cell:'E',q:"— Can you swim? — No, I ___ .",o:["can’t","mustn’t","needn’t","shouldn’t"],a:0,x:"can 的否定回答用 can’t。",r:'rule'},
+ {cell:'F',q:"She ___ play the piano when she was six.",h:"（can）",f:1,a:"could",x:"过去能力用 could。",r:'form'},
+ {cell:'G',q:"You ___ talk loudly in the library.",o:["mustn’t","needn’t","can’t","shouldn’t"],a:0,x:"禁止用 mustn’t。",r:'rule'},
+ {cell:'H',q:"We ___ help each other.",h:"（should）",f:1,a:"should",x:"给建议用 should。",r:'rule'},
+ {cell:'D',q:"— May I come in? — Yes, you ___ .",o:["may","must","can’t","needn’t"],a:0,x:"may 的肯定回答用 may。",r:'rule'},
+ {cell:'E',q:"He ___ get up early every day.",h:"（have to）",f:1,a:"has to",x:"第三人称单数用 has to。",r:'form'},
+ {cell:'F',q:"You ___ see a doctor if you feel ill.",o:["should","can’t","mustn’t","needn’t"],a:0,x:"建议用 should。",r:'rule'},
+ {cell:'G',q:"___ I use your dictionary?",h:"（填情态动词）",f:1,a:"May",x:"请求许可用 May。",r:'pos'},
+ {cell:'H',q:"— Must I hand it in today? — No, you ___ .",o:["mustn’t","needn’t","can’t","shouldn’t"],a:1,x:"must 提问的否定回答用 needn’t。",r:'trap'},
+ {cell:'D',q:"You ___ play with fire.",h:"（must not）",f:1,a:["mustn't","must not"],x:"禁止。",r:'rule'},
+ {cell:'E',q:"He ___ be at home now. The light is on.",o:["must","can’t","may not","needn’t"],a:0,x:"肯定推测用 must。",r:'rule'},
+ {cell:'F',q:"We can ___ the work in an hour.",h:"（finish）",f:1,a:"finish",x:"can 后用原形。",r:'form'},
+ {cell:'G',q:"___ you please open the door?",o:["Can","May","Must","Need"],a:0,x:"礼貌请求用 Can。",r:'pos'},
+ {cell:'H',q:"You ___ eat too much sugar.",h:"（should not）",f:1,a:["shouldn't","should not"],x:"否定建议。",r:'rule'},
+ {cell:'D',q:"She ___ speak three languages.",o:["can","must","should","need"],a:0,x:"表能力用 can。",r:'rule'},
+ {cell:'E',q:"I ___ find my pen.",h:"（not can）",f:1,a:["can't","can not","cannot"],x:"can 的否定。",r:'form'},
+ {cell:'F',q:"— ___ I take this book away? — No, you mustn’t.",o:["May","Must","Should","Need"],a:0,x:"请求许可。",r:'pos'},
+ {cell:'G',q:"We ___ obey the traffic rules.",h:"（must）",f:1,a:"must",x:"表示必须。",r:'rule'},
+ {cell:'H',q:"You ___ worry. Everything is fine.",o:["needn’t","mustn’t","can’t","may not"],a:0,x:"没必要用 needn’t。",r:'rule'}],
+'被动语态':[
+ {cell:'D',q:"English ___ in Canada.",h:"（speak）",f:1,a:"is spoken",x:"一般现在被动。",r:'form'},
+ {cell:'E',q:"The bridge ___ in 1990.",o:["build","built","was built","is built"],a:2,x:"过去时间用过去被动。",r:'form'},
+ {cell:'F',q:"These bikes ___ in China.",h:"（make）",f:1,a:"are made",x:"复数主语用 are made。",r:'form'},
+ {cell:'G',q:"The room ___ every morning.",o:["cleans","cleaned","is cleaned","cleaning"],a:2,x:"每天被动。",r:'form'},
+ {cell:'H',q:"A new hospital ___ here next year.",h:"（build）",f:1,a:"will be built",x:"将来被动。",r:'form'},
+ {cell:'D',q:"The flowers ___ by the students yesterday.",o:["watered","were watered","are watered","water"],a:1,x:"过去被动加 by。",r:'form'},
+ {cell:'E',q:"This kind of food ___ from rice.",h:"（make）",f:1,a:"is made",x:"be made from 看不出原料。",r:'form'},
+ {cell:'F',q:"The homework ___ before Friday.",o:["must finish","must be finished","must finished","must be finish"],a:1,x:"情态动词被动。",r:'form'},
+ {cell:'G',q:"The windows ___ by Tom every week.",h:"（clean）",f:1,a:"are cleaned",x:"复数主语被动。",r:'form'},
+ {cell:'H',q:"Many trees ___ in our school last year.",o:["plant","planted","were planted","are planted"],a:2,x:"去年被动。",r:'form'},
+ {cell:'D',q:"The song ___ by her yesterday.",h:"（sing）",f:1,a:"was sung",x:"sing 的过去分词 sung。",r:'form'},
+ {cell:'E',q:"Paper ___ from wood.",o:["make","made","is made","are made"],a:2,x:"paper 不可数用 is made。",r:'form'},
+ {cell:'F',q:"The meeting ___ next Monday.",h:"（hold）",f:1,a:"will be held",x:"将来被动。",r:'form'},
+ {cell:'G',q:"The letter ___ yesterday.",o:["sent","was sent","is sent","send"],a:1,x:"过去被动。",r:'form'},
+ {cell:'H',q:"Rice ___ in the south of China.",h:"（grow）",f:1,a:"is grown",x:"一般现在被动。",r:'form'},
+ {cell:'D',q:"The homework ___ every day.",o:["checks","is checked","checked","check"],a:1,x:"每天被动。",r:'form'},
+ {cell:'E',q:"The old house ___ down last year.",h:"（pull）",f:1,a:"was pulled",x:"过去被动。",r:'form'},
+ {cell:'F',q:"The book ___ in 2018.",o:["writes","wrote","was written","is written"],a:2,x:"过去被动。",r:'form'},
+ {cell:'G',q:"Football ___ all over the world.",h:"（play）",f:1,a:"is played",x:"一般现在被动。",r:'form'},
+ {cell:'H',q:"The trees ___ by us every spring.",o:["plant","are planted","planted","is planted"],a:1,x:"复数主语被动。",r:'form'}],
+'非谓语动词':[
+ {cell:'D',q:"He enjoys ___ in the river.",h:"（swim）",f:1,a:"swimming",x:"enjoy doing。",r:'form'},
+ {cell:'E',q:"I want ___ a doctor.",o:["be","to be","being","been"],a:1,x:"want to do。",r:'form'},
+ {cell:'F',q:"She is good at ___ .",h:"（draw）",f:1,a:"drawing",x:"be good at doing。",r:'form'},
+ {cell:'G',q:"Let’s ___ shopping.",o:["go","going","to go","goes"],a:0,x:"let’s 后接原形。",r:'rule'},
+ {cell:'H',q:"It’s time ___ to school.",h:"（go）",f:1,a:"to go",x:"It’s time to do。",r:'form'},
+ {cell:'D',q:"Would you like ___ with me?",o:["come","to come","coming","came"],a:1,x:"would like to do。",r:'form'},
+ {cell:'E',q:"My mother asks me ___ the room.",h:"（clean）",f:1,a:"to clean",x:"ask sb to do。",r:'form'},
+ {cell:'F',q:"He finished ___ his homework.",o:["do","does","doing","done"],a:2,x:"finish doing。",r:'form'},
+ {cell:'G',q:"Thank you for ___ me.",h:"（help）",f:1,a:"helping",x:"介词后接 doing。",r:'form'},
+ {cell:'H',q:"Stop ___ ! The baby is sleeping.",o:["talk","talking","to talk","talked"],a:1,x:"stop doing 停止正在做的事。",r:'trap'},
+ {cell:'D',q:"He decided ___ English well.",h:"（learn）",f:1,a:"to learn",x:"decide to do。",r:'form'},
+ {cell:'E',q:"I am sorry ___ you waiting.",o:["keep","to keep","keeping","kept"],a:1,x:"be sorry to do。",r:'form'},
+ {cell:'F',q:"She spends two hours ___ every day.",h:"（read）",f:1,a:"reading",x:"spend time doing。",r:'form'},
+ {cell:'G',q:"It is important ___ hard.",o:["study","to study","studying","studied"],a:1,x:"It is important to do。",r:'rule'},
+ {cell:'H',q:"He is busy ___ a report.",h:"（write）",f:1,a:"writing",x:"be busy doing。",r:'form'},
+ {cell:'D',q:"Would you mind ___ me?",o:["help","to help","helping","helped"],a:2,x:"mind doing。",r:'form'},
+ {cell:'E',q:"We are happy ___ you.",h:"（see）",f:1,a:"to see",x:"be happy to do。",r:'form'},
+ {cell:'F',q:"My hobby is ___ stamps.",o:["collect","collects","collecting","collected"],a:2,x:"作表语用 doing。",r:'rule'},
+ {cell:'G',q:"He kept ___ questions.",h:"（ask）",f:1,a:"asking",x:"keep doing。",r:'form'},
+ {cell:'H',q:"I saw him ___ into the room.",o:["go","to go","going","went"],a:0,x:"see sb do 看见全过程。",r:'trap'}],
+'主谓一致':[
+ {cell:'D',q:"Each student ___ a book.",h:"（have）",f:1,a:"has",x:"each 作主语用单数。",r:'rule'},
+ {cell:'E',q:"Neither he nor I ___ a teacher.",o:["is","am","are","be"],a:1,x:"neither…nor 就近 I 用 am。",r:'trap'},
+ {cell:'F',q:"There ___ some water in the bottle.",h:"（be）",f:1,a:"is",x:"water 不可数用 is。",r:'form'},
+ {cell:'G',q:"The number of students in our school ___ large.",o:["is","are","were","be"],a:0,x:"the number of 用单数。",r:'trap'},
+ {cell:'H',q:"Everyone ___ the answer.",h:"（know）",f:1,a:"knows",x:"everyone 用单数。",r:'rule'},
+ {cell:'D',q:"Either you or he ___ right.",o:["is","are","am","be"],a:0,x:"either…or 就近 he 用 is。",r:'rule'},
+ {cell:'E',q:"Two hours ___ enough for the work.",h:"（be）",f:1,a:"is",x:"时间作整体用单数。",r:'trap'},
+ {cell:'F',q:"My family ___ going to travel this summer.",o:["is","are","be","were"],a:0,x:"family 作整体用单数。",r:'rule'},
+ {cell:'G',q:"The students each ___ a pen.",h:"（have）",f:1,a:"have",x:"each 在主语后，主语 students 用复数。",r:'trap'},
+ {cell:'H',q:"There ___ a book and two pens on the desk.",o:["is","are","have","has"],a:0,x:"就近 a book 用 is。",r:'rule'},
+ {cell:'D',q:"Tom with his friends ___ to the park every week.",h:"（go）",f:1,a:"goes",x:"with 短语不影响主语数。",r:'trap'},
+ {cell:'E',q:"Fifty dollars ___ too much for the toy.",o:["is","are","were","be"],a:0,x:"钱数作整体用单数。",r:'rule'},
+ {cell:'F',q:"Neither of the answers ___ correct.",h:"（be）",f:1,a:"is",x:"neither of 用单数。",r:'rule'},
+ {cell:'G',q:"Each of the boys ___ a bike.",o:["has","have","is","are"],a:0,x:"each of 用单数。",r:'rule'},
+ {cell:'H',q:"Both Tom and Jim ___ good at maths.",h:"（be）",f:1,a:"are",x:"both…and 用复数。",r:'rule'},
+ {cell:'D',q:"The news ___ exciting.",o:["is","are","were","be"],a:0,x:"news 不可数用 is。",r:'trap'},
+ {cell:'E',q:"There ___ two apples and a banana on the table.",h:"（be）",f:1,a:"are",x:"就近 two apples 用 are。",r:'form'},
+ {cell:'F',q:"Everyone in the class ___ here.",o:["is","are","be","were"],a:0,x:"everyone 用单数。",r:'rule'},
+ {cell:'G',q:"My shoes ___ under the bed.",h:"（be）",f:1,a:"are",x:"shoes 复数用 are。",r:'form'},
+ {cell:'H',q:"Three months ___ a long holiday.",o:["is","are","was","were"],a:0,x:"时间段作整体用单数。",r:'rule'}],
+'从句':[
+ {cell:'D',q:"Do you know where he ___ from?",h:"（be）",f:1,a:"is",x:"宾语从句用陈述语序。",r:'rule'},
+ {cell:'E',q:"I don’t know ___ he will come.",o:["if","that","what","which"],a:0,x:"“是否”用 if。",r:'rule'},
+ {cell:'F',q:"Could you tell me ___ the station is?",h:"（填疑问词）",f:1,a:"where",x:"问地点。",r:'rule'},
+ {cell:'G',q:"She asked me ___ I had finished.",o:["if","that","what","who"],a:0,x:"一般疑问句变宾语从句用 if。",r:'rule'},
+ {cell:'H',q:"I wonder ___ he is crying.",h:"（填疑问词）",f:1,a:"why",x:"问原因。",r:'rule'},
+ {cell:'D',q:"Do you know ___ ?",o:["where does he live","where he lives","where he live","where did he live"],a:1,x:"宾语从句用陈述语序。",r:'trap'},
+ {cell:'E',q:"Tell me ___ you will leave.",h:"（填疑问词）",f:1,a:"when",x:"问时间。",r:'rule'},
+ {cell:'F',q:"I think ___ English is useful.",o:["that","what","if","whether"],a:0,x:"陈述句变宾语从句用 that。",r:'rule'},
+ {cell:'G',q:"He asked me ___ I could help him.",h:"（填连词）",f:1,a:["if","whether"],x:"“是否”用 if 或 whether。",r:'rule'},
+ {cell:'H',q:"I don’t know ___ to do.",o:["what","how","which","who"],a:0,x:"疑问词加不定式。",r:'rule'},
+ {cell:'D',q:"She wants to know ___ you like the film.",h:"（填连词）",f:1,a:["if","whether"],x:"“是否”。",r:'rule'},
+ {cell:'E',q:"Can you tell me ___ the museum is?",o:["where","when","why","how"],a:0,x:"问地点。",r:'rule'},
+ {cell:'F',q:"I don’t know ___ he is late.",h:"（填疑问词）",f:1,a:"why",x:"问原因。",r:'rule'},
+ {cell:'G',q:"He said ___ he was busy.",o:["that","if","what","whether"],a:0,x:"陈述句用 that。",r:'rule'},
+ {cell:'H',q:"Do you know ___ he will come back?",h:"（填疑问词）",f:1,a:"when",x:"问时间。",r:'rule'},
+ {cell:'D',q:"I wonder ___ he will say at the meeting.",o:["what","that","if","how"],a:0,x:"say 的宾语用 what。",r:'rule'},
+ {cell:'E',q:"She asked me ___ I had seen the film.",h:"（填连词）",f:1,a:["whether","if"],x:"“是否”。",r:'rule'},
+ {cell:'F',q:"Do you know ___ ?",o:["what is his name","what his name is","how is his name","what his name"],a:1,x:"陈述语序。",r:'trap'},
+ {cell:'G',q:"Tell me ___ you are so happy.",h:"（填疑问词）",f:1,a:"why",x:"问原因。",r:'rule'},
+ {cell:'H',q:"Nobody knows ___ the meeting will end.",o:["when","where","why","what"],a:0,x:"问时间。",r:'rule'}],
+'特殊句型':[
+ {cell:'D',q:"___ a beautiful garden it is!",h:"（填 What 或 How）",f:1,a:"What",x:"What 加形容词加名词。",r:'rule'},
+ {cell:'E',q:"___ tall the boy is!",o:["What","How","What a","How a"],a:1,x:"How 加形容词。",r:'rule'},
+ {cell:'F',q:"___ an interesting story it is!",h:"（填 What 或 How）",f:1,a:"What",x:"What an 加形容词加可数名词单数。",r:'rule'},
+ {cell:'G',q:"___ does it take to get there?",o:["How long","How often","How far","How many"],a:0,x:"问时长。",r:'rule'},
+ {cell:'H',q:"— ___ is the weather like today?",h:"（填疑问词）",f:1,a:"What",x:"What is the weather like。",r:'rule'},
+ {cell:'D',q:"— ___ do you go to the library? — Twice a week.",o:["How long","How often","How far","When"],a:1,x:"问频率。",r:'rule'},
+ {cell:'E',q:"— What is your school ___ ? — It’s big and beautiful.",h:"（填介词）",f:1,a:"like",x:"What is … like 问情况。",r:'rule'},
+ {cell:'F',q:"___ hard the students are working!",o:["What","How","What a","How a"],a:1,x:"How 加副词。",r:'rule'},
+ {cell:'G',q:"— ___ far is it from here? — About two kilometres.",h:"（填疑问词）",f:1,a:"How",x:"How far 问距离。",r:'rule'},
+ {cell:'H',q:"— ___ is the population of China?",o:["How many","What","How much","Which"],a:1,x:"问人口用 What。",r:'rule'},
+ {cell:'D',q:"— ___ do you like Guangzhou? — Very much.",h:"（填疑问词）",f:1,a:"How",x:"问程度。",r:'rule'},
+ {cell:'E',q:"— ___ is your father? — He is a driver.",o:["What","Who","How","Which"],a:0,x:"问职业用 What。",r:'rule'},
+ {cell:'F',q:"___ nice weather we have today!",h:"（填 What 或 How）",f:1,a:"What",x:"weather 不可数。",r:'rule'},
+ {cell:'G',q:"___ is the price of the coat?",o:["How much","How many","What","How"],a:2,x:"What is the price。",r:'trap'},
+ {cell:'H',q:"— ___ are you late? — Because the bus was late.",h:"（填疑问词）",f:1,a:"Why",x:"问原因。",r:'rule'},
+ {cell:'D',q:"— ___ do you go to school? — By bike.",o:["How","What","When","Why"],a:0,x:"问方式。",r:'rule'},
+ {cell:'E',q:"— ___ many students are there in your class?",h:"（填疑问词）",f:1,a:"How",x:"How many 问数量。",r:'rule'},
+ {cell:'F',q:"___ exciting news it is!",o:["What","How","What an","How an"],a:0,x:"news 不可数用 What。",r:'rule'},
+ {cell:'G',q:"— ___ is it today? — It’s Monday.",h:"（填疑问词）",f:1,a:"What day",x:"问星期用 What day。",r:'rule'},
+ {cell:'H',q:"— ___ do you have English classes? — Every day.",o:["How long","How often","How many","When"],a:1,x:"问频率。",r:'rule'}]
+};
+U.forEach(u=>{(EXTRA5[u.n]||[]).forEach(it=>u.items.push(it))});
+U.forEach(u=>{const seen={};u.items=u.items.filter(it=>{if(seen[it.q])return false;seen[it.q]=1;return true})});
+/* 七上范围分层：把“过去进行”从过去时专题里拆出来，与完成时/被动/从句一起归入提前学；默认不进诊断、不进推送 */
+const PROG_U={n:'过去进行时',sub:'be + doing（八上内容，非七上期末范围）',rules:['过去某刻正在进行：was / were + doing。','when 从句用一般过去，主句常用过去进行；while 从句常用过去进行。','短暂动作用一般过去，背景动作用过去进行。'],items:[]};
+(function(){
+  const u=U.find(x=>x.n==='一般过去时与过去进行时');
+  if(!u)return;
+  u.n='一般过去时';u.sub=u.sub.replace('过去进行时','过去进行时见提前学');
+  const isP=it=>/(^| )(was|were) [a-z]+ing($|\s)/.test(ansText(it));
+  u.items=u.items.filter(it=>{if(isP(it)){PROG_U.items.push(it);return false}return true});
+  U.push(PROG_U);
+})();
+const ADV=['现在完成时','被动语态','从句','过去进行时'];
+(function(){const seen={};U.forEach(u=>{u.items=u.items.filter(it=>{if(seen[it.q])return false;seen[it.q]=1;return true})})})();
+const KILL=["Either you ___ he is right.","___ Tom nor Jim was at home.","Neither he nor I am a teacher.","Either you or he ___ right.","The number of students in our school ___ large.","Fifty dollars ___ too much for the toy.","Neither of the answers ___ correct.","— Must I finish it now? — No, you ___ .","You ___ worry. Everything is fine.","He ___ be at home now. The light is on.","I saw him ___ into the room."];
+U.forEach(u=>{u.items=u.items.filter(it=>!KILL.some(k=>it.q.indexOf(k)===0))});
+const KILL2=["It was raining, ___ we stayed at home.","It was raining, ___ we stayed inside.","He was reading ___ I was watching TV.","She stayed at home ___ it was raining.","He ___ his leg when he was playing football.","Neither Tom nor his friends ___ interested in it.","The number of students ___ about five hundred.","Neither Tom nor I ___ good at singing.","The number of the students ___ fifty.","— Must I hand it in today? — No, you ___ ."];
+U.forEach(u=>{u.items=u.items.filter(it=>!KILL2.some(k=>it.q.indexOf(k)===0))});
+U.forEach(u=>{u.items=u.items.filter(it=>!(it.q==='下面哪一句正确？'&&it.o.some(o=>/Neither|needn/.test(o))));});
+const CORE=U.filter(u=>!ADV.includes(u.n));
+/* 过去进行时移走后，个别专题缺 A/B/C 层：把同类型的变式题提一层，保证每专题三层 */
+CORE.forEach(u=>['A','B','C'].forEach(c=>{
+  if(itemsOf(u,c)[0])return;
+  const spare=u.items.filter(i=>!['A','B','C','I','J','Y'].includes(i.cell));
+  const pick=spare.find(i=>(c==='B'?i.f:!i.f));
+  if(pick)pick.cell=c;
+}));
+const SCOPE={'数词':'拓展','情态动词':'拓展','非谓语动词':'拓展','主谓一致':'拓展'};
+
+
+
+const PASS3=[
+{n:'校园运动会',src:'沪教版七上 Units 1–8 语篇填词·自编',sub:'一般过去时 · 比较级最高级 · 将来 · 非谓语 · 介词',
+text:'Our school sports meeting {{1}} at nine last Friday. All the students {{2}} very excited. Before the meeting, we {{3}} every afternoon. When the relay race began, everyone {{4}} loudly. Tom runs the {{5}} in our class, so he was the first runner. At last, our class {{6}} the first prize. We {{7}} a good time. Next year we {{8}} better. It is important {{9}} part in sports, and we are proud ___ our class.',
+blanks:[{h:'(begin)',a:'began',u:'一般过去时与过去进行时',r:'form',x:'last Friday 用一般过去，begin 变 began。'},
+{h:'(be)',a:'were',u:'主谓一致',r:'form',x:'students 是复数，过去时用 were。'},
+{h:'(practise)',a:'practised',u:'一般过去时与过去进行时',r:'form',x:'every afternoon 表过去反复，用一般过去。'},
+{h:'(cheer)',a:'cheered',u:'一般过去时与过去进行时',r:'form',x:'与 began 同时的连续动作用一般过去。'},
+{h:'(fast)',a:'fastest',u:'形容词与副词',r:'pos',x:'in our class 是范围，用最高级。'},
+{h:'(win)',a:'won',u:'一般过去时与过去进行时',r:'form',x:'win 的过去式 won。'},
+{h:'(have)',a:'had',u:'一般过去时与过去进行时',r:'form',x:'have a good time 的过去式。'},
+{h:'(do)',a:'will do',u:'一般将来时',r:'form',x:'Next year 用将来。'},
+{h:'(take)',a:'to take',u:'非谓语动词',r:'form',x:'It is important to do。'},
+{h:'填介词',a:'of',u:'介词',r:'rule',x:'be proud of 为……自豪。'}],
+qs:[]},
+{n:'家里的家务分工',src:'广州七上期中常见语篇填词题型·自编',sub:'一般现在 · 动名词 · 过去时 · 条件句 · 非谓语',
+text:'At my home, everyone {{1}} a job. My father {{2}} the windows every week. My mother is good at {{3}} . I {{4}} washing dishes, but I must {{5}} them. Last Sunday, I {{6}} the floor and my sister {{7}} the flowers. Now my parents {{8}} happy with us. If we share the housework, life {{9}} easier. Doing housework is a good way {{10}} to be independent.',
+blanks:[{h:'(have)',a:'has',u:'主谓一致',r:'form',x:'everyone 用单数。'},
+{h:'(clean)',a:'cleans',u:'一般现在时与现在进行时',r:'form',x:'every week 用一般现在，第三人称加 s。'},
+{h:'(cook)',a:'cooking',u:'非谓语动词',r:'form',x:'be good at doing。'},
+{h:'(not like)',a:"don't like",u:'一般现在时与现在进行时',r:'form',x:'第一人称否定用 don’t。'},
+{h:'(help)',a:'help',u:'情态动词',r:'form',x:'must 后用原形。'},
+{h:'(sweep)',a:'swept',u:'一般过去时与过去进行时',r:'form',x:'sweep 的过去式 swept。'},
+{h:'(water)',a:'watered',u:'一般过去时与过去进行时',r:'form',x:'与前面并列，用过去式。'},
+{h:'(be)',a:'are',u:'主谓一致',r:'form',x:'parents 复数用 are。'},
+{h:'(be)',a:'will be',u:'一般将来时',r:'form',x:'if 从句用一般现在，主句用将来。'},
+{h:'填介词',a:'to',u:'介词',r:'rule',x:'a way to do sth 做某事的方法。'}],
+qs:[]},
+{n:'暑假计划',src:'沪教版七上 Units 1–8 语篇填词·自编',sub:'将来 · 过去时 · there be · 非谓语 · 介词',
+text:'The summer holiday {{1}} soon. My family {{2}} a plan last week. We {{3}} my grandparents in the countryside. There {{4}} a river near their house. I will go fishing {{5}} my grandpa. My sister enjoys {{6}} under the tree. We {{7}} at home all day, because we want {{8}} the world. Last year we went to Hainan and {{9}} in the sea. This year {{10}} different.',
+blanks:[{h:'(come)',a:'will come',u:'一般将来时',r:'form',x:'soon 提示将来，用 will come。'},
+{h:'(make)',a:'made',u:'一般过去时与过去进行时',r:'form',x:'last week 用一般过去。'},
+{h:'(visit)',a:'will visit',u:'一般将来时',r:'form',x:'暑假计划用将来。'},
+{h:'(be)',a:'is',u:'主谓一致',r:'form',x:'就近 a river 用 is。'},
+{h:'填介词',a:'with',u:'介词',r:'rule',x:'和某人一起用 with。'},
+{h:'(read)',a:'reading',u:'非谓语动词',r:'form',x:'enjoy doing。'},
+{h:'(not stay)',a:"won't stay",u:'一般将来时',r:'form',x:'将来否定用 won’t。'},
+{h:'(know)',a:'to know',u:'非谓语动词',r:'form',x:'want to do。'},
+{h:'(swim)',a:'swam',u:'一般过去时与过去进行时',r:'form',x:'与 went 并列，用过去式。'},
+{h:'(be)',a:'will be',u:'一般将来时',r:'form',x:'今年将会不同，用将来。'}],
+qs:[]},
+];
+PASS.push(...PASS3);
+
+const REASON={rule:'规则不熟',form:'形式记错',pos:'位置判断错',trap:'被干扰项带走',read:'审题漏条件'};
+const LAYER={A:'识别',B:'产出',C:'语境',D:'变式',E:'变式',F:'变式',G:'变式',H:'变式',Y:'应用'};
+const KEY='gdiag.v2';
+let D={last:null,drill:null,closed:{},hist:[]};
+let S={view:'assess',started:false,ans:{},graded:false,drillU:null,drillAns:{},drillLock:{}};
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x)D=Object.assign(D,x)}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+function norm(v){
+  let s=String(v==null?'':v).toLowerCase().replace(/\s+/g,' ');
+  s=s.replace(/\bcannot\b/g,'cant').replace(/\bcan not\b/g,'cant')
+     .replace(/\bdo not\b/g,'dont').replace(/\bdoes not\b/g,'doesnt').replace(/\bdid not\b/g,'didnt')
+     .replace(/\bis not\b/g,'isnt').replace(/\bare not\b/g,'arent').replace(/\bwas not\b/g,'wasnt').replace(/\bwere not\b/g,'werent')
+     .replace(/\bhas not\b/g,'hasnt').replace(/\bhave not\b/g,'havent').replace(/\bhad not\b/g,'hadnt')
+     .replace(/\bwill not\b/g,'wont').replace(/\bwould not\b/g,'wouldnt')
+     .replace(/\bmust not\b/g,'mustnt').replace(/\bshould not\b/g,'shouldnt').replace(/\bneed not\b/g,'neednt');
+  return s.replace(/[.。,，!?？;；:'"‘’“”\s]/g,'');
+}
+function itemsOf(u,cell){return u.items.filter(it=>it.cell===cell)}
+function unitById(id){return U.find(u=>u.n===id)}
+function evalItems(){
+  const out=[];
+  ['A','B','C'].forEach(c=>CORE.forEach(u=>{const it=itemsOf(u,c)[0];if(it)out.push({u:u.n,c:c,it})}));
+  return out;
+}
+function ansText(it){return it.f?(Array.isArray(it.a)?it.a.join(' / '):it.a):it.o[it.a]}
+function ok(it,val){if(it.f)return Array.isArray(it.a)?it.a.some(a=>norm(val)===norm(a)):norm(val)===norm(it.a);return +val===it.a}
+function pct(n,d){return d?Math.round(n/d*100):0}
+function gaps(){
+  const out=[];
+  if(D.last){U.forEach(u=>{['A','B','C'].forEach(c=>{
+    const r=D.last[u.n]&&D.last[u.n][c];
+    if(!r)return;
+    if(!r.ok)out.push({u:u.n,c:c,item:itemsOf(u,c)[0],given:r.given});
+  })})}
+  (D.applyW||[]).forEach(w=>out.push(w));
+  return out;
+}
+function gradeApply(){
+  const pi=S.apply,p=PASS[pi-1],A=S.applyAns||{};
+  let right=0;
+  p.blanks.forEach((b,i)=>{if(ok({f:1,a:b.a},A['b'+i]))right++});
+  p.qs.forEach((q,i)=>{if(A['q'+i]===q.a)right++});
+  S.applyGraded=true;
+  D.apply=D.apply||{};D.apply[pi]={right:right,total:p.blanks.length+p.qs.length,date:today()};
+  D.applyW=(D.applyW||[]).filter(x=>x.pi!==pi);
+  p.blanks.forEach((b,i)=>{if(!ok({f:1,a:b.a},A['b'+i]))D.applyW.push({pi:pi,u:b.u,c:'Y',item:{f:1,a:b.a,q:'第 '+(i+1)+' 空（'+b.h+'）',x:b.x,r:b.r},given:A['b'+i]||'（未答）'})});
+  p.qs.forEach((q,i)=>{if(A['q'+i]!==q.a)D.applyW.push({pi:pi,u:q.u,c:'Y',item:{q:q.q,o:q.o,a:q.a,x:q.x,r:q.r},given:A['q'+i]===undefined?'（未答）':q.o[A['q'+i]]})});
+  save();render();
+}
+function openGaps(){return gaps().filter(g=>!D.closed[g.u])}
+function gapByUnit(){const m={};gaps().forEach(g=>{(m[g.u]=m[g.u]||[]).push(g)});return m}
+function passedCount(){if(!D.last)return 0;return U.filter(u=>{const x=D.last[u.n];if(!x)return false;return ['A','B','C'].every(c=>!x[c]||x[c].ok)}).length}
+
+/* ===== 视图 ===== */
+function vAssess(){
+  if(!S.started&&!S.graded){
+    return `<section class="sec"><div class="sechead"><span class="no">01—A</span><h3>诊断前，先说清这次测什么</h3><span class="tag">scope</span></div>
+    <p class="lede">42 题，14 个七上专题（沪教版 Units 1–8，期中到期末全范围），每个专题三个层：识别（会不会看）、产出（写不写得对）、语境（四句里挑对的一句）。三层全对才算这个专题没有盲区——只做选择题的孩子，往往第一层满分、第二层全丢。现在完成时、被动语态、宾语从句、过去进行时属八上到九年级，单独放在“提前学”，不进这张卷，也不进推送。</p>
+    <div class="three">
+      <div class="kv"><b>识别 · 13+4 题</b>四选一，考规则边界。13 个专题各一题，另 4 题取高频专题第二题。错了说明规则本身没立住。</div>
+      <div class="kv"><b>产出 · 13+4 题</b>给词变形填空。错了说明“会认不会写”，这是 80 分学生的典型失分点。</div>
+      <div class="kv"><b>语境 · 13+3 题</b>四句里挑唯一正确的一句。考的是能不能在干扰句里辨出错误。</div>
+    </div>
+    <p class="note" style="margin-top:16px">限时 20 分钟。不会的先跳过，跳过的按错处理——评估要的是“哪里不稳”，不是“能否凑满”。</p>
+    <h4>它怎么判断</h4>
+    <div class="tablewrap"><table><thead><tr><th style="width:14%">步骤</th><th style="width:34%">动作</th><th>输出</th></tr></thead><tbody>
+      <tr><td class="num">01</td><td>三层各做 13 题，补 11 题</td><td class="mut">每层每专题一条记录：对／错、你写的、应为</td></tr>
+      <tr><td class="num">02</td><td>按层判性质</td><td class="mut">识别错＝规则没立住；产出错＝会认不会写；语境错＝被干扰句带走</td></tr>
+      <tr><td class="num">03</td><td>同一组六题重做</td><td class="mut">六题全对才算通过，错一题就回炉</td></tr>
+      <tr><td class="num">04</td><td>出报告</td><td class="mut">掌握矩阵、错因分布、补漏顺序，可直接复制给老师</td></tr>
+    </tbody></table></div>
+    <h4>样例：锁定之后长这样</h4>
+    <div class="tablewrap"><table><thead><tr><th>考点</th><th>层</th><th>他写的</th><th>应为</th><th>错因</th></tr></thead><tbody>
+      <tr><td><b style="font-family:var(--serif)">代词</b></td><td class="mut">产出</td><td class="num" style="color:var(--acc)">my</td><td class="num">mine</td><td><span class="reason">形式记错</span></td></tr>
+      <tr><td><b style="font-family:var(--serif)">一般现在时</b></td><td class="mut">识别</td><td class="num" style="color:var(--acc)">play</td><td class="num">are playing</td><td><span class="reason">位置判断错</span></td></tr>
+    </tbody></table></div>
+    <p class="note" style="margin-top:12px">这两行不是示例数据，是他期中卷上真实出现的两种错法：把名词性物主写成形容词性；看到 Look 仍按一般现在处理。</p>
+    <div class="row"><button class="btn" data-act="start">开始诊断 42 题</button><button class="btn ghost" data-act="go" data-v="units">先看专题清单</button></div>
+    </section>`;
+  }
+  const all=evalItems();
+  const nA=all.filter(x=>x.c==='A').length,nB=all.filter(x=>x.c==='B').length;
+  const done=Object.keys(S.ans).filter(k=>S.ans[k]!==undefined&&S.ans[k]!=='').length;
+  return `<section class="sec"><div class="sechead"><span class="no">01—B</span><h3>诊断卷</h3><span class="tag">42 items</span></div>
+  <div class="row" style="margin:0 0 14px"><span class="note">已答 <b class="num">${done}</b>/${all.length}　·　${S.graded?'已判卷，下面可以直接看漏洞':'做完点末尾判卷'}</span>
+  ${S.graded?'<button class="btn ghost" data-act="to-gaps">去看漏洞清单</button>':''}</div>
+  ${all.slice(0,nA).map((x,i)=>qHTML(x,uIndex(x.u),i,S.ans,S.graded)).join('')}
+  <h4 style="margin-top:22px">第二层 · 产出（给词变形填空）</h4>
+  ${all.slice(nA,nA+nB).map((x,i)=>qHTML(x,uIndex(x.u),i+nA,S.ans,S.graded)).join('')}
+  <h4 style="margin-top:22px">第三层 · 语境（选出唯一正确的一句）</h4>
+  ${all.slice(nA+nB).map((x,i)=>qHTML(x,uIndex(x.u),i+nA+nB,S.ans,S.graded)).join('')}
+  <div class="row">${S.graded?'<button class="btn ghost" data-act="restart">重做诊断</button>':'<button class="btn" data-act="grade">判卷，生成盲区清单与训练队列</button>'}</div>
+  ${S.graded?resultStrip():''}
+  </section>`;
+}
+function uIndex(name){return U.findIndex(u=>u.n===name)}
+function qHTML(x,ui,idx,ansStore,graded){
+  const it=x.it,val=ansStore[idx];
+  const judged=graded;
+  let body;
+  if(it.f){
+    body=`<div class="inline"><span class="note">填：</span><input type="text" data-q="${idx}" value="${val||''}" ${judged?'readonly':''} placeholder="写出正确形式"><span class="note">${it.hint||''}</span></div>`;
+  }else{
+    body=`<div class="opts">${it.o.map((o,oi)=>{
+      let cls='opt';
+      if(judged){if(oi===it.a)cls+=' ok';else if(val===oi)cls+=' bad'}
+      else if(val===oi)cls+=' sel';
+      return `<button class="${cls}" data-opt="${idx}" data-o="${oi}"><em>${'ABCD'[oi]}</em>${o}</button>`;
+    }).join('')}</div>`;
+  }
+  const good=judged&&ok(it,val);
+  return `<div class="qrow"><div class="qmeta"><span class="idx">${String(idx+1).padStart(2,'0')}</span><span class="layer">${LAYER[x.c]}</span><span class="note">${x.u}</span>${judged?'<span class="reason">'+(good?'稳':'漏洞')+'</span>':''}</div>
+  <div class="stem">${it.q}</div>${body}
+  ${judged?`<div class="fb"><span class="${good?'r':'w'}">${good?'对':'错'}</span>　答案 <b>${ansText(it)}</b>　${it.x}${good?'':'　<span class="reason">'+REASON[it.r]+'</span>'}</div>`:''}
+  </div>`;
+}
+function resultStrip(){
+  const pass=passedCount(),g=openGaps().length;
+  return `<div class="row" style="margin-top:18px;align-items:flex-start;gap:34px">
+    <div><div class="note">三层全对的专题</div><div class="big">${pass}<span style="font-size:12px;color:var(--muted)"> /${CORE.length}</span></div></div>
+    <div><div class="note">锁定的盲区</div><div class="big" style="color:var(--acc)">${g}</div></div>
+    <div><div class="note">下一步</div><div class="row" style="margin-top:4px"><button class="btn" data-act="plan">推送训练（${planGroups().length} 组 · ${planGroups().length*6} 题）</button></div></div>
+    <div><div class="note">结论</div><div class="note" style="max-width:44ch">${pass>=15?'基本没有结构性漏洞，剩下的是稳定性问题，隔三天复测一次即可。':'按盲区清单的顺序逐组训练，别从头再学一遍——重复练已经会的部分，是他现在最浪费时间的地方。'}</div></div>
+  </div>`;
+}
+function vGaps(){
+  const g=gaps();
+  if(!D.last) return `<section class="sec"><div class="sechead"><span class="no">02</span><h3>盲区清单</h3><span class="tag">locked</span></div><p class="lede">还没判卷。先去评估，判完这里会自动列出每一处漏洞，连带错在哪一层、你当时写了什么。</p><div class="row"><button class="btn" data-act="go" data-v="assess">去评估</button></div></section>`;
+  if(!g.length) return `<section class="sec"><div class="sechead"><span class="no">02</span><h3>盲区清单</h3><span class="tag">locked</span></div><p class="lede">评估里三层全对，没有锁定到漏洞。建议三天后重做一遍评估，看是不是偶然做对。</p></section>`;
+  const byU=gapByUnit();
+  const reasonBars=(()=>{const c={};g.forEach(x=>{c[x.item.r]=(c[x.item.r]||0)+1});return Object.keys(REASON).map(k=>[k,c[k]||0]).filter(x=>x[1])})();
+  return `<section class="sec"><div class="sechead"><span class="no">02</span><h3>盲区清单</h3><span class="tag">${openGaps().length} open · ${g.length} locked</span></div>
+  <p class="lede">按“一个专题能丢几分”排序。每一条都标了你错在哪一层、当时写的答案、以及这类错的成因——成因比题目重要，因为它决定后面怎么补。已通过的留在这里存档，排到末位。</p>
+  <div class="row" style="margin:0 0 14px"><button class="btn" data-act="plan">按盲区推送训练（${planGroups().length} 组）</button><span class="note">每组 6 题，全对才过</span></div>
+  <div class="tablewrap"><table><thead><tr><th>考点</th><th>层</th><th>你写的</th><th>应为</th><th>错因</th><th>判定</th><th></th></tr></thead><tbody>
+  ${g.sort((a,b)=>(D.closed[a.u]?1:0)-(D.closed[b.u]?1:0)).map(x=>`<tr>
+    <td><b style="font-family:var(--serif)">${x.u}</b></td>
+    <td class="mut">${LAYER[x.c]}</td>
+    <td class="num" style="color:var(--acc)">${x.given===''||x.given==null?'（未答）':x.given}</td>
+    <td class="num">${ansText(x.item)}</td>
+    <td><span class="reason">${REASON[x.item.r]}</span></td>
+    <td class="mut">${D.closed[x.u]?'已通过':'待训练'}</td>
+    <td><button class="btn ghost" data-act="drill" data-u="${x.u}">训练</button></td>
+  </tr>`).join('')}
+  </tbody></table></div>
+  
+  <h4>错因分布</h4>
+  <div class="barlist">${reasonBars.map(([k,n])=>`<div class="bar"><span>${REASON[k]}</span><div class="track"><div class="fill" style="width:${pct(n,g.length)}%"></div></div><span class="num">${n} / ${g.length}</span></div>`).join('')}</div>
+  <p class="note">错因过半集中在同一类，就按那一类整批补；分散在三类以上，说明是“没有判据”而不是“某一处粗心”，先回专题读判据。</p>
+  </section>`;
+}
+function planGroups(){
+  const o=openGaps(),m={};
+  o.forEach(g=>{const x=m[g.u]=m[g.u]||{u:g.u,count:0,cells:[],rs:{}};x.count++;x.cells.push(g.c);x.rs[g.item.r]=1});
+  return Object.values(m).sort((a,b)=>b.count-a.count);
+}
+function pickSet(u){
+  const pool=u.items;
+  const wrong=(D.last&&D.last[u.n])?['A','B','C'].filter(c=>D.last[u.n][c]&&!D.last[u.n][c].ok):[];
+  const seen=(D.seen&&D.seen[u.n])||[];
+  const idOf=it=>it.cell+'#'+pool.indexOf(it);
+  const capList=(list)=>{const c={};return list.filter(it=>{c[it.cell]=(c[it.cell]||0)+1;return c[it.cell]<=2})};
+  let pick=[];
+  wrong.forEach(c=>{const it=pool.find(x=>x.cell===c);if(it&&!pick.includes(it))pick.push(it)});
+  const proto=pool.find(x=>x.cell==='D');if(proto&&!pick.includes(proto))pick.push(proto);
+  const rest=pool.filter(it=>!pick.includes(it));
+  const fresh=rest.filter(it=>!seen.includes(idOf(it)));
+  for(const it of [...fresh,...rest]){if(pick.length>=6)break;pick.push(it)}
+  const capped=capList(pick);
+  const need=6-capped.length;
+  if(need>0){const extra=pick.filter(it=>!capped.includes(it)).slice(0,need);capped.push(...extra)}
+  return capped.slice(0,6);
+}
+function startDrill(u,regen){
+  if(!u)return;
+  S.drillU=u;S.drillAns={};S.drillLock={};
+  S.drillSet=pickSet(unitById(u));
+  D.seen=D.seen||{};const pool=unitById(u).items;
+  D.seen[u]=S.drillSet.map(it=>it.cell+'#'+pool.indexOf(it));
+  save();S.view='drill';render();
+}
+function vDrill(){
+  const plan=planGroups();
+  if(!D.last)return `<section class="sec"><div class="sechead"><span class="no">03</span><h3>推送训练</h3><span class="tag">plan</span></div><p class="lede">还没有诊断记录，没有可推送的内容。先做 42 题诊断，系统才知道该往哪儿推。</p><div class="row"><button class="btn" data-act="go" data-v="assess">去诊断</button></div></section>`;
+  if(!S.drillU){
+    if(!plan.length)return `<section class="sec"><div class="sechead"><span class="no">03</span><h3>推送训练</h3><span class="tag">clear</span></div>
+      <p class="lede">当前没有待补盲区，推送队列是空的。三天后重做诊断，确认不是偶然做对。</p>
+      <div class="row"><button class="btn" data-act="to-report">看报告</button><button class="btn ghost" data-act="restart">重做诊断</button></div></section>`;
+    const total=plan.length*6;
+    return `<section class="sec"><div class="sechead"><span class="no">03</span><h3>推送训练</h3><span class="tag">${plan.length} groups · ${total} items</span></div>
+    <p class="lede">按盲区推，每组 6 题，从该专题 ${Math.min(...U.map(u=>u.items.length))}–${Math.max(...U.map(u=>u.items.length))} 题的池里选：先取诊断错的那几层，再补变式和干扰项，同一层最多 2 题。同一批题做过会换一批，不会原地重复。池里有 30 题是广州真卷复刻（广附期中、十七中阶段测、沪教版 A 卷），其余是同考点变式，难度按七上期中口径。</p>
+    <div class="tablewrap"><table><thead><tr><th style="width:8%">#</th><th style="width:26%">考点</th><th style="width:20%">缺的层</th><th style="width:22%">错因</th><th>题库</th></tr></thead><tbody>
+    ${plan.map((x,n)=>`<tr><td class="num">${String(n+1).padStart(2,'0')}</td><td><b style="font-family:var(--serif)">${x.u}</b></td><td class="mut">${x.cells.map(c=>LAYER[c]).join('／')}</td><td class="mut">${Object.keys(x.rs).map(r=>REASON[r]).join('、')}</td><td class="num mut">${unitById(x.u).items.length} 题</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="row"><button class="btn" data-act="drill" data-u="${plan[0].u}">开始第 1 组 · ${plan[0].u}</button><span class="note">约 ${Math.round(total*0.9)} 分钟</span></div>
+    <p class="note" style="margin-top:10px">已通过 ${Object.keys(D.closed).length} 组。过一组推下一组，不用自己选。</p>
+    </section>`;
+  }
+  const u=unitById(S.drillU);
+  const set=S.drillSet||u.items.slice(0,6);
+  const idx=plan.findIndex(x=>x.u===S.drillU);
+  const locked=S.drillLock||{};
+  const rightN=set.filter((it,i)=>locked[i]&&locked[i].ok).length;
+  const allRight=set.length===6&&set.every((it,i)=>locked[i]&&locked[i].ok);
+  const dots=set.map((it,i)=>{const l=locked[i];return `<span class="cell ${l?(l.ok?'ok':'no'):'na'}" style="width:24px;height:16px">${i+1}</span>`}).join('');
+  return `<section class="sec"><div class="sechead"><span class="no">03</span><h3>${u.n}</h3><span class="tag">group ${idx>=0?idx+1:'—'} / ${plan.length} · 6 items</span></div>
+  <div class="row" style="margin:0 0 6px"><button class="btn ghost" data-act="drill-back">← 回推送清单</button><button class="btn ghost" data-act="drill-regen">换一组题</button><span style="display:flex;gap:4px">${dots}</span></div>
+  <h4>先看判据，别凭语感</h4>
+  ${u.rules.slice(0,3).map(r=>`<div class="rule">${r}</div>`).join('')}
+  ${(D.last&&D.last[u.n]?['A','B','C'].map(c=>({c,r:D.last[u.n][c]})).filter(x=>x.r&&!x.r.ok):[]).length?`<h4>诊断时这一步错在哪</h4>
+  <div class="tablewrap"><table><thead><tr><th style="width:14%">题</th><th style="width:30%">你的答案</th><th style="width:26%">正确</th><th>成因</th></tr></thead><tbody>
+  ${['A','B','C'].map(c=>({c,r:D.last[u.n]&&D.last[u.n][c]})).filter(x=>x.r&&!x.r.ok).map(x=>`<tr><td class="num">${x.c} · ${LAYER[x.c]}</td><td class="num" style="color:var(--acc)">${x.r.given==null||x.r.given===''?'（未答）':x.r.given}</td><td class="num">${x.r.right}</td><td><span class="reason">${REASON[x.r.r]}</span></td></tr>`).join('')}
+  </tbody></table></div>`:''}
+  <h4>这一组 6 题</h4>
+  ${set.map((it,k)=>{
+    const st=(S.drillAns||{})[k],l=locked[k];
+    let body;
+    if(it.f)body=`<div class="inline"><span class="note">填：</span><input type="text" data-di="${k}" value="${st||''}" ${l&&l.ok?'readonly':''} placeholder="写出正确形式"></div>`;
+    else body=`<div class="opts">${it.o.map((o,oi)=>{let cls='opt';if(l){if(oi===it.a)cls+=' ok';else if(st===oi)cls+=' bad'}else if(st===oi)cls+=' sel';return `<button class="${cls}" data-dopti="${k}" data-o="${oi}"><em>${'ABCD'[oi]}</em>${o}</button>`}).join('')}</div>`;
+    return `<div class="qrow"><div class="qmeta"><span class="idx">${String(k+1).padStart(2,'0')}</span><span class="layer">${it.cell} · ${LAYER[it.cell]}</span>${l?`<span class="reason">${l.ok?'对':'还错'}</span>`:''}</div><div class="stem">${it.q}</div>${body}
+    ${l?`<div class="fb"><span class="${l.ok?'r':'w'}">${l.ok?'对':'错'}</span>　答案 <b>${ansText(it)}</b>　${it.x}${l.ok?'':'　<span class="reason">'+REASON[it.r]+'</span>'}</div>`:''}</div>`;
+  }).join('')}
+  <div class="row">
+  ${allRight?`<button class="btn" data-act="drill-close">通过，推下一组</button>`:`<button class="btn" data-act="drill-check">结算这 6 题</button>`}
+  ${rightN&&!allRight?'<button class="btn ghost" data-act="drill-retry">只看错题，重做一遍</button>':''}
+  <span class="note">${Object.keys(locked).length?`已判 ${rightN}/6 对`:'答完再结算'}</span></div>
+  ${allRight?'<p class="note" style="margin-top:10px">六题全对。通过后自动推下一组，不用回清单。</p>':''}
+  </section>`;
+}
+function vApply(){
+  if(!S.apply){
+    const rec=D.apply||{};
+    return `<section class="sec"><div class="sechead"><span class="no">04</span><h3>综合应用</h3><span class="tag">reading × grammar</span></div>
+    <p class="lede">前面 42 题测的是单点规则，这一页测规则在文章里能不能用。第 1–3 篇是原创配理解题，第 4–5 篇取自广州真卷语法选择（答案按原卷），第 6–8 篇是广州卷常见的语篇填词。填空看你能否写出形式，理解题看你能否靠语法读懂句子关系（谁指谁、谁做的、什么时候）。</p>
+    <div class="tablewrap"><table><thead><tr><th style="width:6%">#</th><th style="width:24%">篇目</th><th style="width:42%">考点分布</th><th style="width:8%">题量</th><th style="width:12%">状态</th><th>操作</th></tr></thead><tbody>
+    ${PASS.map((p,i)=>`<tr><td class="num">${String(i+1).padStart(2,'0')}</td><td><b style="font-family:var(--serif)">${p.n}</b></td><td class="mut">${p.sub}</td><td class="num">${p.blanks.length+p.qs.length}</td><td class="mut">${rec[i+1]?rec[i+1].right+'/'+(p.blanks.length+p.qs.length):'未做'}</td><td><button class="btn ghost" data-act="apply" data-u="${i+1}" style="padding:3px 12px;font-size:12px">做</button></td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="row"><button class="btn" data-act="apply" data-u="1">做第一篇 · ${PASS[0].n}</button><span class="note">8 分钟一篇，别查词典</span></div>
+    <p class="note" style="margin-top:12px">这里错的题不单独记，会并进对应专题的盲区，训练队列会一起推。</p>
+    </section>`;
+  }
+  const pi=S.apply,p=PASS[pi-1],A=S.applyAns||{},G=S.applyGraded;
+  const bs=p.blanks.map((b,i)=>ok({f:1,a:b.a},A['b'+i]));
+  const qs=p.qs.map((q,i)=>ok(q,A['q'+i]));
+  const right=bs.filter(Boolean).length+qs.filter(Boolean).length;
+  let text=p.text.replace(/\{\{(\d+)\}\}/g,(m,n)=>{
+    const i=+n-1,b=p.blanks[i],v=A['b'+i]||'';
+    const cls=G?(bs[i]?'ok':'bad'):'';
+    const corr=G&&!bs[i]?`<span class="hint" style="color:var(--acc)">→ ${Array.isArray(b.a)?b.a.join('/'):b.a}</span>`:'';
+    return `<span class="blank ${cls}"><i>${i+1}</i><input type="text" data-ab="${i}" value="${v}" ${G?'readonly':''}></span><span class="hint">${b.h.indexOf('（')===0||b.h.indexOf('(')===0?b.h:'（'+b.h+'）'}</span>${corr}`;
+  });
+  return `<section class="sec"><div class="sechead"><span class="no">04—${pi}</span><h3>${p.n}</h3><span class="tag">${p.blanks.length} blanks${p.qs.length?` · ${p.qs.length} questions`:""}</span></div>
+  <div class="row" style="margin:0 0 10px"><button class="btn ghost" data-act="apply-back">← 换一篇</button><span class="note">${p.sub}</span></div>
+  <div class="passage">${text}</div>
+  ${G?`<h4>空位批改</h4>
+  <div class="tablewrap"><table><thead><tr><th style="width:8%">空</th><th style="width:22%">你写的</th><th style="width:24%">应为</th><th style="width:22%">专题</th><th>错因</th></tr></thead><tbody>
+  ${p.blanks.map((b,i)=>({i:i,b:b,ok:bs[i]})).filter(x=>!x.ok).map(x=>`<tr><td class="num">${x.i+1}</td><td class="num" style="color:var(--acc)">${(A['b'+x.i]||'（未答）')}</td><td class="num">${Array.isArray(x.b.a)?x.b.a.join(' / '):x.b.a}</td><td class="mut">${x.b.u}</td><td><span class="reason">${REASON[x.b.r]}</span></td></tr>`).join('')||'<tr><td class="mut" colspan="5">${p.blanks.length} 个空全对。</td></tr>'}
+  </tbody></table></div>`:''}
+  ${p.qs.length?`<h4>理解题（靠语法读懂，不靠猜）</h4>`:''}
+  ${p.qs.map((q,i)=>{
+    let inner;
+    if(G){
+      inner=q.o.map((o,oi)=>{let cls='opt';if(oi===q.a)cls+=' ok';else if(A['q'+i]===oi)cls+=' bad';return `<button class="${cls}" data-aq="${i}" data-o="${oi}"><em>${'ABCD'[oi]}</em>${o}</button>`}).join('');
+    }else{
+      inner=q.o.map((o,oi)=>`<button class="opt${A['q'+i]===oi?' sel':''}" data-aq="${i}" data-o="${oi}"><em>${'ABCD'[oi]}</em>${o}</button>`).join('');
+    }
+    return `<div class="qrow"><div class="qmeta"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="layer">理解</span>${G?`<span class="reason">${qs[i]?'对':'漏洞'}</span>`:''}</div><div class="stem">${q.q}</div><div class="opts">${inner}</div>
+    ${G?`<div class="fb"><span class="${qs[i]?'r':'w'}">${qs[i]?'对':'错'}</span>　答案 <b>${q.o[q.a]}</b>　${q.x}${qs[i]?'':'　<span class="reason">'+REASON[q.r]+' · '+q.u+'</span>'}</div>`:''}</div>`;
+  }).join('')}
+  <div class="row">${G?`<button class="btn ghost" data-act="apply" data-u="${pi}">重做这一篇</button><button class="btn" data-act="apply" data-u="${pi<PASS.length?pi+1:1}">做下一篇</button>`:'<button class="btn" data-act="apply-grade">交卷</button>'}</div>
+  ${G?`<div class="row" style="margin-top:16px;align-items:flex-start;gap:34px">
+    <div><div class="note">本篇得分</div><div class="big">${right}<span style="font-size:12px;color:var(--muted)"> /${p.blanks.length+p.qs.length}</span></div></div>
+    <div><div class="note">空错／理解错</div><div class="note">${bs.filter(x=>!x).length} 个空错，${qs.filter(x=>!x).length} 道理解题错</div></div>
+    <div><div class="note">下一步</div><div class="note" style="max-width:42ch">错的已并进盲区。回训练队列，按推送顺序补；补完再来做下一篇。</div></div>
+  </div>`:''}
+  <p class="note" style="margin-top:14px">判分口径：拼写、时态形式、单复数都算对错${p.qs.length?"；理解题必须靠句子结构判断，凭感觉蒙对的记“对”，但下一篇仍会出现同类结构":"；大小写不计，缩写与完整写法（dont 与 do not）按同一答案判"}。</p>
+  </section>`;
+}
+function vUnits(){
+  const row=(u,i,extra)=>{
+    const st=D.last&&D.last[u.n];
+    const okAll=st&&['A','B','C'].every(c=>!st[c]||st[c].ok);
+    const tag=!st?'未测':(okAll?'三层全对':(D.closed[u.n]?'已补':'有漏洞'));
+    const scope=extra||'';
+    return `<details><summary><span><span class="reason" style="margin-right:8px">${String(i+1).padStart(2,'0')}</span><b style="font-family:var(--serif);font-size:13px">${u.n}</b>　<span class="note">${u.sub}</span></span><span class="note">${scope?scope+'　':''}${tag}</span></summary>
+      <div style="margin-top:8px">${u.rules.map(r=>`<div class="rule">${r}</div>`).join('')}
+      <div class="row" style="margin-top:10px"><button class="btn ghost" data-act="drill" data-u="${u.n}">训练这个专题</button><span class="note">题库 ${u.items.length} 题</span></div></div></details>`;
+  };
+  return `<section class="sec"><div class="sechead"><span class="no">05</span><h3>专题与判据</h3><span class="tag">${CORE.length} + ${ADV.length} topics</span></div>
+  <p class="lede">这一页是工具书，不是课程。哪个专题有漏洞就点开读它的判据，读完直接去训练，不必按顺序学。上半区 14 个专题是沪教版七上范围（期中到期末），进诊断、进推送；下半区 4 个属八上到九年级，只作提前学，默认不推。</p>
+  ${CORE.map((u,i)=>row(u,i,SCOPE[u.n]||'')).join('')}
+  <h4 style="margin-top:22px">提前学（八上—九年级，非七上期末范围，不进诊断与推送）</h4>
+  <p class="note" style="margin:0 0 10px">这三组题留着是为了以后：现在完成时（八下）、被动语态（九年级）、宾语从句（九年级）。现在做只会把“不会”记成“漏”，干扰对七上漏洞的判断，所以默认不进队列。</p>
+  ${ADV.map(n=>unitById(n)).filter(Boolean).map((u,i)=>row(u,CORE.length+i,'提前学')).join('')}
+  </section>`;
+}
+function vUnitsOld(){
+  return `<section class="sec"><div class="sechead"><span class="no">05</span><h3>专题与判据</h3><span class="tag">17 topics</span></div>
+  <p class="lede">这一页是工具书，不是课程。哪个专题有漏洞就点开读它的判据，读完直接去训练，不必按顺序学。</p>
+  ${U.map((u,i)=>{
+    const st=D.last&&D.last[u.n];
+    const okAll=st&&['A','B','C'].every(c=>!st[c]||st[c].ok);
+    const tag=!st?'未测':(okAll?'三层全对':(D.closed[u.n]?'已补':'有漏洞'));
+    return `<details><summary><span><span class="reason" style="margin-right:8px">${String(i+1).padStart(2,'0')}</span><b style="font-family:var(--serif);font-size:13px">${u.n}</b>　<span class="note">${u.sub}</span></span><span class="note">${tag}</span></summary>
+      <div style="margin-top:8px">${u.rules.map(r=>`<div class="rule">${r}</div>`).join('')}
+      <div class="row" style="margin-top:10px"><button class="btn ghost" data-act="drill" data-u="${u.n}">训练这个专题</button></div></div></details>`;
+  }).join('')}
+  </section>`;
+}
+function reportText(){
+  const pass=passedCount(),g=openGaps();
+  const hasLast=!!D.last;
+  const byU={};g.forEach(x=>{(byU[x.u]=byU[x.u]||[]).push(x)});
+  const reasons=(()=>{const c={};g.forEach(x=>{c[x.item.r]=(c[x.item.r]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1])})();
+  const lines=[];
+  lines.push('【语法评估结论】');
+  lines.push('范围：沪教版七上 Units 1–8。诊断与推送只覆盖 '+CORE.length+' 个专题、'+CORE.reduce((a,u)=>a+u.items.length,0)+' 题；另有 '+ADV.length+' 个专题、'+ADV.map(n=>unitById(n)).reduce((a,u)=>a+(u?u.items.length:0),0)+' 题属八上到九年级，只作提前学，不参与本次判断。');
+  if(hasLast)lines.push('专题通过 '+pass+'/'+CORE.length+'，剩余待补漏洞 '+g.length+' 处。');
+  if(!g.length){
+    lines.push('三层全部通过，没有结构性漏洞。下一步只做稳定性复测：三天后重做一次诊断，两次都满分才算真会。');
+  }else{
+    const worst=Object.keys(byU).sort((a,b)=>byU[b].length-byU[a].length).slice(0,3);
+    lines.push('最该先补：'+worst.map(u=>u+'（'+byU[u].length+' 处）').join('、')+'。');
+    const top=reasons[0];
+    if(top){
+      const map={rule:'规则本身没立住，先读判据再做题，别刷题',form:'会认不会写，问题在落笔变形，练“给词变形”而不是选择题',pos:'每道题先问“这个空在动词前还是后、后面有没有名词”，先定位置再选词',trap:'被干扰句带走，练“逐句挑错”而不是选一个看着顺的',read:'审题漏条件，读题时把时间词、单复数圈出来'};
+      lines.push('主要错因是「'+REASON[top[0]]+'」'+top[1]+' 处：'+map[top[0]]+'。');
+    }
+    lines.push('补的顺序：'+worst.join(' → ')+'，每个专题六题全对再往下走。');
+  }
+  const ap=D.apply&&Object.keys(D.apply).length;
+  if(ap){
+    lines.push('综合应用：'+Object.keys(D.apply).map(k=>'第'+k+'篇 '+D.apply[k].right+'/'+(D.apply[k].total||12)).join('，')+'。');
+    const aw=(D.applyW||[]).length;
+    if(aw)lines.push('综合应用里有 '+aw+' 处错已并进盲区：规则单点会做，放进文章里调不出来，先补对应专题再回读。');
+    else lines.push('三篇短文全对，规则在文章里能用起来。');
+  }else if(hasLast&&pass===U.length){
+    lines.push('单点规则已全过，综合应用还没测：去 04 做三篇短文，那里最容易暴露“会规则、不会用”。');
+  }
+  return lines.join('\n');
+}
+function vReport(){
+  if(!D.last&&!D.apply)return `<section class="sec"><div class="sechead"><span class="no">06</span><h3>报告</h3><span class="tag">report</span></div><p class="lede">还没有评估记录。判卷之后，这一页会生成结论、错因分布和补漏顺序，可以直接复制给老师。</p></section>`;
+  const pass=passedCount(),g=gaps(),closed=Object.keys(D.closed).length;
+  const reasons=(()=>{const c={};g.forEach(x=>{c[x.item.r]=(c[x.item.r]||0)+1});return Object.keys(REASON).map(k=>[k,c[k]||0]).filter(x=>x[1])})();
+  return `<section class="sec"><div class="sechead"><span class="no">05</span><h3>报告</h3><span class="tag">generated</span></div>
+  <div class="three">
+    <div class="kv"><b>${D.last?pass+'/'+CORE.length:'—'}</b>专题三层全对</div>
+    <div class="kv"><b>${openGaps().length}</b>处待补，已通过 ${closed}</div>
+    <div class="kv"><b>${D.lastDate||''}</b>上次评估</div>
+  </div>
+  ${D.last?`<h4>掌握矩阵</h4>
+  <div class="mx" style="border-bottom:1px solid var(--rule);padding-bottom:6px"><span class="note">专题</span><span class="note">识别</span><span class="note">产出</span><span class="note">语境</span><span class="note">判定</span></div>
+  ${U.map(u=>{const x=D.last[u.n];const cells=['A','B','C'].map(c=>{const r=x&&x[c];return `<div class="cell ${r?(r.ok?'ok':'no'):'na'}">${r?(r.ok?'✓':'✗'):'·'}</div>`}).join('');
+    const all=x&&['A','B','C'].every(c=>!x[c]||x[c].ok);
+    return `<div class="mx"><span style="font-size:12px">${u.n}</span>${cells}<span class="note">${all?'无漏洞':(D.closed[u.n]?'已补':'待补')}</span></div>`}).join('')}`:'<p class="note">还没做诊断，这里只显示综合应用的成绩。</p>'}
+<h4>综合应用</h4>
+  <div class="tablewrap"><table><thead><tr><th style="width:8%">#</th><th style="width:34%">篇目</th><th style="width:16%">得分</th><th>状态</th></tr></thead><tbody>
+  ${PASS.map((p,i)=>`<tr><td class="num">${i+1}</td><td>${p.n}</td><td class="num">${D.apply&&D.apply[i+1]?D.apply[i+1].right+'/'+(D.apply[i+1].total||12):'—'}</td><td class="mut">${D.apply&&D.apply[i+1]?(D.apply[i+1].right===(D.apply[i+1].total||12)?'全对':'仍有错，已并入盲区'):'未做'}</td></tr>`).join('')}
+  </tbody></table></div>  <h4>错因分布</h4>
+  <div class="barlist">${reasons.map(([k,n])=>`<div class="bar"><span>${REASON[k]}</span><div class="track"><div class="fill s" style="width:${pct(n,g.length)}%"></div></div><span class="num">${n}</span></div>`).join('')||'<p class="note">没有漏洞。</p>'}</div>
+  <h4>结论</h4>
+  ${reportText().split('\n').slice(1).map(t=>`<p class="rule" style="border-left-color:var(--sage)">${t}</p>`).join('')}
+  <h4>可复制文本</h4>
+  <textarea class="copy" id="rep">${reportText()}</textarea>
+  <div class="row"><button class="btn" data-act="copy">复制报告</button><button class="btn ghost" data-act="wipe">清空本机记录</button></div>
+  </section>`;
+}
+/* ===== 判卷 ===== */
+function gradeAssess(){
+  const all=evalItems();
+  const res={};let right=0;
+  all.forEach((x,i)=>{
+    const val=S.ans[i];const good=ok(x.it,val);
+    if(good)right++;
+    res[x.u]=res[x.u]||{};
+    res[x.u][x.c]={ok:good,right:ansText(x.it),given:x.it.f?(val==null?'':String(val)):(val==null?'':(x.it.o[val]||'')),r:x.it.r};
+  });
+  D.last=res;D.lastDate=today();D.hist=D.hist||[];D.hist.push({date:today(),right:right,total:all.length});save();
+  S.graded=true;S.view='assess';render();
+}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+/* ===== 渲染 ===== */
+function render(){
+  try{draw()}catch(e){
+    document.getElementById('app').innerHTML='<section class="sec"><div class="sechead"><span class="no">!</span><h3>这一页没能渲染出来</h3></div><p class="lede">'+String(e&&e.message||e)+'　记录还在本机，刷新一次或回诊断页即可。</p><div class="row"><button class="btn" data-act="go" data-v="assess">回诊断</button><button class="btn ghost" onclick="location.reload()">刷新页面</button></div></section>';
+  }
+}
+function draw(){
+  const app=document.getElementById('app');
+  const map={assess:vAssess,gaps:vGaps,drill:vDrill,apply:vApply,units:vUnits,report:vReport};
+  app.innerHTML=map[S.view]();
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.nav===S.view));
+  const pass=passedCount(),g=gaps().length,closed=Object.keys(D.closed).length;
+  document.getElementById('s-pass').innerHTML=pass+'<i>/'+CORE.length+'</i>';
+  document.getElementById('s-gap').textContent=D.last?openGaps().length:'—';
+  document.getElementById('s-closed').innerHTML=closed+'<i>/'+CORE.length+'</i>';
+  document.getElementById('railstats').innerHTML='诊断 <b>'+(D.last?'已做':'未做')+'</b><br>题库 <b>'+(U.reduce((a,u)=>a+u.items.length,0)+PASS.reduce((a,x)=>a+x.blanks.length+x.qs.length,0))+'</b> 题 · 诊断 '+evalItems().length+' · 综合 '+PASS.length+' 篇<br>待补 <b>'+(D.last?openGaps().length+' / 已通过 '+closed:'—')+'</b>';
+  if(S.view==='drill'){document.getElementById('mt').textContent='盲区在哪，训练就从哪开始';document.getElementById('md').textContent='每组六题，全对才通过；过一组推下一组，顺序按漏洞多少排，不用自己挑。';}
+  else if(S.view==='gaps'){document.getElementById('mt').textContent='漏洞不补，分数不会自己上去';document.getElementById('md').textContent='按层拆开看：识别错是规则没立住，产出错是会认不会写，语境错是被干扰句带走。三类补法完全不同。';}
+  else if(S.view==='report'){document.getElementById('mt').textContent='一份能直接给老师看的评估';document.getElementById('md').textContent='矩阵看结构，错因看性质，结论看顺序。报告末尾可复制。';}
+  else if(S.view==='apply'){document.getElementById('mt').textContent='规则最终要落在读上';document.getElementById('md').textContent='短文里的空看你会不会写形式，理解题看你能否靠句子结构读出谁指谁、谁做的、什么时候。';}
+  else if(S.view==='units'){document.getElementById('mt').textContent='判据都在这里，按需取用';document.getElementById('md').textContent='不用从头学。带着漏洞来查规则，读完就去训练。';}
+  else{document.getElementById('mt').textContent='先把漏洞找全，再谈考多少分';document.getElementById('md').textContent='42 题、14 个七上专题、三层诊断，三层全对才算没有盲区。';}
+}
+/* ===== 交互 ===== */
+document.addEventListener('click',function(e){
+  const a=e.target.closest('[data-act]');
+  if(a){
+    const act=a.dataset.act,u=a.dataset.u;
+    if(act==='start'){S.started=true;S.ans={};S.graded=false;render()}
+    else if(act==='grade'){gradeAssess()}
+    else if(act==='restart'){S.ans={};S.graded=false;S.started=true;render()}
+    else if(act==='to-gaps'){S.view='gaps';render()}
+    else if(act==='go'){S.view=a.dataset.v;render()}
+    else if(act==='drill'){startDrill(u)}
+    else if(act==='drill-regen'){startDrill(S.drillU,true)}
+    else if(act==='drill-back'){S.drillU=null;S.view='drill';render()}
+    else if(act==='to-report'){S.view='report';render()}
+    else if(act==='plan'){S.drillU=null;S.view='drill';render()}
+    else if(act==='apply'){S.apply=+u;S.applyAns={};S.applyGraded=false;S.view='apply';render()}
+    else if(act==='apply-back'){S.apply=null;S.view='apply';render()}
+    else if(act==='apply-grade'){gradeApply()}
+    else if(act==='drill-retry'){Object.keys(S.drillLock||{}).forEach(k=>{if(!S.drillLock[k].ok){delete S.drillLock[k];delete S.drillAns[k]}});render()}
+    else if(act==='drill-check'){
+      let allOk=true;
+      (S.drillSet||[]).forEach((it,k)=>{
+        const v=S.drillAns[k];
+        if(v===undefined||v===''){allOk=false;return}
+        const good=ok(it,v);S.drillLock[k]={ok:good};
+        if(!good)allOk=false;
+      });
+      render();
+    }
+    else if(act==='drill-close'){if(S.drillU){D.closed[S.drillU]=1;save();
+      const next=planGroups()[0];S.drillU=next?next.u:null;S.drillAns={};S.drillLock={};S.view='drill';render()}}
+    else if(act==='copy'){const t=document.getElementById('rep');t.select();try{document.execCommand('copy')}catch(err){};document.getElementById('mt').textContent='已复制，粘贴到微信或文档里';}
+    else if(act==='wipe'){if(confirm('清空全部记录？')){D={last:null,drill:null,closed:{},hist:[]};save();S.ans={};S.graded=false;S.started=false;S.drillU=null;render()}}
+    return;
+  }
+  const o=e.target.closest('[data-opt]');
+  if(o){if(S.graded)return;const idx=+o.dataset.opt;S.ans[idx]=+o.dataset.o;render();return}
+  const aq=e.target.closest('[data-aq]');
+  if(aq){if(S.applyGraded)return;S.applyAns=S.applyAns||{};S.applyAns['q'+aq.dataset.aq]=+aq.dataset.o;render();return}
+  const d=e.target.closest('[data-dopti]');
+  if(d){const k=+d.dataset.dopti;if(S.drillLock[k]&&S.drillLock[k].ok)return;if(S.drillLock[k])delete S.drillLock[k];S.drillAns[k]=+d.dataset.o;render();return}
+});
+document.addEventListener('input',function(e){
+  const t=e.target;
+  if(t.dataset&&t.dataset.q!==undefined){S.ans[+t.dataset.q]=t.value}
+  if(t.dataset&&t.dataset.di!==undefined){S.drillAns[t.dataset.di]=t.value}
+  if(t.dataset&&t.dataset.ab!==undefined){S.applyAns=S.applyAns||{};S.applyAns['b'+t.dataset.ab]=t.value}
+});
+window.addEventListener('hashchange',function(){
+  const h=location.hash.replace('#','');
+  if(['assess','gaps','drill','apply','units','report'].includes(h)){S.view=h;render()}
+});
+load();
+document.querySelectorAll('#nav a').forEach(a=>{
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    S.view=a.dataset.nav;
+    if(history.replaceState)history.replaceState(null,'','#'+S.view);
+    render();
+  });
+});
+const h0=location.hash.replace('#','');
+if(['assess','gaps','drill','apply','units','report'].includes(h0))S.view=h0;
+if(D.last){S.started=true;S.graded=false;if(!h0)S.view='report'}
+render();
+</script>
+</body>
+</html>

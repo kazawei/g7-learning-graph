@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>英语提分教练</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231d1a16'/%3E%3Cpath d='M8 9h7v15H8zM17 9h7v15h-7z' fill='%23f6f2ea'/%3E%3Cpath d='M15.4 9h1.2v15h-1.2z' fill='%238f4b2d'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#f6f2ea; --panel:#fffdf8; --ink:#1d1a16; --sub:#6f665c; --faint:#9a9084;
+  --line:#ddd3c4; --line-soft:#eae2d6;
+  --accent:#8f4b2d; --accent-ink:#6d3519;
+  --ok:#2f5d50; --no:#a63a2a; --warn:#8a6a1f;
+  --serif:"Noto Serif SC","Songti SC","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"SFMono-Regular","Consolas","Menlo",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:700;letter-spacing:.01em;margin:0}
+p{margin:0}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+a{color:var(--accent-ink)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 28px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:30px;height:30px;flex:0 0 30px;background:var(--ink);display:grid;place-items:center}
+.mark svg{width:18px;height:18px;display:block}
+h1{font-size:20px;line-height:1.3}
+.tag{font-size:12px;color:var(--faint);letter-spacing:.02em}
+.hdr-stat{font-size:12.5px;color:var(--sub);text-align:right;line-height:1.5}
+.hdr-stat b{font-family:var(--serif);color:var(--ink);font-size:14px}
+.shell{display:grid;grid-template-columns:196px minmax(0,1fr);gap:0;max-width:1120px;margin:0 auto;align-items:start}
+.rail{position:sticky;top:0;padding:20px 14px 40px 20px;border-right:1px solid var(--line-soft);align-self:start}
+.rail nav{display:flex;flex-direction:column;gap:2px}
+.navbtn{display:flex;align-items:center;gap:10px;background:none;border:0;border-left:2px solid transparent;padding:9px 10px;text-align:left;color:var(--sub);font-size:14px;border-radius:0}
+.navbtn:hover{color:var(--ink);background:#efe8dd}
+.navbtn.on{color:var(--ink);font-weight:700;border-left-color:var(--accent);background:#f1eadd}
+.navbtn i{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--faint);width:14px}
+.rail-foot{margin-top:22px;padding-top:14px;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--faint);line-height:1.7}
+main{padding:24px 28px 60px;min-width:0}
+.viewhead{margin-bottom:18px}
+.viewhead h2{font-size:17px;display:flex;align-items:baseline;gap:10px}
+.viewhead h2 span{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.08em}
+.lede{color:var(--sub);font-size:13.5px;margin-top:6px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);padding:20px 22px;margin-bottom:16px}
+.panel h3{font-size:14.5px;margin-bottom:10px}
+.hint{font-size:12.5px;color:var(--sub)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{background:var(--ink);color:#fbf7f0;border:1px solid var(--ink);padding:9px 16px;font-size:14px}
+.btn:hover{background:#332d26}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:#efe8dd;border-color:var(--faint)}
+.btn.acc{background:var(--accent);border-color:var(--accent);color:#fffaf3}
+.btn.acc:hover{background:var(--accent-ink)}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn.sm{padding:6px 12px;font-size:13px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.entrycard{background:var(--panel);border:1px solid var(--line);padding:16px 18px;text-align:left;display:block;width:100%}
+.entrycard:hover{border-color:var(--faint);background:#fffef9}
+.entrycard b{display:block;font-family:var(--serif);font-size:15px;margin-bottom:4px}
+.entrycard em{font-style:normal;font-size:12.5px;color:var(--sub);line-height:1.6;display:block}
+.q{padding:16px 0;border-bottom:1px dashed var(--line-soft)}
+.q:last-child{border-bottom:0}
+.qno{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-bottom:2px}
+.stem{font-size:15px;line-height:1.9}
+.stem u{text-underline-offset:3px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.opt{display:flex;gap:9px;align-items:flex-start;background:#fbf7ef;border:1px solid var(--line-soft);padding:9px 12px;text-align:left;font-size:14px;line-height:1.6;width:100%}
+.opt:hover{border-color:var(--faint)}
+.opt.sel{border-color:var(--accent);background:#fbeee6}
+.opt .k{font-family:var(--mono);font-size:12px;color:var(--faint);flex:0 0 14px}
+.opt.right{border-color:var(--ok);background:#eaf1ee}
+.opt.wrong{border-color:var(--no);background:#f8e9e6}
+.opt .k.right{color:var(--ok)}
+.fill{display:flex;gap:10px;align-items:center;margin-top:10px}
+.fill input{flex:1;min-width:0;border:1px solid var(--line);background:#fbf7ef;padding:9px 12px;font-family:var(--mono);font-size:14px;color:var(--ink)}
+.fill input:focus{outline:2px solid #e8d9c9;border-color:var(--accent)}
+.passage{background:#f3ede1;border-left:3px solid var(--line);padding:14px 16px;font-size:14.5px;line-height:1.95;margin-bottom:6px;white-space:pre-wrap}
+.passage b{font-family:var(--mono);font-size:12px;color:var(--accent-ink)}
+.gradebox{margin-top:10px;font-size:13.5px;line-height:1.8}
+.verdict{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;padding:2px 8px;border:1px solid}
+.verdict.ok{color:var(--ok);border-color:#b9cdc5;background:#eef4f1}
+.verdict.no{color:var(--no);border-color:#e0c3bd;background:#f8ece9}
+.explain.lite{font-size:12.5px;border-left-color:var(--line);margin-top:8px;color:#7d7468}
+.explain{color:var(--sub);font-size:13px;margin-top:6px;padding-left:2px;border-left:2px solid var(--line-soft);padding-left:10px}
+.reason{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--sub);flex-wrap:wrap}
+.reason select{border:1px solid var(--line);background:#fbf7ef;padding:5px 8px;font-family:inherit;font-size:12.5px;color:var(--ink)}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+th,td{border:1px solid var(--line-soft);padding:7px 9px;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+th{background:#efe8dc;font-weight:500;font-size:12.5px}
+td.num{text-align:right;font-family:var(--mono)}
+.st{font-family:var(--mono);font-size:11.5px;padding:1px 6px;border:1px solid var(--line);white-space:nowrap}
+.st.s0{color:var(--faint)}
+.st.s1{color:var(--sub)}
+.st.s2{color:var(--warn);border-color:#ddd0a8;background:#faf5e4}
+.st.s3{color:var(--accent-ink);border-color:#e2cbb9;background:#faeee4}
+.st.s4{color:var(--ok);border-color:#b9cdc5;background:#eef4f1}
+.txt{font-family:var(--mono);font-size:12.5px;line-height:1.85;background:#f3ede1;border:1px solid var(--line);padding:14px 16px;white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px}
+.empty{padding:34px 0;text-align:center;color:var(--faint);font-size:13.5px}
+.tablewrap{overflow-x:auto;margin-bottom:16px}
+.big{font-size:19px;letter-spacing:.2px;margin:6px 0 8px}
+.big b{font-family:var(--mono);font-size:22px;color:var(--accent-ink)}
+.foot{margin-top:12px;font-size:12px;color:var(--faint);line-height:1.8}
+.gapcards{display:none;margin:0;padding:0}
+.gapcards li{list-style:none;padding:10px 0;border-bottom:1px dashed var(--line-soft);font-size:13px;line-height:1.8}
+.gapcards b{font-weight:500}
+.gapcards .meta{display:block;color:var(--sub);margin:2px 0 0}
+.gapcards .line{display:flex;align-items:center;gap:10px;margin:5px 0 0}
+.gapcards i{font-style:normal;color:var(--accent);font-size:12.5px}
+.pairs{display:grid;grid-template-columns:132px minmax(0,1fr);gap:0 18px;margin:12px 0 14px}
+.pairs dt{font-family:var(--mono);font-size:13px;color:var(--accent);padding:9px 0;border-bottom:1px dashed var(--line-soft);align-self:start}
+.pairs dd{margin:0;padding:9px 0;border-bottom:1px dashed var(--line-soft);font-size:13.5px;line-height:1.75}
+.pairs dd b{font-weight:500}
+.pairs .eg{display:block;font-family:var(--mono);font-size:12.5px;color:var(--sub);margin-top:2px}
+.teach{border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:2px 0;margin-bottom:6px}
+.tr{display:grid;grid-template-columns:74px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px dashed var(--line-soft);font-size:13.5px;line-height:1.7}
+.tr:last-child{border-bottom:0}
+.tr span{color:var(--faint);font-family:var(--mono);font-size:11.5px;padding-top:3px}
+.tr b{font-weight:500}
+.tr code{font-family:var(--mono);font-size:12.5px;background:#f3ede1;padding:1px 5px;display:inline-block;justify-self:start;width:max-content;max-width:100%}
+.tr code.bad{background:#f8ece9;color:var(--no)}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--line);margin:12px 0 6px}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);border:0;cursor:pointer}
+.range::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);border:0;cursor:pointer}
+.range::-moz-range-track{height:2px;background:var(--line)}
+.chk{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;padding:6px 0;line-height:1.6}
+.chk input{margin-top:4px;accent-color:var(--accent);flex:0 0 auto}
+.seg{display:flex;gap:0;border:1px solid var(--line);width:fit-content;margin-bottom:6px}
+.seg button{background:transparent;border:0;border-right:1px solid var(--line-soft);padding:7px 14px;font-size:13px;color:var(--sub)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ink);color:#fbf7f0}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#fbf7f0;padding:10px 18px;font-size:13px;z-index:20;opacity:0;pointer-events:none;transition:opacity .18s}
+.toast.on{opacity:1}
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;border-right:0;border-bottom:1px solid var(--line-soft);padding:12px 16px;min-width:0}
+  .rail nav{flex-direction:row;overflow-x:auto;gap:4px;min-width:0;-webkit-overflow-scrolling:touch}
+  .navbtn{border-left:0;border-bottom:2px solid transparent;white-space:nowrap;flex:0 0 auto}
+  .navbtn.on{border-left:0;border-bottom-color:var(--accent)}
+  .rail-foot{display:none}
+  main{padding:20px 16px 48px;min-width:0}
+  .top{padding:14px 16px}
+  .opts,.grid2,.grid3{grid-template-columns:1fr}
+  h1{font-size:17px}
+  .viewhead h2{flex-wrap:wrap;gap:6px}
+}
+@media (max-width:560px){
+  .swipe{display:inline}
+  .pairs{grid-template-columns:1fr;gap:0}
+  .pairs dt{border-bottom:0;padding-bottom:0}
+  .pairs dd{padding-top:2px}
+
+  table.gaptable{display:none}
+  .gapcards{display:block}
+  .top{flex-wrap:wrap;gap:8px}
+  .hdr-stat{text-align:left;font-size:11.5px;line-height:1.6}
+  .tag{display:none}
+  .panel{padding:16px}
+  .stem{font-size:14.5px;line-height:1.85}
+  .tablewrap table{min-width:720px}
+  .tablewrap{padding-bottom:2px}
+}
+@media print{.rail,.top,.actions{display:none}.panel{border:0}}
+
+.swipe{display:none}
+
+td.ph{font-family:"Charis SIL","Doulos SIL","DejaVu Sans","Lucida Sans Unicode",Georgia,serif;font-size:19px;line-height:1.5;letter-spacing:.6px;white-space:nowrap}
+td.ph .ph{}
+td.note{color:var(--ink-2);font-size:12.5px}
+td.ph2{font-family:"Charis SIL","DejaVu Sans",Georgia,serif;font-size:16px;letter-spacing:.4px;white-space:nowrap}
+table.tbl td.ph{white-space:nowrap}
+.ipa{font-family:"Charis SIL","Doulos SIL","DejaVu Sans","Lucida Sans Unicode",Georgia,serif;font-size:15px;color:var(--ink-2)}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h7v14H4zM13 5h7v14h-7z" fill="#f6f2ea"/><path d="M11.4 5h1.2v14h-1.2z" fill="#8f4b2d"/></svg></div>
+    <div>
+      <h1>英语提分教练</h1>
+      <p class="tag">广州初一 · 沪教版牛津 2024 · 120 分卷 95→110</p>
+    </div>
+  </div>
+  <div class="hdr-stat" id="hdrStat"></div>
+</header>
+
+<div class="shell">
+  <aside class="rail">
+    <nav id="nav" aria-label="导航"></nav>
+    <div class="rail-foot" id="railFoot"></div>
+  </aside>
+  <main id="view" aria-live="polite"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 知识点：名称与一句话规则 ===== */
+const KPS = [
+  ['G1','Wh- 特殊疑问句'],['G2','冠词 a/an/the'],['G3','一般现在时（含三单）'],['G4','do / does 的否定与疑问'],
+  ['G5','形容词作定语与表语'],['G6','there be 与 some/any'],['G7','一般将来时 will'],['G8','人称代词主格宾格'],
+  ['G9','物主代词'],['G10','名词复数'],['G11','可数与不可数'],['G12','介词 in/on/at'],
+  ['G13','频度副词位置'],['G14','情态动词'],['G15','疑问句与答语一致'],['G16','连词'],
+  ['P1','长短元音'],['P2','/æ/ /e/ /eɪ/'],['P5','-s 尾音'],['P6','th 的两种读法'],['P8','不发音字母'],
+  ['T3','完形填空'],['T5','单词拼写与词形'],['T6','句型转换'],
+  ['V','词汇']
+];
+const KPNAME = Object.fromEntries(KPS);
+const RULE = {
+  G1:'问什么答什么：how 问方式，why 问原因，who 问人，how often 问频率',
+  G2:'a/an 看第一个音素，不看字母；the 指特指或独一无二',
+  G3:'主语是第三人称单数才加 -s/-es，其余用原形；Look! 之后用现在进行时',
+  G4:'do/does 已经把三单信息吃掉，后面动词必须还原成原形',
+  G5:'系动词（be、sound、taste、look、smell）后面接形容词，不接副词',
+  G6:'there be 就近原则：be 跟最近的那个名词走；some 用于肯定，any 用于否定和疑问',
+  G7:'will + 原形；有迹象的将来用 be going to',
+  G8:'动词和介词后面用宾格（me/him/them）',
+  G9:'后面有名词用形容词性（my），没有名词用名词性（mine）',
+  G10:'-s/-es/-ies 与不规则（child→children、tooth→teeth、man→men）',
+  G11:'不可数用 much / a little，可数用 many / a few',
+  G12:'具体某天或某天的上下午用 on；月份年份季节用 in；钟点用 at',
+  G13:'频度副词放在 be 动词之后、实义动词之前',
+  G14:'情态动词后一律接原形；must 的否定回答用 needn\'t',
+  G15:'答语助动词跟问句一致：Are you…? → Yes, I am. / Do you…? → Yes, I do.',
+  G16:'前后相反用 but，因果关系用 because / so，二选一用 or',
+  P1:'长音 /iː/ 与短音 /ɪ/ 是两个音，不是"读长一点"',
+  P2:'a 在开音节读 /eɪ/，闭音节读 /æ/',
+  P5:'清音后 /s/，浊音与元音后 /z/，咝音（s/x/ch/sh）后 /ɪz/',
+  P6:'th 在虚词（the/this/that/they）里读 /ð/，在实词里多读 /θ/',
+  P8:'kn-、wr-、mb、gh 里有不发音的字母',
+  T3:'先通读抓主线，再按词义、搭配、逻辑、复现四类判',
+  T5:'先按音标写，再单独查词尾（-s、-ed、-ing、双写）',
+  T6:'转换完先问一句"意思变了没有"，再看语序与缩写'
+};
+
+/* ===== 题目：t=c 选择，t=f 填空 ===== */
+const BANK = [
+  /* --- 诊断 A 段：16 编号各 1 题 + 8 个高频编号各 2 题，共 24 --- */
+  {id:'A1',kp:'G1',t:'c',q:'— ______ do you usually go to school?　— By bus.',o:['What','How','Where','Who'],a:1},
+  {id:'A2',kp:'G2',t:'c',q:'There is ______ “u” in the word “sun”.',o:['a','an','the','不填'],a:0,x:'“u” 读 /juː/，/j/ 是辅音，所以用 a'},
+  {id:'A3',kp:'G3',t:'c',q:'My father ______ TV every evening.',o:['watch','watches','watching','watched'],a:1},
+  {id:'A4',kp:'G4',t:'c',q:'Emma ______ have any brothers or sisters.',o:["doesn't","don't","isn't",'not'],a:0},
+  {id:'A5',kp:'G5',t:'c',q:'The music sounds ______.',o:['beautiful','beautifully','beauty','beauties'],a:0},
+  {id:'A6',kp:'G6',t:'c',q:'There ______ a pen and two books on the desk.',o:['is','are','have','has'],a:0,x:'就近原则，跟 a pen 走'},
+  {id:'A7',kp:'G7',t:'c',q:'I ______ visit the science museum with my classmates tomorrow.',o:['will','am','was','do'],a:0},
+  {id:'A8',kp:'G8',t:'c',q:'Please give ______ the book. ______ is on the desk.',o:['me; It','I; It','me; They','my; It'],a:0},
+  {id:'A9',kp:'G9',t:'c',q:'This is ______ pen. ______ is over there.',o:['my; Mine','mine; My','my; My','me; Mine'],a:0},
+  {id:'A10',kp:'G10',t:'c',q:'There are three ______ in the box.',o:['knifes','knives','knifs','knive'],a:1},
+  {id:'A11',kp:'G11',t:'c',q:"There isn't ______ milk in the fridge. Let's buy some.",o:['many','much','a few','a lot'],a:1},
+  {id:'A12',kp:'G12',t:'c',q:'We have an English class ______ Monday morning.',o:['in','on','at','for'],a:1},
+  {id:'A13',kp:'G13',t:'c',q:'My sister ______ late for school.',o:['is often','often is','often be','be often'],a:0},
+  {id:'A14',kp:'G14',t:'c',q:'You ______ finish your homework before dinner.',o:['must','must to','can to','musts'],a:0},
+  {id:'A15',kp:'G16',t:'c',q:"I like apples, ______ I don't like pears.",o:['and','but','because','so'],a:1},
+
+  /* --- 诊断 B1：辨音 15 题（5 个编号各 3 题）--- */
+  {id:'P1',kp:'P1',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['sh<u>i</u>p','sh<u>ee</u>p','s<u>i</u>t','b<u>i</u>g'],a:1,x:'sheep 是 /iː/，其余 /ɪ/'},
+  {id:'P2',kp:'P2',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['n<u>a</u>me','c<u>a</u>ke','m<u>a</u>p','g<u>a</u>me'],a:2,x:'map 闭音节 /æ/，其余开音节 /eɪ/'},
+  {id:'P3',kp:'P5',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['book<u>s</u>','cat<u>s</u>','pen<u>s</u>','map<u>s</u>'],a:2,x:'pens 在浊音 n 后读 /z/，其余 /s/'},
+  {id:'P4',kp:'P6',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['<u>th</u>ree','<u>th</u>ank','<u>th</u>ink','<u>th</u>is'],a:3,x:'this 是虚词，读 /ð/，其余 /θ/'},
+  {id:'P5',kp:'P8',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['<u>k</u>now','<u>k</u>nife','<u>k</u>ing','<u>k</u>nock'],a:2,x:'king 的 k 发音，kn- 里的 k 不发音'},
+  {id:'P6',kp:'P1',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['f<u>oo</u>d','sch<u>oo</u>l','g<u>oo</u>d','m<u>oo</u>n'],a:2,x:'good 是短音 /ʊ/，其余长音 /uː/'},
+  {id:'P7',kp:'P1',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['b<u>i</u>t','s<u>i</u>t','k<u>i</u>te','h<u>i</u>t'],a:2,x:'kite 是开音节 /aɪ/，其余 /ɪ/'},
+  {id:'P8',kp:'P2',t:'c',q:'选出划线部分读 /æ/ 的一项',o:['h<u>a</u>t','h<u>a</u>te','m<u>a</u>ke','pl<u>a</u>ne'],a:0,x:'hat 闭音节 /æ/，其余开音节 /eɪ/'},
+  {id:'P9',kp:'P2',t:'c',q:'选出划线部分读音与其他三个不同的一项',o:['b<u>e</u>d','p<u>e</u>n','r<u>e</u>d','th<u>e</u>se'],a:3,x:'these 读 /iː/，其余 /e/'},
+  {id:'P10',kp:'P5',t:'c',q:'选出划线部分读 /ɪz/ 的一项',o:['box<u>es</u>','cat<u>s</u>','dog<u>s</u>','cup<u>s</u>'],a:0,x:'x 结尾是咝音，加 -es 读 /ɪz/'},
+  {id:'P11',kp:'P5',t:'c',q:'选出划线部分读 /z/ 的一项',o:['book<u>s</u>','pen<u>s</u>','map<u>s</u>','hat<u>s</u>'],a:1,x:'n 是浊音，后面 -s 读 /z/；其余在清音后读 /s/'},
+  {id:'P12',kp:'P6',t:'c',q:'选出划线部分读 /ð/ 的一项',o:['<u>th</u>ink','<u>th</u>ree','<u>th</u>e','<u>th</u>ank'],a:2,x:'the 是虚词读 /ð/，其余实词读 /θ/'},
+  {id:'P13',kp:'P6',t:'c',q:'选出划线部分读音与 /θ/ 相同的一项',o:['<u>th</u>is','<u>th</u>at','<u>th</u>ose','<u>th</u>irteen'],a:3,x:'thirteen 是实词读 /θ/，其余 /ð/'},
+  {id:'P14',kp:'P8',t:'c',q:'选出划线字母不发音的一项',o:['<u>w</u>rite','<u>w</u>ater','<u>w</u>indow','<u>w</u>ay'],a:0,x:'wr- 里的 w 不发音，write 读 /raɪt/'},
+  {id:'P15',kp:'P8',t:'c',q:'选出划线字母不发音的一项',o:['lis<u>t</u>en','s<u>t</u>op','s<u>t</u>and','s<u>t</u>udent'],a:0,x:'listen 的 t 不发音；stop、stand、student 的 t 都读 /t/'},
+
+  /* --- 诊断 B2：语法选择 10 题 --- */
+  {id:'S1',kp:'G1',t:'c',q:'— ______ is your new English teacher?　— The woman in red.',o:['What','Who','Where','How'],a:1},
+  {id:'S2',kp:'G2',t:'c',q:'There is ______ old photo on the wall.',o:['a','an','the','不填'],a:1,x:'old 以元音 /ɒ/ 开头'},
+  {id:'S3',kp:'G3',t:'c',q:'Lily and Tom ______ in the same class.',o:['is','are','am','be'],a:1},
+  {id:'S4',kp:'G15',t:'c',q:'— ______ your brother like football?　— Yes, he does.',o:['Do','Does','Is','Are'],a:1},
+  {id:'S5',kp:'G5',t:'c',q:'The soup tastes ______. I want some more.',o:['well','good','badly','nicely'],a:1},
+  {id:'S6',kp:'G6',t:'c',q:'There ______ some water in the bottle.',o:['is','are','have','has'],a:0},
+  {id:'S7',kp:'G7',t:'c',q:'We ______ have a picnic if it is sunny tomorrow.',o:['will','are','did','do'],a:0},
+  {id:'S8',kp:'G3',t:'c',q:'Look! The children ______ football on the playground.',o:['play','plays','are playing','played'],a:2},
+  {id:'S9',kp:'G12',t:'c',q:'He goes to the library ______ Sundays.',o:['in','on','at','of'],a:1},
+  {id:'S10',kp:'G14',t:'c',q:'— Must I hand in the homework now?　— No, you ______.',o:["mustn't","needn't","can't","shouldn't"],a:1,x:'must 开头的问句，否定回答用 needn\'t'},
+
+  /* --- 诊断 B3：完形 10 空 --- */
+  {id:'C1',kp:'G3',t:'c',q:'He ______ up at six thirty every morning.',o:['get','gets','getting','got'],a:1},
+  {id:'C2',kp:'G3',t:'c',q:'After breakfast, he ______ to school by bike.',o:['go','goes','going','went'],a:1},
+  {id:'C3',kp:'G16',t:'c',q:'He likes his school ______ the teachers are friendly.',o:['so','because','but','or'],a:1,x:'后句是原因'},
+  {id:'C4',kp:'T3',t:'c',q:"Tom's favourite ______ is English.",o:['food','sport','subject','colour'],a:2,x:'后文出现 maths，同类词是学科'},
+  {id:'C5',kp:'G16',t:'c',q:"He thinks it is interesting, ______ he doesn't like maths.",o:['and','but','so','because'],a:1,x:'前后相反'},
+  {id:'C6',kp:'T3',t:'c',q:'“Maths is too ______ for me,” he says.',o:['easy','difficult','funny','short'],a:1},
+  {id:'C7',kp:'G3',t:'c',q:'After school, Tom usually ______ football with his friends.',o:['play','plays','playing','played'],a:1},
+  {id:'C8',kp:'T5',t:'c',q:'He also likes ______ books at home.',o:['read','reads','reading','readed'],a:2,x:'like 后接 v-ing'},
+  {id:'C9',kp:'G3',t:'c',q:'On Sundays, he ______ his grandparents.',o:['visit','visits','visiting','visited'],a:1},
+  {id:'C10',kp:'T3',t:'c',q:'He says he is ______ every day.',o:['busy','free','happy','angry'],a:2},
+
+  /* --- 诊断 B4：拼写与词形 10 题 --- */
+  {id:'W1',kp:'T5',t:'f',q:'/ˈweðə/　天气',ph:'写出单词',a:['weather']},
+  {id:'W2',kp:'T5',t:'f',q:'/ˈɔːtəm/　秋天',ph:'写出单词',a:['autumn']},
+  {id:'W3',kp:'T5',t:'f',q:'/ˈlaɪbrəri/　图书馆',ph:'写出单词',a:['library']},
+  {id:'W4',kp:'T5',t:'f',q:'/dʒuːn/　六月',ph:'写出单词',a:['june']},
+  {id:'W5',kp:'T5',t:'f',q:'/ˈpræktɪs/　练习',ph:'写出单词',a:['practice']},
+  {id:'F1',kp:'G3',t:'f',q:'He ______ (study) hard every day.',ph:'写正确形式',a:['studies']},
+  {id:'F2',kp:'G3',t:'f',q:'She likes ______ (swim) in summer.',ph:'写正确形式',a:['swimming']},
+  {id:'F3',kp:'G10',t:'f',q:'There are two ______ (box) on the desk.',ph:'写正确形式',a:['boxes']},
+  {id:'F4',kp:'G4',t:'f',q:'My mother ______ (not have) a car.',ph:'写正确形式',a:["doesn't have",'does not have']},
+  {id:'F5',kp:'G3',t:'f',q:'Look! The cat ______ (run) after a mouse.',ph:'写正确形式',a:['is running']},
+
+  /* --- 诊断 B5：句型转换 5 题 --- */
+  {id:'T1',kp:'T6',t:'f',q:'He goes to school by bike.（改为否定句）',ph:'写出整句',a:["he doesn't go to school by bike",'he does not go to school by bike']},
+  {id:'T2',kp:'T6',t:'f',q:'My father watches TV every evening.（改为一般疑问句）',ph:'写出整句',a:['does your father watch tv every evening']},
+  {id:'T3',kp:'T6',t:'f',q:'She likes English because it is interesting.（对划线部分提问）',ph:'写出整句',a:['why does she like english']},
+  {id:'T4',kp:'T6',t:'f',q:'My sister is good at singing.（同义改写，句意不变）',ph:'写出整句',a:['my sister sings well']},
+  {id:'T5',kp:'T6',t:'f',q:'There is a book on the desk.（改为复数句）',ph:'写出整句',a:['there are some books on the desk']},
+
+  /* --- 训练题库：每编号 3 题 --- */
+  {id:'d1',kp:'G1',t:'c',q:'— ______ are you late?　— Because the bus was late.',o:['What','Why','When','How'],a:1},
+  {id:'d2',kp:'G1',t:'c',q:'— ______ is the boy in blue?　— He is my cousin.',o:['Who','What','Whose','Where'],a:0},
+  {id:'d3',kp:'G1',t:'c',q:'— ______ do you go to the library?　— Twice a week.',o:['How often','How long','How many','How much'],a:0},
+
+  {id:'d4',kp:'G2',t:'c',q:'This is ______ useful book.',o:['a','an','the','不填'],a:0,x:'useful 读 /ˈjuːsfəl/，/j/ 是辅音'},
+  {id:'d5',kp:'G2',t:'c',q:'I have ______ honest friend.',o:['a','an','the','不填'],a:1,x:'honest 的 h 不发音，以元音开头'},
+  {id:'d6',kp:'G2',t:'c',q:'Look at ______ sun. It is bright today.',o:['a','an','the','不填'],a:2,x:'独一无二的事物用 the'},
+
+  {id:'d7',kp:'G3',t:'c',q:'My brother ______ his homework after dinner.',o:['do','does','doing','did'],a:1},
+  {id:'d8',kp:'G3',t:'c',q:'The students ______ English every morning.',o:['read','reads','reading','is reading'],a:0},
+  {id:'d9',kp:'G3',t:'f',q:'Lucy ______ (have) a nice bike.',ph:'写正确形式',a:['has']},
+
+  {id:'d10',kp:'G4',t:'c',q:'______ your parents work in Guangzhou?',o:['Do','Does','Are','Is'],a:0},
+  {id:'d11',kp:'G4',t:'c',q:'He ______ watch TV on school nights.',o:["don't","doesn't","isn't",'not'],a:1},
+  {id:'d12',kp:'G4',t:'c',q:'— Does Lily like music?　— ______',o:['Yes, she does.','Yes, she is.',"No, she doesn't like.",'Yes, she like.'],a:0},
+
+  {id:'d13',kp:'G5',t:'c',q:'The flowers smell ______.',o:['sweet','sweetly','sweetness','sweets'],a:0},
+  {id:'d14',kp:'G5',t:'c',q:'She is a ______ girl.',o:['happy','happily','happiness','happyly'],a:0},
+  {id:'d15',kp:'G5',t:'c',q:'He looks ______ today.',o:['tired','tiredly','tire','tiring'],a:0},
+
+  {id:'d16',kp:'G6',t:'c',q:'There ______ some books and a pen on the desk.',o:['is','are','has','have'],a:1},
+  {id:'d17',kp:'G6',t:'c',q:'______ there any milk in the glass?',o:['Is','Are','Has','Have'],a:0},
+  {id:'d18',kp:'G6',t:'c',q:"There aren't ______ apples in the basket.",o:['some','any','much','a'],a:1},
+
+  {id:'d19',kp:'G7',t:'c',q:'They ______ visit the zoo this Saturday.',o:['will','are','were','do'],a:0},
+  {id:'d20',kp:'G7',t:'c',q:'Look at the clouds! It ______ rain.',o:['is going to','will be','is','does'],a:0,x:'有迹象的判断用 be going to'},
+  {id:'d21',kp:'G7',t:'c',q:'I ______ be a teacher when I grow up.',o:['will','am','do','was'],a:0},
+
+  {id:'d22',kp:'G8',t:'c',q:'______ is my friend. ______ are in Class Two.',o:['He; We','Him; Us','His; Our','He; Us'],a:0},
+  {id:'d23',kp:'G8',t:'c',q:'Please help ______.',o:['I','me','my','mine'],a:1},
+  {id:'d24',kp:'G8',t:'c',q:'These books are for ______.',o:['they','them','their','theirs'],a:1},
+
+  {id:'d25',kp:'G9',t:'c',q:'This is ______ bag. That is ______.',o:['her; his','hers; him','her; him','she; he'],a:0},
+  {id:'d26',kp:'G9',t:'c',q:'______ name is Tom.',o:['His','He','Him',"He's"],a:0},
+  {id:'d27',kp:'G9',t:'c',q:'The pen is ______.',o:['my','mine','me','I'],a:1},
+
+  {id:'d28',kp:'G10',t:'c',q:'There are many ______ in the zoo.',o:['monkey','monkeys','monkeyes','monkies'],a:1},
+  {id:'d29',kp:'G10',t:'c',q:'I have two ______.',o:['tooth','tooths','teeth','teeths'],a:2},
+  {id:'d30',kp:'G10',t:'c',q:'There are some ______ on the table.',o:['tomato','tomatos','tomatoes','tomatoies'],a:2},
+
+  {id:'d31',kp:'G11',t:'c',q:'There is ______ bread on the plate.',o:['many','a few','some','few'],a:2},
+  {id:'d32',kp:'G11',t:'c',q:'How ______ water do you need?',o:['many','much','long','often'],a:1},
+  {id:'d33',kp:'G11',t:'c',q:'I have ______ apples but ______ milk.',o:['many; little','much; few','many; few','much; little'],a:0},
+
+  {id:'d34',kp:'G12',t:'c',q:'My birthday is ______ May.',o:['in','on','at','of'],a:0},
+  {id:'d35',kp:'G12',t:'c',q:"The film begins ______ seven o'clock.",o:['in','on','at','for'],a:2},
+  {id:'d36',kp:'G12',t:'c',q:"We have a party ______ Children's Day.",o:['in','on','at','for'],a:1},
+
+  {id:'d37',kp:'G13',t:'c',q:'He ______ goes to school by bus.',o:['always','is always','always is','be always'],a:0},
+  {id:'d38',kp:'G13',t:'c',q:'She is ______ late for class.',o:['never','not never','never not','no never'],a:0},
+  {id:'d39',kp:'G13',t:'c',q:'They ______ play football after school.',o:['often','are often','often are','be often'],a:0},
+
+  {id:'d40',kp:'G14',t:'c',q:'You ______ be quiet in the library.',o:['must','must to','musts','to must'],a:0},
+  {id:'d41',kp:'G14',t:'c',q:'______ I use your pen?',o:['May','Do','Am','Is'],a:0},
+  {id:'d42',kp:'G14',t:'c',q:"We ______ swim in the river. It's dangerous.",o:["mustn't","needn't","can","may"],a:0},
+
+  {id:'d43',kp:'G15',t:'c',q:'— Are you a student?　— ______',o:['Yes, I am.','Yes, I do.','Yes, I is.','Yes, I are.'],a:0},
+  {id:'d44',kp:'G15',t:'c',q:'— Do you like apples?　— ______',o:['Yes, I am.','Yes, I do.','Yes, I like.','Yes, I does.'],a:1},
+  {id:'d45',kp:'G15',t:'c',q:'— Is she your sister?　— ______',o:["No, she isn't.","No, she doesn't.",'No, she not.',"No, she don't."],a:0},
+
+  {id:'d46',kp:'G16',t:'c',q:'He is young, ______ he knows a lot.',o:['and','but','so','or'],a:1},
+  {id:'d47',kp:'G16',t:'c',q:'______ it was raining, we stayed at home.',o:['Because','So','But','Or'],a:0},
+  {id:'d48',kp:'G16',t:'c',q:'Study hard, ______ you will fail.',o:['and','or','but','so'],a:1},
+  /* --- 补题：每编号凑满 8 题 --- */
+  {id:'d49',kp:'G1',t:'c',q:'— ______ are you going to do this weekend?　— Visit my grandma.',o:['What','How','Why','Which'],a:0},
+  {id:'d50',kp:'G1',t:'c',q:'— ______ does it take to get there?　— About ten minutes.',o:['How long','How often','How far','How many'],a:0},
+  {id:'d51',kp:'G1',t:'c',q:"— ______ bag is this?　— It's Lily's.",o:['Who','Whose','Which','What'],a:1},
+
+  {id:'d52',kp:'G2',t:'c',q:'He is ______ honest boy and ______ useful student.',o:['a; an','an; a','a; a','an; an'],a:1},
+  {id:'d53',kp:'G2',t:'c',q:'I usually play ______ piano after school.',o:['a','an','the','不填'],a:2,x:'乐器前用 the'},
+  {id:'d54',kp:'G2',t:'c',q:'We go to school by ______ bus.',o:['a','an','the','不填'],a:3,x:'by bus 是固定搭配，零冠词'},
+
+  {id:'d55',kp:'G4',t:'c',q:'______ he ______ his homework in the evening?',o:['Does; do','Do; does','Is; do','Does; does'],a:0},
+  {id:'d56',kp:'G4',t:'c',q:"They ______ like playing computer games.",o:["doesn't","don't","isn't","aren't"],a:1},
+  {id:'d57',kp:'G4',t:'c',q:'— Does your sister have a bike?　— No, ______.',o:["she doesn't","she isn't","she don't","she hasn't"],a:0},
+
+  {id:'d58',kp:'G5',t:'c',q:'The cake tastes ______. Can I have another one?',o:['good','well','bad','badly'],a:0},
+  {id:'d59',kp:'G5',t:'c',q:'She looks ______ in the red dress.',o:['beautiful','beautifully','beauty','beautify'],a:0},
+  {id:'d60',kp:'G5',t:'c',q:'The story sounds ______. I want to read it again.',o:['interesting','interested','interest','interestingly'],a:0},
+
+  {id:'d61',kp:'G6',t:'c',q:'There ______ a lot of water in the river.',o:['is','are','have','has'],a:0},
+  {id:'d62',kp:'G6',t:'c',q:'______ there any students in the classroom now?',o:['Are','Is','Have','Do'],a:0},
+  {id:'d63',kp:'G6',t:'c',q:'There ______ some apples and an orange in the bag.',o:['are','is','has','have'],a:0},
+
+  {id:'d64',kp:'G7',t:'c',q:'She ______ come back next Friday.',o:['will','is','does','did'],a:0},
+  {id:'d65',kp:'G7',t:'c',q:'It ______ be sunny tomorrow.',o:['will','is','does','was'],a:0},
+  {id:'d66',kp:'G7',t:'c',q:'We ______ going to have a party this weekend.',o:['are','will','do','is'],a:0},
+
+  {id:'d67',kp:'G8',t:'c',q:'______ are good friends.',o:['He and I','He and me','Him and I','I and he'],a:0},
+  {id:'d68',kp:'G8',t:'c',q:'Please wait for ______ at the school gate.',o:['us','we','our','ours'],a:0},
+  {id:'d69',kp:'G8',t:'c',q:'Can you help ______ with ______ English?',o:['me; my','I; me','me; I','my; me'],a:0},
+  {id:'d70',kp:'G8',t:'c',q:'This present is for ______. It is from ______.',o:['her; him','she; he','hers; his','her; he'],a:0},
+
+  {id:'d71',kp:'G9',t:'c',q:'Is this ______ book or ______?',o:['your; his','yours; him','your; he','yours; his'],a:0},
+  {id:'d72',kp:'G9',t:'c',q:'The blue bag is ______. ______ is the red one.',o:['mine; Yours','my; Your','mine; Your','me; Yours'],a:0},
+  {id:'d73',kp:'G9',t:'c',q:'______ brother is a doctor.',o:['My','Mine','Me','I'],a:0},
+  {id:'d74',kp:'G9',t:'c',q:'That is not ______ dog. ______ is black.',o:['our; Ours','ours; Our','our; Our','us; Ours'],a:0},
+
+  {id:'d75',kp:'G10',t:'c',q:'There are three ______ in the basket.',o:['potatos','potatoes','potato','potatoe'],a:1},
+  {id:'d76',kp:'G10',t:'c',q:'Look at those ______. They are cute.',o:['baby','babys','babies','babyes'],a:2},
+  {id:'d77',kp:'G10',t:'c',q:'The ______ are playing in the garden.',o:['child','childs','children','childes'],a:2},
+
+  {id:'d78',kp:'G11',t:'c',q:"There isn't ______ rice in the bowl.",o:['many','much','a few','few'],a:1},
+  {id:'d79',kp:'G11',t:'c',q:'I need ______ information about the trip.',o:['some','many','a few','few'],a:0},
+  {id:'d80',kp:'G11',t:'c',q:'How ______ apples are there on the table?',o:['many','much','long','far'],a:0},
+  {id:'d81',kp:'G11',t:'c',q:'There are only ______ people in the park.',o:['a little','little','a few','much'],a:2},
+
+  {id:'d82',kp:'G12',t:'c',q:'The meeting begins ______ 9:00 ______ the morning.',o:['at; in','in; at','on; in','at; on'],a:0},
+  {id:'d83',kp:'G12',t:'c',q:'We will have a test ______ Friday afternoon.',o:['on','in','at','for'],a:0},
+  {id:'d84',kp:'G12',t:'c',q:'My family often go swimming ______ summer.',o:['in','on','at','to'],a:0},
+
+  {id:'d85',kp:'G13',t:'c',q:'He ______ late for class.',o:['is never','never is','never be','not never'],a:0},
+  {id:'d86',kp:'G13',t:'c',q:'We ______ go to the park on Sundays.',o:['usually','are usually','usually are','be usually'],a:0},
+  {id:'d87',kp:'G13',t:'c',q:'She ______ eats breakfast at school.',o:['always','is always','always is','always be'],a:0},
+  {id:'d88',kp:'G13',t:'c',q:'I am ______ busy on Monday.',o:['always','always am','be always','never be'],a:0},
+
+  {id:'d89',kp:'G14',t:'c',q:'— Must I finish it today?　— No, you ______.',o:["needn't","mustn't","can't","shouldn't"],a:0},
+  {id:'d90',kp:'G14',t:'c',q:'Children ______ play near the road. It is dangerous.',o:["mustn't","needn't","may","can"],a:0},
+  {id:'d91',kp:'G14',t:'c',q:'You ______ be tired. You have worked all day.',o:['must','can','need','may'],a:0,x:'推测用 must'},
+
+  {id:'d92',kp:'G15',t:'c',q:'— Is your father a teacher?　— ______',o:['Yes, he is.','Yes, he does.','Yes, he do.','Yes, he are.'],a:0},
+  {id:'d93',kp:'G15',t:'c',q:'— Do they live here?　— ______',o:['Yes, they do.','Yes, they are.','Yes, they live.','Yes, they does.'],a:0},
+  {id:'d94',kp:'G15',t:'c',q:'— Are these your books?　— No, ______.',o:["they aren't","they don't","these aren't","it isn't"],a:0},
+  {id:'d95',kp:'G15',t:'c',q:'— Does it rain a lot here?　— ______',o:['Yes, it does.','Yes, it is.','Yes, it do.','Yes, it rains.'],a:0},
+
+  {id:'d96',kp:'G16',t:'c',q:'I was tired, ______ I went to bed early.',o:['so','but','because','or'],a:0},
+  {id:'d97',kp:'G16',t:'c',q:'Would you like tea ______ coffee?',o:['or','and','but','so'],a:0},
+];
+
+/* ===== 试卷：诊断分段 ===== */
+const PASSAGE = "Tom is a student in Grade 7. He (1) up at six thirty every morning. After breakfast, he (2) to school by bike. He likes his school (3) the teachers are friendly.\n\nTom's favourite (4) is English. He thinks it is interesting, (5) he doesn't like maths. \u201cMaths is too (6) for me,\u201d he says.\n\nAfter school, Tom usually (7) football with his friends. He also likes (8) books at home. On Sundays, he (9) his grandparents. He says he is (10) happy every day.";
+const PAPERS = {
+  A:  {title:'A 段 · 语法定位 24 题', note:'16 个语法编号各 1 题，8 个高频编号多 1 题。限时 9 分钟，猜也要选，猜对猜错都记。', ids:['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13','A14','A15']},
+  B1: {title:'B1 · 语音辨识 15 题', note:'先在心里标音标，再选。不要靠“读起来像不像”。', ids:['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','P14','P15']},
+  B2: {title:'B2 · 语法选择 10 题', note:'限时 8 分钟。每道题先在题号旁写考点编号，写不出来就是没定考点。', ids:['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10']},
+  B3: {title:'B3 · 完形填空 10 空', note:'先不填，通读一遍说出“这篇讲什么”，再动笔。', ids:['C1','C2','C3','C4','C5','C6','C7','C8','C9','C10']},
+  B4: {title:'B4 · 拼写与词形 10 题', note:'前 5 题写单词，后 5 题写括号里的正确形式。', ids:['W1','W2','W3','W4','W5','F1','F2','F3','F4','F5']},
+  B5: {title:'B5 · 句型转换 5 题', note:'写完先问自己一句“意思变了没有”。', ids:['T1','T2','T3','T4','T5']},
+  V:  {title:'V · 词汇 20 题', note:'10 道语境选词 + 10 道词形转换。选词考“用不用得上”，词形考“变不变对”。', ids:['V01','V02','V03','V04','V05','V06','V07','V08','V09','V10','V11','V12','V13','V14','V15','V16','V17','V18','V19','V20']}
+};
+/* ===== 重讲卡：每个编号一段，错因对不上时先讲这里 ===== */
+const TEACH = {
+  G1:{bug:'疑问词和答语对不上',right:'— How do you go to school? — By bus.',wrong:'— How do you go to school? — At seven.',why:'How 只问方式；答时间要用 When',cmp:'How often 频率、How long 时长、How far 距离、Whose 谁的',step:'先看答语给的是哪类信息，再倒推疑问词'},
+  G2:{bug:'看字母不看音',right:'an hour　a university',wrong:'a hour　an university',why:'hour 的 h 不发音，以元音开头；university 读 /juː/，第一个音是辅音 /j/',cmp:'a useful book / an old book / the sun',step:'把单词读出来，第一个音是元音音素才用 an'},
+  G3:{bug:'三单漏 s，或者加了 s 又加 does',right:'He goes.　He doesn\'t go.',wrong:'He go.　He doesn\'t goes.',why:'三单的 s 只出现在肯定句；does 已经承担了三单信息，后面的动词必须还原',cmp:'every day 用一般现在时；Look! 之后用现在进行时',step:'先找主语是单是复，再看句子里有没有 does'},
+  G4:{bug:'doesn\'t 后面又写三单',right:'She doesn\'t like it.',wrong:'She doesn\'t likes it.',why:'助动词已经变形，实义动词要回原形——这是整段里最容易白丢分的一处',cmp:'Do 配 I/you/we/they；Does 配 he/she/it',step:'划主语 → 定助动词 → 动词打回原形'},
+  G5:{bug:'系动词后面加 ly',right:'The soup tastes good.',wrong:'The soup tastes well.',why:'taste/sound/look/smell 后面说的是"主语怎么样"，要形容词；well 当形容词只表示身体好',cmp:'a happy girl（定语，在名词前）；She is happy（表语，在系动词后）',step:'看到系动词，先问后面是不是在讲主语的状态'},
+  G6:{bug:'there be 不按就近走',right:'There is a pen and two books.',wrong:'There are a pen and two books.',why:'就近原则，be 跟最靠近它的那个名词一致',cmp:'there be 表"某处有"；have 表"某人拥有"',step:'只看 be 后面第一个名词，别往后看'},
+  G7:{bug:'will 后面又加 to 或加 s',right:'She will come.',wrong:'She will comes.　She will to come.',why:'will 后一律接原形，不随主语变',cmp:'有迹象（乌云、天色）用 be going to：It is going to rain.',step:'见到 will，动词先拍回原形再选'},
+  G8:{bug:'动词或介词后面用主格',right:'Wait for me.　Help him.',wrong:'Wait for I.　Help he.',why:'动词和介词后面接宾格',cmp:'主格 I/he/they；宾格 me/him/them',step:'看空格前一个词是不是动词或介词'},
+  G9:{bug:'后面有名词却用 mine',right:'my book　It is mine.',wrong:'mine book',why:'形容词性物主代词必须带名词；名词性的单独用，后面不能再接名词',cmp:'my/your/his/her/our/their 带名词；mine/yours/his/hers/ours/theirs 不带',step:'看空格后面有没有名词，有就用 my'},
+  G10:{bug:'-es / -ies / -ves 乱用',right:'boxes　babies　knives',wrong:'boxs　babys　knifes',why:'s/x/ch/sh 结尾加 es；辅音字母+y 去 y 加 ies；f/fe 结尾变 ves',cmp:'photo→photos，potato→potatoes；man→men，tooth→teeth',step:'先看词尾拼写，再查是不是不规则'},
+  G11:{bug:'不可数名词配 many',right:'much water　many apples',wrong:'many water　much apples',why:'不可数用 much / a little，可数用 many / a few',cmp:'information、homework、news、milk 都是不可数',step:'先判可数不可数，再定量词'},
+  G12:{bug:'具体某天用 in',right:'on Monday morning　in May　at seven',wrong:'in Monday morning',why:'具体某天，或某天的上下午，用 on',cmp:'in 用于月份、年份、季节、一天里的时段（in the morning）',step:'看后面是"某一天""时段"还是"钟点"'},
+  G13:{bug:'频度副词放到 be 前面',right:'He is often late.　He often comes late.',wrong:'He often is late.',why:'频度副词在 be 之后，在实义动词之前',cmp:'always > usually > often > sometimes > never',step:'先找句子里有没有 be 动词'},
+  G14:{bug:'must 的否定回答用了 mustn\'t',right:'— Must I go? — No, you needn\'t.',wrong:'— No, you mustn\'t.',why:'mustn\'t 是"禁止"，不是"不必"；问 must 的否定回答用 needn\'t',cmp:'mustn\'t 不许 / needn\'t 不必 / can\'t 不能',step:'先判这句是"不许"还是"不必"'},
+  G15:{bug:'答语助动词跟问句不一致',right:'— Are you…? — Yes, I am.',wrong:'— Are you…? — Yes, I do.',why:'答语的助动词必须和问句的第一个词一致',cmp:'Be 问 Be 答，Do 问 Do 答，Can 问 Can 答',step:'把问句第一个词原样抄进答语'},
+  G16:{bug:'因果和转折混用',right:'It was late, so we went home.',wrong:'It was late, but we went home.',why:'so 表结果，because 表原因，but 表相反',cmp:'前后相反用 but；前因后果用 so；二选一用 or',step:'先读两半句是什么关系：顺、反、因果'}
+};
+
+/* ===== 第二轮变式题：换场景、换题型，不换规则 ===== */
+const W2 = [
+  {id:'v01',kp:'G1',t:'c',q:'— ______ is the weather in Guangzhou today?　— It is warm.',o:['What','How','Who','Whose'],a:1,x:'How is the weather 固定说法'},
+  {id:'v02',kp:'G1',t:'c',q:'— ______ will you stay in Beijing?　— For two weeks.',o:['How long','How soon','How far','How much'],a:0},
+  {id:'v03',kp:'G1',t:'c',q:'— ______ do you go swimming?　— In the school pool.',o:['Where','When','Why','Whose'],a:0},
+  {id:'v04',kp:'G1',t:'f',q:'He goes to school by bus.（对 by bus 提问）',ph:'写出整句',a:['how does he go to school']},
+
+  {id:'v05',kp:'G2',t:'c',q:'My brother is ______ university student.',o:['a','an','the','不填'],a:0,x:'university 以辅音 /j/ 开头'},
+  {id:'v06',kp:'G2',t:'c',q:'______ sun rises in ______ east.',o:['The; the','A; the','The; an','A; an'],a:0},
+  {id:'v07',kp:'G2',t:'c',q:'She plays ______ violin very well.',o:['a','an','the','不填'],a:2,x:'乐器前用 the'},
+  {id:'v08',kp:'G2',t:'f',q:'This is ______ old bike.（填冠词）',ph:'填 a/an/the',a:['an']},
+
+  {id:'v09',kp:'G3',t:'f',q:'My sister often ______ (help) me with my homework.',ph:'写正确形式',a:['helps']},
+  {id:'v10',kp:'G3',t:'f',q:"The boy ______ (not like) carrots.",ph:'写正确形式',a:["doesn't like",'does not like']},
+  {id:'v11',kp:'G3',t:'c',q:'Every morning, my grandma ______ the newspaper.',o:['read','reads','reading','is reading'],a:1},
+  {id:'v12',kp:'G3',t:'c',q:'— What ______ he ______ after school?　— He plays basketball.',o:['do; do','does; do','does; does','do; does'],a:1},
+
+  {id:'v13',kp:'G4',t:'c',q:'______ your brother ______ football every day?',o:['Do; play','Does; play','Does; plays','Do; plays'],a:1},
+  {id:'v14',kp:'G4',t:'c',q:"We ______ have any classes on Sunday.",o:["don't","doesn't","isn't","aren't"],a:0},
+  {id:'v15',kp:'G4',t:'c',q:'— Do you and Tom live here?　— ______',o:['Yes, we do.','Yes, we are.','Yes, I do.','Yes, they do.'],a:0},
+  {id:'v16',kp:'G4',t:'f',q:"She ______ (not go) to school on Saturday.",ph:'写正确形式',a:["doesn't go",'does not go']},
+
+  {id:'v17',kp:'G5',t:'c',q:'The fish smells ______. Throw it away.',o:['bad','badly','worse','badness'],a:0},
+  {id:'v18',kp:'G5',t:'c',q:'It is a ______ day. Let us go out.',o:['sunny','sun','sunshine','sunnily'],a:0},
+  {id:'v19',kp:'G5',t:'c',q:'Her voice sounds ______.',o:['sweet','sweetly','sweetness','sweets'],a:0},
+  {id:'v20',kp:'G5',t:'c',q:'The soup tastes too ______. Add some water.',o:['salty','salt','saltily','saltness'],a:0},
+
+  {id:'v21',kp:'G6',t:'c',q:'There ______ a lot of students in the hall.',o:['is','are','has','have'],a:1},
+  {id:'v22',kp:'G6',t:'c',q:'______ there any water in the cup?',o:['Is','Are','Has','Have'],a:0},
+  {id:'v23',kp:'G6',t:'c',q:"There aren't ______ oranges in the box.",o:['some','any','much','a'],a:1},
+  {id:'v24',kp:'G6',t:'c',q:'There ______ a book and two pens on the desk.',o:['is','are','have','has'],a:0},
+
+  {id:'v25',kp:'G7',t:'c',q:'My father ______ back next Monday.',o:['will come','comes','came','is come'],a:0},
+  {id:'v26',kp:'G7',t:'c',q:'I think it ______ rain tomorrow.',o:['will','is','does','did'],a:0},
+  {id:'v27',kp:'G7',t:'c',q:'They ______ visit the museum next week.',o:['are going to','are','do','did'],a:0},
+  {id:'v28',kp:'G7',t:'f',q:'She ______ (be) a teacher in the future.',ph:'写正确形式',a:['will be']},
+
+  {id:'v29',kp:'G8',t:'c',q:'______ all like English very much.',o:['We','Us','Our','Ours'],a:0},
+  {id:'v30',kp:'G8',t:'c',q:'The teacher asked ______ to answer the question.',o:['him','he','his','himself'],a:0},
+  {id:'v31',kp:'G8',t:'c',q:'I often play games with ______.',o:['them','they','their','theirs'],a:0},
+  {id:'v32',kp:'G8',t:'f',q:'Please give ______ a call.（我）',ph:'填代词',a:['me']},
+
+  {id:'v33',kp:'G9',t:'c',q:'This is ______ classroom. ______ is on the second floor.',o:['our; Theirs','ours; Their','our; Their','us; Theirs'],a:0},
+  {id:'v34',kp:'G9',t:'c',q:'Is that ______ bike?　— No, it is ______.',o:['your; his','yours; he','your; he','yours; his'],a:0},
+  {id:'v35',kp:'G9',t:'c',q:"The pencil is ______. Don't take it.",o:['mine','my','me','I'],a:0},
+  {id:'v36',kp:'G9',t:'f',q:'This is ______ (she) book.',ph:'写正确形式',a:['her']},
+
+  {id:'v37',kp:'G10',t:'c',q:'There are five ______ in the classroom.',o:['woman teachers','women teachers','women teacher','woman teacher'],a:1,x:'woman 也要跟着变复数'},
+  {id:'v38',kp:'G10',t:'c',q:'I brush my ______ twice a day.',o:['tooth','tooths','teeth','teeths'],a:2},
+  {id:'v39',kp:'G10',t:'c',q:'Look! Some ______ are flying.',o:['butterfly','butterflys','butterflies','butterflyes'],a:2},
+  {id:'v40',kp:'G10',t:'f',q:'There are two ______ (knife) on the table.',ph:'写正确形式',a:['knives']},
+
+  {id:'v41',kp:'G11',t:'c',q:'There is ______ milk in the fridge.',o:['a few','a little','many','few'],a:1},
+  {id:'v42',kp:'G11',t:'c',q:'How ______ money do you have?',o:['many','much','long','far'],a:1},
+  {id:'v43',kp:'G11',t:'c',q:'I have ______ homework today.',o:['a few','a lot of','many','few'],a:1},
+  {id:'v44',kp:'G11',t:'c',q:'There are ______ apples in the basket.',o:['a little','little','a few','much'],a:2},
+
+  {id:'v45',kp:'G12',t:'c',q:'We have lunch ______ noon.',o:['at','in','on','of'],a:0},
+  {id:'v46',kp:'G12',t:'c',q:'School begins ______ September.',o:['in','on','at','for'],a:0},
+  {id:'v47',kp:'G12',t:'c',q:'My birthday is ______ October 1st.',o:['in','on','at','for'],a:1},
+  {id:'v48',kp:'G12',t:'c',q:"He goes to bed ______ ten o'clock.",o:['in','on','at','for'],a:2},
+
+  {id:'v49',kp:'G13',t:'c',q:'My father is ______ busy on weekdays.',o:['usually','usually is','usually be','be usually'],a:0},
+  {id:'v50',kp:'G13',t:'c',q:'We ______ have a test on Friday.',o:['sometimes','are sometimes','sometimes are','be sometimes'],a:0},
+  {id:'v51',kp:'G13',t:'c',q:'She ______ goes to the cinema. She likes books.',o:['never','never is','is never','be never'],a:0},
+  {id:'v52',kp:'G13',t:'c',q:'He is ______ late for school.',o:['always','always be','be always','always is'],a:0},
+
+  {id:'v53',kp:'G14',t:'c',q:"You ______ finish it now. You can do it tomorrow.",o:["needn't","mustn't","can't","may not"],a:0},
+  {id:'v54',kp:'G14',t:'c',q:'______ I borrow your pen?　— Sure.',o:['May','Do','Am','Does'],a:0},
+  {id:'v55',kp:'G14',t:'c',q:'Students ______ wear uniforms at school.',o:['must','must to','musts','to must'],a:0},
+  {id:'v56',kp:'G14',t:'c',q:'It is dangerous. You ______ swim in this river.',o:["mustn't","needn't","may","can"],a:0},
+
+  {id:'v57',kp:'G15',t:'c',q:'— Is this your pen?　— ______',o:['Yes, it is.','Yes, this is.','Yes, it does.','Yes, they are.'],a:0},
+  {id:'v58',kp:'G15',t:'c',q:'— Are those your books?　— No, ______',o:["they aren't","those aren't","it isn't","they don't"],a:0},
+  {id:'v59',kp:'G15',t:'c',q:'— Does your father work here?　— ______',o:['Yes, he does.','Yes, he is.','Yes, he work.','Yes, he works.'],a:0},
+  {id:'v60',kp:'G15',t:'c',q:'— Can you swim?　— ______',o:['Yes, I can.','Yes, I do.','Yes, I am.','Yes, I could.'],a:0},
+
+  {id:'v61',kp:'G16',t:'c',q:'I like both English ______ maths.',o:['and','but','or','so'],a:0},
+  {id:'v62',kp:'G16',t:'c',q:'He is old, ______ he still works hard.',o:['but','and','so','or'],a:0},
+  {id:'v63',kp:'G16',t:'c',q:'It was late, ______ we went home.',o:['so','but','because','or'],a:0},
+  {id:'v64',kp:'G16',t:'c',q:'Hurry up, ______ you will be late.',o:['or','and','but','so'],a:0}
+];
+
+/* ===== 词汇诊断 20 题：语境选词 10 + 词形转换 10 ===== */
+const VB = [
+  {id:'V01',kp:'V',t:'c',q:'My aunt is a nurse. She works in a ______.',o:['hospital','library','factory','zoo'],a:0,x:'nurse 只出现在医院'},
+  {id:'V02',kp:'V',t:'c',q:'We have four ______ in the morning: Chinese, maths, English and PE.',o:['classes','class','classs','classis'],a:0,x:'four 后面跟复数'},
+  {id:'V03',kp:'V',t:'c',q:'I usually ______ my homework after dinner.',o:['do','make','take','have'],a:0,x:'do homework 固定搭配'},
+  {id:'V04',kp:'V',t:'c',q:'My brother is good ______ maths.',o:['at','in','on','for'],a:0,x:'be good at 固定搭配'},
+  {id:'V05',kp:'V',t:'c',q:'Please ______ the window. It is cold.',o:['close','closes','closing','closed'],a:0,x:'祈使句用原形'},
+  {id:'V06',kp:'V',t:'c',q:"It is hot. Let's go ______.",o:['swimming','swim','swims','swam'],a:0,x:'go swimming 固定说法'},
+  {id:'V07',kp:'V',t:'c',q:'I want to ______ friends with them.',o:['make','do','take','have'],a:0,x:'make friends with 固定搭配'},
+  {id:'V08',kp:'V',t:'c',q:'Look! The boy is ______ a book under the tree.',o:['reading','reads','read','to read'],a:0,x:'is 后面用 -ing'},
+  {id:'V09',kp:'V',t:'c',q:'There is a ______ of shoes under the bed.',o:['pair','piece','set','group'],a:0,x:'a pair of shoes'},
+  {id:'V10',kp:'V',t:'c',q:'Maths is my favourite ______. I like numbers.',o:['subject','lesson','class','study'],a:0,x:'学科用 subject'},
+  {id:'V11',kp:'V',t:'f',q:'My uncle has two ______ (child).',ph:'写正确形式',a:['children']},
+  {id:'V12',kp:'V',t:'f',q:'My grandpa is a ______ (farm).',ph:'写正确形式',a:['farmer']},
+  {id:'V13',kp:'V',t:'f',q:'It is a ______ (sun) day today.',ph:'写正确形式',a:['sunny']},
+  {id:'V14',kp:'V',t:'f',q:'She sings very ______ (good).',ph:'写正确形式',a:['well']},
+  {id:'V15',kp:'V',t:'f',q:'We are ______ (China).',ph:'写正确形式',a:['chinese']},
+  {id:'V16',kp:'V',t:'f',q:'He ______ (study) English every day.',ph:'写正确形式',a:['studies']},
+  {id:'V17',kp:'V',t:'f',q:'The story is very ______ (interest).',ph:'写正确形式',a:['interesting']},
+  {id:'V18',kp:'V',t:'f',q:'I am ______ (real) happy today.',ph:'写正确形式',a:['really']},
+  {id:'V19',kp:'V',t:'f',q:'This is my ______ (one) visit to Beijing.',ph:'写正确形式',a:['first']},
+  {id:'V20',kp:'V',t:'f',q:'Be ______ (care) with the knife.',ph:'写正确形式',a:['careful']}
+];
+/* ===== 成组辨析：先看这几组，最容易混 ===== */
+const PAIRS = [
+  {t:'few / a few / little / a little',kps:'G11',lead:'有没有那个 a，决定是“有一点”还是“几乎没有”；后面的名词可数不可数，决定用 few 还是 little。两个判断都要做，只做一个就会错。',
+   rows:[
+     ['a few','可数名词复数','有几个（有，够用）','I have a few friends here. 我在这儿有几个朋友。'],
+     ['few','可数名词复数','几乎没有（不够，带否定味道）','He has few friends. 他几乎没朋友。'],
+     ['a little','不可数名词','有一点（有，但不一定够）','There is a little water in the bottle. 瓶里还有点水。'],
+     ['little','不可数名词','几乎没有（不够）','There is little water in the bottle. 瓶里几乎没水了。']
+   ],
+   steps:['第一步：看空格后面的名词。可数复数 → few / a few；不可数（water, milk, time, money）→ little / a little。',
+          '第二步：看有没有 a。有 a 是“有”，没 a 是“几乎没有”。',
+          '第三步：读句子语气。出现 only / sorry / I am afraid，多半要“几乎没有”。'],
+   traps:['quite a few 是“相当多”，不是“相当少”。',
+          'only a few 是“只有几个”，only a little 是“只有一点”。',
+          'a little 还能当副词，意思是“有点儿”：He is a little tired. 这里的 a little 修饰形容词，不是数量。',
+          'little 单独用还可作形容词“小的”：a little girl。看到 little 先看它后面有没有名词、是不是在说数量。']},
+  {t:'some / any',kps:'G6',lead:'some 在肯定句，any 在否定句和疑问句。但请求、建议、希望对方点头的疑问句，仍然用 some。',
+   rows:[
+     ['some','肯定句','一些','There are some apples on the table.'],
+     ['any','否定句 / 疑问句','任何、一些',"There aren't any apples. / Are there any apples?"],
+     ['some','请求、建议、期待“是”的疑问','来一点吧','Would you like some tea? / Can I have some water?']
+   ],
+   steps:['先判句式：肯定 → some；否定/疑问 → any。','再判语气：如果是请人吃东西、提要求，用 some 更自然。'],
+   traps:['any 在肯定句里可以表示“任何一个”：Any student can join.','some 修饰不可数名词也可以：some water。']},
+  {t:'much / many / a lot of',kps:'G11',lead:'much 只跟不可数，many 只跟可数复数，a lot of 两边都能用。考试里 much/many 多出现在否定句和疑问句。',
+   rows:[
+     ['much','不可数','多少（量）',"How much water do you need? / I don't have much time."],
+     ['many','可数复数','多少个','How many books do you have?'],
+     ['a lot of','两者皆可','很多','a lot of books / a lot of water']
+   ],
+   steps:['看名词：能数（books, apples）→ many；不能数（water, time, homework）→ much。','不确定或者想偷懒 → a lot of，肯定句里最安全。'],
+   traps:['homework、information、news 都不可数，别用 many。','how much 还能问价钱：How much is it?']}
+];
+
+const SIB = {G1:'G4',G2:'G10',G3:'G10',G4:'G3',G5:'G13',G6:'G11',G7:'G3',G8:'G9',G9:'G8',G10:'G3',G11:'G6',G12:'G13',G13:'G5',G14:'G4',G15:'G4',G16:'G1'};
+const REASONS = ['规则不熟','规则混淆','词形拼写','结构错误','审题','手滑'];
+const KP2REASON = {G2:'规则混淆',G3:'规则混淆',G4:'规则混淆',G10:'词形拼写',T5:'词形拼写',T6:'结构错误',P1:'规则不熟',P2:'规则不熟',P5:'规则不熟',P6:'规则不熟',P8:'规则不熟',T3:'审题'};
+
+/* ===== 存储与状态 ===== */
+const KEY='engcoach.v1';
+let P=null;
+try{P=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){P=null}
+if(!P)P={student:{name:'',baseline:95,target:110},kps:{},mistakes:[],created:new Date().toISOString().slice(0,10)};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){toast('浏览器不允许存储，本次记录不会保存')}}
+function pad(n){return n<10?'0'+n:''+n}
+function today(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function monday(){const d=new Date();const off=(d.getDay()+6)%7;const m=new Date(d.getTime()-off*864e5);return m.getFullYear()+'-'+pad(m.getMonth()+1)+'-'+pad(m.getDate())}
+function item(id){return BANK.find(x=>x.id===id)||W2.find(x=>x.id===id)||VB.find(x=>x.id===id)}
+function norm(s){return String(s||'').toLowerCase().replace(/['‘]/g,"'").replace(/\s+/g,' ').trim().replace(/[.。!！?？]+$/,'').trim()}
+function mineOf(it,p){
+  const a=p.answers[it.id];
+  if(it.t==='c')return a===undefined||a===null?'未答':'ABCD'[a];
+  return a?String(a):'未答';
+}
+function isRight(it,ans){
+  if(ans===undefined||ans===null||ans==='')return false;
+  if(it.t==='c')return Number(ans)===it.a;
+  return it.a.map(norm).indexOf(norm(ans))>=0;
+}
+
+/* ===== 掌握判定（与脚本同一套门槛） ===== */
+function nodeOf(kp){return P.kps[kp]}
+function addSession(kp,correct,questions){
+  const n=P.kps[kp]||(P.kps[kp]={sessions:[]});
+  n.sessions.push({date:today(),correct:correct,questions:questions});
+}
+function bigSessions(kp){
+  const n=P.kps[kp];
+  return n?n.sessions.filter(x=>x.questions>=8):[];
+}
+function status(kp){
+  const n=P.kps[kp];
+  if(!n||!n.sessions.length)return '未学习';
+  const big=bigSessions(kp);
+  if(!big.length)return '学习中';
+  const pass=x=>x.correct/x.questions>=0.85;
+  if(big.length===1)return pass(big[0])?'基本掌握':'待巩固';
+  const prev=big[big.length-2],cur=big[big.length-1];
+  const gap=(new Date(cur.date)-new Date(prev.date))/864e5;
+  if(pass(cur)&&pass(prev)&&gap>=1)return '稳定掌握';
+  const pooled=(cur.correct+prev.correct)/(cur.questions+prev.questions);
+  if(pass(cur)||pooled>=0.85)return '基本掌握';
+  return '待巩固';
+}
+const STCLS={'未学习':'s0','学习中':'s1','待巩固':'s2','基本掌握':'s3','稳定掌握':'s4'};
+function kpNum(k){return /^G\d+$/.test(k)?Number(k.slice(1)):99}
+function statBadge(kp){const st=status(kp);return '<span class="st '+STCLS[st]+'">'+st+'</span>'}
+function totals(){
+  const r={q:0,c:0,sess:0};const days={};
+  Object.keys(P.kps).forEach(k=>{(P.kps[k].sessions||[]).forEach(s=>{r.q+=s.questions;r.c+=s.correct;days[s.date]=1})});
+  r.sess=Object.keys(days).length;return r;
+}
+
+/* ===== 组件 ===== */
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),1800)}
+function copy(txt){
+  const done=()=>toast('已复制，粘到对话框里就行');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fb(txt,done))}
+  else fb(txt,done);
+  function fb(t,cb){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');cb()}catch(e){toast('复制失败，请手动选中')}document.body.removeChild(ta)}
+}
+function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function viewHead(title,code,lede){
+  return '<div class="viewhead"><h2>'+title+'<span>'+code+'</span></h2><p class="lede">'+lede+'</p></div>'
+}
+
+/* ===== 导航 ===== */
+const NAV=[['home','首页','00'],['diagnose','诊断','01'],['real','真卷','02'],['explain','精讲','03'],['phonics','音标','04'],['repair','补给','05'],['grammar','语法卡','06'],['train','今日训练','07'],['mistakes','错题本','08'],['writing','作文量表','09'],['report','周报','10']];
+function renderNav(){
+  const cur=location.hash.replace('#','')||'home';
+  document.getElementById('nav').innerHTML=NAV.map(n=>
+    '<button class="navbtn '+(cur===n[0]?'on':'')+'" data-nav="'+n[0]+'"><i>'+n[2]+'</i>'+n[1]+'</button>').join('');
+  const t=totals();
+  document.getElementById('railFoot').innerHTML='题库 '+(BANK.length+W2.length+VB.length)+' 题<br>练了 '+t.sess+' 天 · 共 '+t.q+' 题<br>数据只存在这台浏览器';
+  const stable=Object.keys(P.kps).filter(k=>status(k)==='稳定掌握').length;
+  const weak=Object.keys(P.kps).filter(k=>{const st=status(k);return st==='待巩固'||st==='基本掌握'||st==='学习中'}).length;
+  const rx=P.exam&&P.exam.real;
+  document.getElementById('hdrStat').innerHTML='<b>'+(P.student.name||'未署名')+'</b>　目标 '+P.student.target+' 分<br>稳定掌握 '+stable+' 个　待跟进 '+weak+' 个'+(rx?'　真卷 '+rx.got+'/'+rx.max:'');
+}
+
+
+/* ===== 真卷：2026 学年（上）期中（冯敬熙实卷，卷面红笔为准） ===== */
+const REAL={
+  title:'2026 学年（上）期中考试 · 七年级英语（闭卷）',
+  who:'冯敬熙 · 七(5)班 · 座号 06',
+  head:'满分 120 · 100 分钟 · 卷面 10 页 · 答题卡 4 页',
+  secs:[
+   {n:'一、听力理解',max:10,got:10,ok:1,note:'答题卡 1–10 全涂，卷面没有标错'},
+   {n:'二、听取信息',max:5,got:4,note:'C 空写 sing，应为 singing。听填信息要照原词形式，不能自己换词性'},
+   {n:'三、语音辨别',max:10,got:4,kp:'P1',lost:'规则不熟',note:'10 题错 6。音标对应（/æ/ /eə/ /ʌ/ /ə/）和重音位置两条线一起断，靠“读起来像不像”在猜'},
+   {n:'四、单项选择',max:10,got:10,ok:1,note:'卷面红勾齐，没扣分'},
+   {n:'五、语法选择',max:10,got:5,kp:'G2',lost:'规则混淆',note:'错 5 题：冠词 a/an/the、it 与 its、exciting 与 excited、showing、more confident，几条规则混着用'},
+   {n:'六、完形填空',max:10,got:7,kp:'T3',lost:'词汇',note:'错 3 题，落在方位词和上下文词汇。句子读得通，词选不准'},
+   {n:'七、阅读理解',max:30,got:30,ok:1,note:'15 题 ×2 分，未见标错。这块目前最稳'},
+   {n:'八、信息匹配',max:5,got:5,ok:1,note:'5 题未见标错'},
+   {n:'九、单词填空',max:5,got:2,kp:'T5',lost:'词形拼写',note:'71 funny→friendly、73 practise→practising、75 practice→provides：没先判词性，按中文意思直接填'},
+   {n:'十、完成句子',max:10,got:6,kp:'T6',lost:'结构错误',note:'78 野餐写成 take a picnic（应为 have a picnic）；79 把 look after 和 take care of 搅在一起'},
+   {n:'十一、看图写句',max:10,got:4,kp:'G3',lost:'结构错误',note:'5 句丢 6 分：三单 -s、时态、there be 就近、be busy doing 都在漏'},
+   {n:'十二、书面表达',max:15,got:null,note:'作文页不在这组照片里（答题卡第 4 页是空的）。没定分，也不猜'}
+  ]
+};
+function realSum(){
+  let got=0,max=0,luo=[];
+  REAL.secs.forEach(x=>{if(x.got==null)return;got+=x.got;max+=x.max;
+    if(x.got<x.max)luo.push({n:x.n,d:x.max-x.got,kp:x.kp||'',lost:x.lost||''})});
+  luo.sort((a,b)=>b.d-a.d);
+  return {got:got,max:max,luo:luo};
+}
+function vReal(){
+  const r=realSum();
+  const imp=P.exam&&P.exam.real;
+  const top3=r.luo.slice(0,3).reduce((a,b)=>a+b.d,0);
+  const rows=REAL.secs.map(x=>{
+    const g=x.got==null?null:x.got, rate=g==null?0:Math.round(g/x.max*100);
+    return '<tr><td>'+x.n+'</td><td class="num">'+x.max+'</td><td class="num">'+(g==null?'未录':g)+'</td>'
+      +'<td>'+(g==null?'<span class="hint">—</span>':'<div style="height:6px;background:#e6e0d3"><i style="display:block;height:6px;width:'+rate+'%;background:'+(rate>=90?'#6d7455':rate>=60?'#8f4b2d':'#a33a2a')+'"></i></div>')
+      +'<span class="hint">'+(g==null?'':rate+'%')+'</span></td>'
+      +'<td>'+(x.kp?'<button class="btn sm ghost" data-act="repair:'+x.kp+'">'+x.kp+' '+KPNAME[x.kp]+'</button>':'<span class="hint">—</span>')+'</td>'
+      +'<td>'+x.note+'</td></tr>';
+  }).join('');
+  const plan=[
+    ['第 1 天','语音：先把 20 个元音音标过一遍，再拿卷上错的 6 题对音标','P1'],
+    ['第 2 天','冠词 a/an/the：看第一个音素，不看字母（an hour / a university）','G2'],
+    ['第 3 天','it 与 its、exciting 与 excited：物主代词 vs 主格、-ing 说物 / -ed 说人','G9'],
+    ['第 4 天','固定搭配成套背：have a picnic、look after = take care of','T6'],
+    ['第 5 天','词形：先判词性再拼（practice 名词 / practise 动词、provide → provides）','T5'],
+    ['第 6 天','写句四件套：三单 -s、there be 就近、be busy doing、时态一致','G3'],
+    ['第 7 天','复测：语音 15 题 + 语法 8 题，两组都过 85% 再往下走','']
+  ].map((p,i)=>{
+    const b=p[2]?'<button class="btn sm ghost" data-act="repair:'+p[2]+'">练 '+p[2]+'（'+buildRepair(p[2]).length+' 题）</button>':'<button class="btn sm ghost" data-nav="grammar">去语法卡</button>';
+    return '<tr><td>'+p[0]+'</td><td>'+p[1]+'</td><td>'+b+'</td></tr>';
+  }).join('');
+  return viewHead('真卷','EXAM','分数按老师红笔标的分段抄下来的。逐题对错要等答案页——照片里没有答案，我不替你编答案。')
+   +'<div class="panel"><h3>这次到底丢在哪</h3>'
+   +'<p class="big">除作文外 <b>'+r.got+'</b> / '+r.max+'　丢 <b>'+(r.max-r.got)+'</b> 分　最大三块吃掉 '+top3+' 分</p>'
+   +'<p class="hint">语音辨认 4/10、语法选择 5/10、看图写句 4/10——三块合计丢 '+top3+'，占全部失分的 '+Math.round(top3/(r.max-r.got)*100)+'%。阅读 30/30、听力 10/10、单选 10/10，说明读得懂、听得懂，问题出在“写出来”和“辨音”。</p></div>'
+   +'<div class="tablewrap"><table class="tbl"><colgroup><col style="width:15%"><col style="width:7%"><col style="width:7%"><col style="width:14%"><col style="width:16%"><col style="width:41%"></colgroup>'
+   +'<thead><tr><th>题型</th><th>满分</th><th>得分</th><th>得分率</th><th>对应编号</th><th>病因</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+   +'<div class="panel"><h3>七天，只补这 28 分里能补的</h3><div class="tablewrap"><table class="tbl"><colgroup><col style="width:14%"><col style="width:56%"><col style="width:30%"></colgroup><thead><tr><th>时间</th><th>做什么</th><th>直接练</th></tr></thead><tbody>'+plan+'</tbody></table></div>'
+   +'<p class="hint">每天 30–40 分钟。练完当天不重测，隔一天再验一次——同一个编号两组 8 题都过 85%，才算清干净。</p></div>'
+   +'<div class="panel"><h3>这份卷子还差两块没对上</h3>'
+   +'<p class="hint">一是作文：答题卡第 4 页是空的，作文页没拍到，15 分没有依据，我不给分。补拍一张作文页，我按量表逐句批。</p>'
+   +'<p class="hint" style="margin-top:8px">二是答案：照片里没有答案页，红笔只标了分段扣分和划线，能确认的是分段分和“哪几空被改”，逐题对错对不上。要逐题入库，把答案页拍来。</p>'
+   +'<p class="hint" style="margin-top:8px">顺带一笔：档案里记的是 95 分。87 分已到手，剩下 8 分只能出在作文，也就是 8/15。这条是反推，不是评卷，别当结论用。</p>'
+   +'<div class="actions"><button class="btn acc" data-act="real-import">把这次真卷写进档案</button><button class="btn ghost" data-nav="grammar">先看语法卡</button></div>'
+   +'<p class="foot">'+(imp?'已录入：'+imp.date+'，'+imp.got+'/'+imp.max+'（不含作文）。':'还没录入，首页显示的是抽样诊断，不是这次真卷。')+'</p></div>';
+}
+function importReal(){
+  if(P.exam&&P.exam.real){toast('这次真卷已经在档案里了');return}
+  const r=realSum();
+  P.exam=P.exam||{};
+  P.exam.real={date:today(),got:r.got,max:r.max,title:REAL.title};
+  save();toast('已录入 '+r.got+'/'+r.max+'（不含作文）');render();
+}
+
+
+/* ===== 精讲：按真卷题型讲 + 系统评估 ===== */
+const EXSEC=[
+ ['一、听力理解',10,10,'无音频，只有文字稿','不能替'],
+ ['二、听取信息',5,4,'无听写训练','缺'],
+ ['三、语音辨别',10,4,'P 组 5 个编号共 15 题','够'],
+ ['四、单项选择',10,10,'G1–G16 各 12 题','够'],
+ ['五、语法选择',10,5,'同编号 + W2 变式','够'],
+ ['六、完形填空',10,7,'T3 只有 3 题','缺，要 10'],
+ ['七、阅读理解',30,30,'没有短文题库','缺'],
+ ['八、信息匹配',5,5,'没有','缺'],
+ ['九、单词填空',5,2,'T5 六题','勉强'],
+ ['十、完成句子',10,6,'T6 五题','勉强'],
+ ['十一、看图写句',10,4,'没有看图题','缺'],
+ ['十二、书面表达',15,'未录','量表 12 项，没有范文库','勉强']
+];
+const EXCARDS=[
+ {n:'1',t:'语音辨别：一个音标题里有三种问法',kp:'P1',
+  r:'① 给你音标，找划线读音相同的；② 四个词里找读音不同的；③ 找重音位置不同的那个。三种问法都要单独练，混着练等于没练。',
+  q:'（卷 11）找出划线部分发音与 /æ/ 相同的词：A. patient　B. pack　C. appearance　D. drama',
+  st:['patient 读 /ˈpeɪʃnt/，第一个音是 /eɪ/，不是 /æ/。','pack 读 /pæk/，中间就是 /æ/。','appearance 读 /əˈpɪərəns/，首音是弱读的 /ə/。','drama 读 /ˈdrɑːmə/，是 /ɑː/。'],
+  a:'B',
+  more:[['划线读 /eɪ/ 的是：A. have　B. cake　C. map　D. watch','B（cake /keɪk/；have /hæv/、map /mæp/、watch /wɒtʃ/）'],
+        ['划线读 /θ/ 的是：A. this　B. three　C. those　D. brother','B（three 是清音 /θ/；this、those、brother 都是浊音 /ð/）'],
+        ['重音落在第一个音节的是：A. begin　B. hotel　C. doctor　D. enjoy','C（/ˈdɒktə/；begin、enjoy 重音在第二音节，hotel 也在第二音节）']]
+ },
+ {n:'2',t:'冠词：看音素，不看字母',kp:'G2',
+  r:'a / an 看紧挨着的第一个音素是不是元音；the 用在特指或独一无二；抽象名词、球类、三餐前面不加。',
+  q:'（卷 32）She is really good at ___ art.　A. a　B. an　C. the　D. 不填',
+  st:['art 是不可数抽象名词，这里泛指“美术”这门东西。','不是特指某件作品，所以不用 the。','不填，答案 D。'],
+  a:'D（不填）',
+  more:[['He waited for ___ hour.','an（hour 首音是 /aʊ/，元音音素；拼写上有 h 也不算辅音）'],
+        ['___ sun rises in the east.','The（独一无二）'],
+        ['He plays ___ basketball after school.','不填（球类运动前不加 the）']]
+ },
+ {n:'3',t:"it / its / it's：一个跟名词，一个是 it is",kp:'G9',
+  r:"its 后面必须跟名词（its tail）；it's 等于 it is；it 单独用时作主语或宾语。三个长得像，判据是“后面有没有名词”。",
+  q:"（卷 34）When I have good news, I can't wait to share ___ with her.　A. it　B. its　C. itself　D. it's",
+  st:['share 是及物动词，后面要宾语，指前面那件事。','its 后面必须接名词，这里没名词，排除。',"it's 展开是 it is，句子会变成 share it is，不通。",'答案 it（A）。他写 its，错在把“物主”当成“代词”。'],
+  a:'A（it）',
+  more:[['The cat is licking ___ paws.','its（后面有名词 paws）'],
+        ["___ raining outside. Take an umbrella.","It's（= it is）"],
+        ["I can't find my key. Can you help me look for ___?",'it（作宾语）']]
+ },
+ {n:'4',t:'-ing 和 -ed：说物还是说人',kp:'G5',
+  r:'-ing 形容“东西让人感到…”（the news is exciting）；-ed 形容“人被…了”（I am excited）。看主语是物还是人。',
+  q:'（卷 33）When I have ___ news, like getting a high score on a test…　A. excite　B. exciting　C. excited　D. excitedly',
+  st:['主语是 news，是“东西”，用 -ing。','exciting news 才通；excited news 等于“被激动的新闻”，不通。','答案 B。这题他做对了，可以当模板记。'],
+  a:'B（exciting）',
+  more:[['The film is ___ (bore).','boring（电影让人困）'],
+        ['We were ___ (excite) about the school trip.','excited（人感到兴奋）'],
+        ['改错：I am interesting in science.','interested（人 → -ed）']]
+ },
+ {n:'5',t:'固定搭配：整条背，拆开必错',kp:'T6',
+  r:'have a picnic（不是 take a picnic）、take a walk；look after 和 take care of 意思一样，但不能拼成 look take after care of。',
+  q:'（卷 78）下周日我们去野餐。We ___ ___ ___ next Sunday.',
+  st:['“野餐”在英语里是 have a picnic，动词是 have，不是 take。','take 配的是 a walk / a photo / a bus，不配 picnic。','他写 take … a picnic，动词就错了，这空整题没分。'],
+  a:'have a picnic',
+  more:[['你每天照顾妹妹吗？Do you ___ ___ your sister every day?','look after'],
+        ['我替妈妈照顾狗。I ___ ___ ___ the dog for my mom.','take care of'],
+        ["我们去散步吧。Let's ___ ___ ___.",'take a walk']]
+ },
+ {n:'6',t:'词形填空：先判词性，再变形',kp:'T5',
+  r:'空里缺什么成分，决定要什么词性；定了词性再判单复、三单、时态。只按中文意思填，十次错八次。',
+  q:'（卷 71/73/75）① He is very ___ (friend) to everyone.　② She practises ___ (play) the piano.　③ Our school ___ (provide) us with free lunch.',
+  st:['① is 后面跟形容词 → friendly；他填 funny，意思跑到“好笑”去了，属于意思和词性同时错。','② practise 后面接动名词 → playing，不是原形。','③ 主语 our school 是第三人称单数，provide → provides。'],
+  a:'friendly / playing / provides',
+  more:[['The teacher is ___ (friend) to us.','friendly'],
+        ['He practises ___ (speak) English every morning.','speaking'],
+        ['The shop ___ (provide) free bags.','provides']]
+ },
+ {n:'7',t:'看图写句：四件套检查',kp:'G3',
+  r:'一句先定主语，再定动词形式（三单 / 时态），再补地点时间；there be 跟最近的那个名词走；be busy doing 后面接 -ing。写完照着这四条过一遍。',
+  q:'（卷 81）她帮妈妈打扫房间，一周两次。',
+  st:['主语 she 是三单，help 要加 -s。','“帮某人做某事”是 help sb. (to) do，用原形 clean。','频率放句尾：twice a week。','他写 She helps her mom clean the room twice a week，这句是对的——拿它当模板。'],
+  a:'She helps her mom clean the room twice a week.',
+  more:[['他每天走路上学。','He walks to school every day.（三单 walks）'],
+        ['桌上有一本书和两支笔。','There is a book and two pens on the table.（就近用 is）'],
+        ['学生们正忙着准备考试。','The students are busy preparing for the exam.（busy doing）']]
+ }
+];
+function vExplain(){
+  const rows=EXSEC.map(x=>'<tr><td>'+x[0]+'</td><td class="num">'+x[1]+'</td><td class="num">'+x[2]+'</td><td>'+x[3]+'</td><td>'+x[4]+'</td></tr>').join('');
+  const cards=EXCARDS.map(c=>'<div class="panel"><h3>'+c.n+'　'+c.t+'</h3>'
+    +'<p class="hint">'+c.r+'</p>'
+    +'<p class="stem" style="margin-top:12px">'+c.q+'</p>'
+    +'<div class="explain">'+c.st.map((l,i)=>'<span style="display:block">'+l+'</span>').join('')+'</div>'
+    +'<p class="hint" style="margin-top:8px">答案：<b>'+c.a+'</b></p>'
+    +'<div class="teach" style="margin-top:10px">'+c.more.map((m,i)=>'<div class="tr"><span>举 '+(i+1)+'</span><div>'+m[0]+'<br><span class="hint">'+m[1]+'</span></div></div>').join('')+'</div>'
+    +'<div class="actions"><button class="btn sm ghost" data-act="repair:'+c.kp+'">练 '+c.kp+'（'+buildRepair(c.kp).length+' 题）</button>'+(c.kp==='P1'?'<button class="btn sm ghost" data-nav="phonics">先看音标表</button>':'')+'</div></div>').join('');
+  return viewHead('精讲','EXPLAIN','照他这张卷的十二个题型来：先看系统接不接得住，再逐条讲错在哪、怎么绕开、自己给自己出三题。')
+   +'<div class="panel"><h3>这张卷的题型，本系统接得住几个</h3>'
+   +'<p class="hint">学校卷 120 分拆成 12 段。表里“够”是能直接出题练，“勉强”是有题但太少，“缺”是这套页面根本练不了——别把“有讲解”当成“能练”。</p>'
+   +'<p class="hint swipe" style="display:none">手机上看这张表，左右滑动</p>'
+   +'<div class="tablewrap"><table class="tbl"><colgroup><col style="width:20%"><col style="width:8%"><col style="width:8%"><col style="width:34%"><col style="width:30%"></colgroup><thead><tr><th>学校题型</th><th>满分</th><th>本次</th><th>系统对应</th><th>够不够</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
+   +cards
+   +'<div class="panel"><h3>这套系统，全新评一遍</h3>'
+   +'<div class="tr"><span>能直接练</span><div>单项选择、语法选择（约 20 分）＋ 单词填空、完成句子的部分（约 15 分）。<br><span class="hint">题库 246 题，16 个语法编号各 12 题，词汇 20 题，这一块是实的，能出题、能判分、能回炉。</span></div></div>'
+   +'<div class="tr"><span>只能给方法</span><div>语音辨别、完形、看图写句、书面表达。<br><span class="hint">讲解和量表能给：音标补到 15 题了，完形只有 3 题，看图题 0。</span></div></div>'
+   +'<div class="tr"><span>完全给不了</span><div>听力 15 分、阅读理解 30 分、信息匹配 5 分，合计 50 分。<br><span class="hint">静态页面没有音频、没有短文库，这块只能靠学校作业和真题卷，系统不假装能替。</span></div></div>'
+   +'<div class="tr"><span>覆盖结论</span><div>120 分里，能直接练的 35 分（29%），有题但太少、只能给方法的 55 分（46%），完全给不了的 50 分（42%）。<br><b>所以它是个“语法＋词形补漏器”，不是全科提分器。</b></div></div>'
+   +'<div class="tr"><span>能做到多少</span><div>按这张卷的 28 分失分：语音 6、语法 5、写句 6、搭配 4、词形 3、完形 3。<br>语音 6、语法 5、搭配 4、词形 3 这 18 分是它真能动的，收回 12–15 分；看图写句 6 分只能靠句型规则迁移，能收回一半。两周内做到 100–105 是现实的；110 必须再加每天 30 分钟阅读和听力，那部分系统不承担。</div></div>'
+   +'<div class="tr"><span>第一次怎么用</span><div>① 真卷页点“写进档案”；② 精讲 1 语音，当天练 P1 五题；③ 第 2 天 G2 八题；④ 第 3 天 G9；⑤ 第 4 天 T6；⑥ 第 5 天 T5；⑦ 第 6 天 G3；⑧ 第 7 天复测语音＋语法。<br><span class="hint">每天 30–40 分钟，练完当天不重测，隔一天再验一次。记录会进周报。</span></div></div>'
+   +'<p class="foot">评分口径：能直接练＝题库里有对应编号且题量≥8；能给方法＝有讲解或量表但题量不足；完全给不了＝无音频/无短文/无看图素材。</p></div>';
+}
+
+
+/* ===== 音标与自然拼读 ===== */
+const PH_V1=[
+ ['/iː/','s<u>ee</u>　t<u>ea</u>','长音，嘴向两边拉开；别读成“衣”那么短'],
+ ['/ɪ/','s<u>i</u>t　b<u>i</u>g','短音，喉咙松一点；和 /iː/ 是两个音，不是读快读慢'],
+ ['/e/','b<u>e</u>d　h<u>ea</u>d','舌位比 /æ/ 高，嘴没张那么大'],
+ ['/æ/','c<u>a</u>t　h<u>a</u>nd','嘴要张大，广州学生最容易读成 /e/'],
+ ['/ɜː/','g<u>ir</u>l　b<u>ir</u>d','卷舌别加 r 的音，英式不卷舌'],
+ ['/ə/','s<u>o</u>fa　t<u>ea</u>cher','弱读音，非重读音节几乎都读它；最常考'],
+ ['/ʌ/','c<u>u</u>p　c<u>o</u>me','短促，嘴半开；不是 /ɒ/'],
+ ['/ɒ/','d<u>o</u>g　b<u>o</u>x','圆唇短音（英式）；美式读 /ɑː/'],
+ ['/ɔː/','b<u>all</u>　d<u>oor</u>','圆唇长音'],
+ ['/ʊ/','g<u>oo</u>d　b<u>oo</u>k','短音，嘴唇略圆；和 /uː/ 成对'],
+ ['/uː/','f<u>oo</u>d　r<u>u</u>le','长音，嘴唇收圆前突'],
+ ['/ɑː/','c<u>ar</u>　f<u>a</u>ther','张大嘴的长音；英式不发卷舌']
+];
+const PH_V2=[
+ ['/eɪ/','n<u>a</u>me　r<u>ai</u>n','a 的开音节、ai/ay 组合'],
+ ['/aɪ/','b<u>i</u>ke　m<u>y</u>','i 的开音节、igh/y 结尾'],
+ ['/ɔɪ/','b<u>oy</u>　c<u>oi</u>n','oi 在词中，oy 在词尾'],
+ ['/əʊ/','h<u>o</u>me　sn<u>ow</u>','o 的开音节、oa/ow'],
+ ['/aʊ/','h<u>ou</u>se　n<u>ow</u>','ou/ow，嘴从大到小收'],
+ ['/ɪə/','n<u>ear</u>　h<u>ere</u>','ear/ere，第二个音很轻'],
+ ['/eə/','h<u>air</u>　th<u>ere</u>','air/are/ere，别读成 /ɪə/'],
+ ['/ʊə/','t<u>our</u>　s<u>ure</u>','少考，our/ure']
+];
+const PH_C=[
+ ['/p/ — /b/','<u>p</u>en / <u>b</u>ed','清浊成对：手放喉咙，/b/ 会震'],
+ ['/t/ — /d/','<u>t</u>en / <u>d</u>og','t 别读成汉语的“特”'],
+ ['/k/ — /g/','<u>c</u>at / <u>g</u>o','c 在 a/o/u 前读 /k/'],
+ ['/f/ — /v/','<u>f</u>ive / <u>v</u>ery','/v/ 上齿咬下唇，别读成 /w/'],
+ ['/θ/ — /ð/','<u>th</u>ree / <u>th</u>is','舌尖轻触上齿；广州学生常读成 /s/ /z/'],
+ ['/s/ — /z/','<u>s</u>un / <u>z</u>oo','/z/ 要震喉咙'],
+ ['/ʃ/ — /ʒ/','<u>sh</u>e / u<u>s</u>ually','/ʒ/ 少，多出现在 sure、vision'],
+ ['/tʃ/ — /dʒ/','<u>ch</u>air / <u>j</u>uice','ch 大多 /tʃ/，school 里是 /k/'],
+ ['m / n / ŋ','<u>m</u>an / <u>n</u>ose / si<u>ng</u>','/ŋ/ 在 -ng、-nk 里，别加 g 的音'],
+ ['l / r','<u>l</u>eg / <u>r</u>ed','/r/ 舌尖不碰上颚，别卷成汉语 r'],
+ ['j / w','<u>y</u>es / <u>w</u>e','/j/ 是“耶”的起音，/w/ 是“乌”的起音'],
+ ['h','<u>h</u>at','h 要送气；hour、honest 里不发音']
+];
+const PH_RULE=[
+ ['a','开音节 /eɪ/　闭音节 /æ/','n<u>a</u>me / c<u>a</u>t　　“元音+辅音+e”算开音节','have 读 /æ/，是个例外'],
+ ['e','开音节 /iː/　闭音节 /e/','h<u>e</u> / b<u>e</u>d','English、pretty 里 e 读 /ɪ/'],
+ ['i','开音节 /aɪ/　闭音节 /ɪ/','b<u>i</u>ke / s<u>i</u>t','give、live 读 /ɪ/'],
+ ['o','开音节 /əʊ/　闭音节 /ɒ/','h<u>o</u>me / h<u>o</u>t','come、some、love 读 /ʌ/'],
+ ['u','开音节 /juː/　闭音节 /ʌ/','<u>u</u>se / c<u>u</u>p','put 读 /ʊ/，rule 读 /uː/'],
+ ['ai·ay','/eɪ/','r<u>ai</u>n / pl<u>ay</u>','said 读 /e/'],
+ ['ee·ea','/iː/','s<u>ee</u> / t<u>ea</u>','bread、head 读 /e/；great 读 /eɪ/'],
+ ['oa·ow','/əʊ/','b<u>oa</u>t / sn<u>ow</u>','ow 也能读 /aʊ/：now、how'],
+ ['oo','长 /uː/　短 /ʊ/','f<u>oo</u>d / b<u>oo</u>k','k 前多短音：look、cook、book'],
+ ['ou·ow','/aʊ/','h<u>ou</u>se / n<u>ow</u>','soup /uː/、young /ʌ/'],
+ ['oi·oy','/ɔɪ/','c<u>oi</u>n / b<u>oy</u>','词中写 oi，词尾写 oy'],
+ ['ar·er·ir·ur','ar /ɑː/；er·ir·ur /ɜː/','c<u>ar</u> / h<u>er</u> / b<u>ir</u>d / t<u>ur</u>n','w 后 ar 读 /ɔː/：war、warm'],
+ ['sh·ch·th','/ʃ/ /tʃ/ /θ/·/ð/','<u>sh</u>e / <u>ch</u>air / <u>th</u>in','th 在虚词里读 /ð/'],
+ ['wh·ph·ck·ng','/w/ /f/ /k/ /ŋ/','<u>wh</u>at / <u>ph</u>one / lo<u>ck</u> / si<u>ng</u>','who 的 wh 读 /h/'],
+ ['kn·wr·mb','k、w、b 不发音','<u>kn</u>ow / <u>wr</u>ite / cli<u>mb</u>','listen 的 t、hour 的 h 也不读'],
+ ['-s 尾音','清 /s/　浊 /z/　咝音 /ɪz/','book<u>s</u> / pen<u>s</u> / box<u>es</u>','判据看前一个音，不看字母'],
+ ['-ed 尾音','t/d 后 /ɪd/　清后 /t/　浊后 /d/','want<u>ed</u> / help<u>ed</u> / call<u>ed</u>','别一律读成 /ed/']
+];
+const PH_STEP=[
+ ['important','im-por-tant','/ɪmˈpɔːtənt/','先切三拍；重音在第二拍 por，第一拍 im 的 i 读 /ɪ/，最后一拍 tant 弱读 /tənt/'],
+ ['dictionary','dic-tion-ary','/dɪkʃənəri/','-tion 固定读 /ʃən/，这是初中最该背的一条；重音在第一拍'],
+ ['welcome','wel-come','/ˈwelkəm/','第二拍的 o 不重读，弱化成 /ə/；别读成 /welˈkʌm/']
+];
+const PH_TRAP=[
+ ['/θ/ /ð/ 读成 /s/ /z/','three 读成 /sriː/（th 换成 s）是广州最常见的错。舌尖要轻触上齿，能感觉到气从齿缝出来'],
+ ['长短元音不分','ship / sheep、sit / seat 靠长短区分，不是靠读快读慢。短音要“收得住”'],
+ ['/v/ 读成 /w/','very 读成 “wery”。/v/ 上齿咬下唇，/w/ 是圆唇，两个口型完全不同'],
+ ['词尾 -s 一律读 /s/','pens 该读 /z/，boxes 该读 /ɪz/。按“前一个音清浊”判，不按字母'],
+ ['重音位置','photograph 重音在第一拍，photographer 在第三拍。词性一变，重音常变']
+];
+function vPhonics(){
+  const v1=PH_V1.map(x=>'<tr><td class="ph">'+x[0]+'</td><td>'+x[1]+'</td><td class="note">'+x[2]+'</td></tr>').join('');
+  const v2=PH_V2.map(x=>'<tr><td class="ph">'+x[0]+'</td><td>'+x[1]+'</td><td class="note">'+x[2]+'</td></tr>').join('');
+  const cc=PH_C.map(x=>'<tr><td class="ph">'+x[0]+'</td><td>'+x[1]+'</td><td class="note">'+x[2]+'</td></tr>').join('');
+  const rules=PH_RULE.map(x=>'<tr><td class="ph">'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td><td class="note">'+x[3]+'</td></tr>').join('');
+  const steps=PH_STEP.map(x=>'<tr><td><b>'+x[0]+'</b></td><td class="ph2">'+x[1]+'</td><td class="ph2">'+x[2]+'</td><td class="note">'+x[3]+'</td></tr>').join('');
+  const traps=PH_TRAP.map((x,i)=>'<div class="tr"><span>'+(i+1)+'</span><div><b>'+x[0]+'</b><br><span class="hint">'+x[1]+'</span></div></div>').join('');
+  return viewHead('音标','PHONICS','初中要用的就 20 个元音、24 个辅音。这里一张表对例词，一张表讲字母怎么变音，最后三步拆一个生词。页面放不了音频，读音得他自己出声。')
+   +'<p class="hint swipe">手机上这几张表要左右滑，先滑到“怎么读”那一列再看例词</p>'
+   +'<div class="panel"><h3>怎么用这一页</h3>'
+   +'<p class="hint">① 看符号对例词：例词里划线的字母就是发这个音的字母。② 出声读三遍，再回来看规则表，确认自己是按规则拼的，不是背下来的。③ 遮住例词只看音标，能读出来才算会。</p>'
+   +'<p class="hint" style="margin-top:6px">页面没有音频，也没有点读。要听发音，用教材配套音频或词典 App 的标准音，别用我的文字代替。</p></div>'
+   +'<div class="panel"><h3>单元音 12 个</h3><div class="tablewrap"><table class="tbl"><colgroup><col style="width:16%"><col style="width:34%"><col style="width:50%"></colgroup><thead><tr><th>音标</th><th>例词</th><th>怎么读、错在哪</th></tr></thead><tbody>'+v1+'</tbody></table></div></div>'
+   +'<div class="panel"><h3>双元音 8 个</h3><div class="tablewrap"><table class="tbl"><colgroup><col style="width:16%"><col style="width:34%"><col style="width:50%"></colgroup><thead><tr><th>音标</th><th>例词</th><th>拼读来源</th></tr></thead><tbody>'+v2+'</tbody></table></div></div>'
+   +'<div class="panel"><h3>辅音 24 个（清浊成对记）</h3><div class="tablewrap"><table class="tbl"><colgroup><col style="width:22%"><col style="width:34%"><col style="width:44%"></colgroup><thead><tr><th>音标</th><th>例词</th><th>要点</th></tr></thead><tbody>'+cc+'</tbody></table></div></div>'
+   +'<div class="panel"><h3>自然拼读：字母怎么变音</h3>'
+   +'<p class="hint">这张表是“看见生词自己拼”的全部依据。开音节＝以元音结尾，或“元音+辅音+e”（e 不发音）。</p>'
+   +'<div class="tablewrap"><table class="tbl"><colgroup><col style="width:20%"><col style="width:24%"><col style="width:34%"><col style="width:22%"></colgroup><thead><tr><th>字母 / 组合</th><th>读什么</th><th>例词</th><th>例外</th></tr></thead><tbody>'+rules+'</tbody></table></div></div>'
+   +'<div class="panel"><h3>三步拆一个生词</h3><div class="tablewrap"><table class="tbl"><colgroup><col style="width:16%"><col style="width:20%"><col style="width:20%"><col style="width:44%"></colgroup><thead><tr><th>生词</th><th>切音节</th><th>音标</th><th>怎么拼</th></tr></thead><tbody>'+steps+'</tbody></table></div>'
+   +'<p class="hint" style="margin-top:8px">顺序固定：切音节 → 定重音 → 按字母组合拼每一拍。切错了，重音一定错。</p></div>'
+   +'<div class="panel"><h3>五个最费分的坑</h3>'+traps
+   +'<div class="actions"><button class="btn acc" data-act="repair:P1">练语音 15 题</button><button class="btn ghost" data-nav="explain">回精讲看卷上的错题</button></div>'
+   +'<p class="foot">音位口径：英式 20 元音 + 24 辅音。教辅上常写“48 个音标”，多出来的是把 /juː/、/kw/ 这类组合单算，各地版本不一，考试按音不按编号，别背数字。</p></div>';
+}
+
+/* ===== 首页 ===== */
+function vHome(){
+  const t=totals();
+  const weak=Object.keys(P.kps).filter(k=>status(k)==='待巩固').sort((a,b)=>a.localeCompare(b));
+  const cards=[
+    ['real','真卷','2026 期中实卷：除作文 87/105，丢 28'],
+    ['explain','精讲','照他这张卷的十二个题型讲：例题、误区、举一反三'],
+    ['phonics','音标','44 个音位对例词 + 拼读规则：看见生词自己拆'],
+    ['diagnose','先做诊断','没有近期卷子就从 A 段 24 题定位卷开始'],
+    ['repair','错题补给','按错题挑两个编号：重讲一遍，再出一组 8 题'],
+    ['train','今日训练','选一个编号，出 12 题：主 8 + 干扰 4'],
+    ['mistakes','错题本','看沉在底下的错题，挑两道重练'],
+    ['writing','作文量表','按 15 分量表自评，生成批改请求'],
+    ['report','家长周报','五栏，数字全部来自本机记录']
+  ];
+  return viewHead('引擎状态','HOME','这一页是“看得见的那个部分”：出题、判分、记档、把错题变成重讲和一整组新题。')
+   +'<div class="panel"><h3>本周</h3><p class="hint">'+(t.q?'题量 '+t.q+' 题，累计正确 '+Math.round(t.c/t.q*100)+'%，练了 '+t.sess+' 天'+(weak.length?'　待巩固：'+weak.map(k=>k+' '+KPNAME[k]).join('、'):'　单编号只有 1–2 题样本，够不到 8 题门槛，暂不判掌握——去补给页按错的编号挑两组'):'还没有题目记录。先做 A 段 24 题 + V 段 20 题，它会告诉你先动哪个编号')+'</p>'
+   +((P.exam&&P.exam.real)?'<p class="hint" style="margin-top:6px">真卷已录入：'+P.exam.real.date+'，除作文 '+P.exam.real.got+'/'+P.exam.real.max+'。补给页按这份卷的失分排。':'<p class="hint" style="margin-top:6px">还没有录入学校真卷。有卷子照片就进真卷页，分数按红笔抄进去。')
+   +'<div class="actions"><button class="btn acc" data-act="start:A">开始 A 段 24 题</button><button class="btn ghost" data-nav="train">直接训练</button></div></div>'
+   +'<div class="grid2">'+cards.map((c,i)=>'<button class="entrycard" data-nav="'+c[0]+'"'+(cards.length%2&&i===cards.length-1?' style="grid-column:1/-1"':'')+'><b>'+c[1]+'</b><em>'+c[2]+'</em></button>').join('')+'</div>'
+   +'<div class="panel" style="margin-top:16px"><h3>库里不够用的时候</h3><p class="hint">补给页给的是每个编号 4 道新编变式加 4 道回炉题，够撑一次 8 题复测。要换你学校刚考的那套场景、或者要更细的讲解，判完卷点“复制给教练”，把错题和错因贴过去——那部分只能由对话生成，静态页面生不出来，我不会假装能生。</p></div>';
+}
+
+/* ===== 诊断 ===== */
+function vDiagnose(){
+  const done=Object.keys(P.kps).length;
+  const blocks=Object.keys(PAPERS).map(k=>{
+    const p=PAPERS[k];
+    return '<button class="entrycard" data-act="start:'+k+'"><b>'+p.title+'</b><em>'+p.note+'</em></button>';
+  }).join('').replace('<button class="entrycard" data-act="start:V"','<button class="entrycard" data-act="start:V" style="grid-column:1/-1"')
+  return viewHead('诊断','DIAG','先定位再讲。A 段判“哪几个语法编号最弱”，V 段判词汇是词义、词形还是搭配出的问题，B 段判“漏洞有没有落到题型上”。测不到的编号会标未测，不当成不会。')
+   +'<div class="panel"><h3>覆盖 16 个语法编号（8 个各 2 题）+ 词汇 20 题</h3><p class="hint">'+(done?'当前有记录的知识点 '+done+' 个':'还没有任何记录')+'。A 段 24 题、V 段 20 题，都只测初一上（期中 Unit 1–5 范围）。这是抽样，不是定分——两段都过 85%，才谈得上“期中范围过关”。</p></div>'
+   +'<div class="grid2">'+blocks+'</div>';
+}
+
+/* ===== 训练 ===== */
+function vTrain(){
+  const list=KPS.filter(k=>/^G/.test(k[0])).sort((a,b)=>{
+    const sa=status(a[0]),sb=status(b[0]);
+    const rank={'待巩固':0,'基本掌握':1,'学习中':2,'未学习':3,'稳定掌握':4};
+    return rank[sa]-rank[sb]||Number(a[0].slice(1))-Number(b[0].slice(1));
+  });
+  return viewHead('今日训练','TRAIN','一次 12 题：主编号 8 题（够一个样本门槛）+ 相邻编号 4 题（只算干扰，样本不足不判掌握）。30 分钟封顶。')
+   +'<div class="panel"><p class="hint">排序规则：待巩固的排前面，稳定掌握的排最后。选了编号就直接发题，答案不会提前出现。主编号要连做 8 题才算一个样本，低于 8 题的状态只记“学习中”。</p></div>'
+   +'<table><thead><tr><th style="width:14%">编号</th><th style="width:38%">知识点</th><th style="width:22%">累计</th><th style="width:26%">状态</th></tr></thead><tbody>'
+   +list.map(k=>{
+     const n=P.kps[k[0]];
+     const acc=n&&n.sessions.length?n.sessions.reduce((a,s)=>a+s.correct,0)+'/'+n.sessions.reduce((a,s)=>a+s.questions,0):'—';
+     return '<tr><td><button class="btn sm ghost" data-act="train:'+k[0]+'">'+k[0]+'</button></td><td>'+k[1]+'</td><td class="num">'+acc+'</td><td>'+statBadge(k[0])+'</td></tr>';
+   }).join('')+'</tbody></table>';
+}
+
+/* ===== 语法卡 ===== */
+function vGrammar(){
+  const pairs=PAIRS.map(g=>{
+    return '<div class="panel"><h3>'+g.t+'</h3><p class="hint" style="margin-bottom:6px">'+g.lead+'</p>'
+     +'<dl class="pairs">'+g.rows.map(r=>'<dt>'+r[0]+'</dt><dd><b>'+r[1]+'　'+r[2]+'</b><span class="eg">'+r[3]+'</span></dd>').join('')+'</dl>'
+     +'<div class="teach">'+g.steps.map((x,i)=>'<div class="tr"><span>判法 '+(i+1)+'</span><b>'+x+'</b></div>').join('')
+     +g.traps.map(x=>'<div class="tr"><span>坑</span><b>'+x+'</b></div>').join('')+'</div></div>';
+  }).join('');
+  const kps=Object.keys(KPNAME).filter(k=>/^G\d+$/.test(k)).sort((a,b)=>kpNum(a)-kpNum(b)).map(k=>{
+    const t=TEACH[k]||{};
+    return '<div class="panel"><h3>'+k+'　'+KPNAME[k]+'　'+statBadge(k)+'</h3>'
+     +'<p class="hint" style="margin-bottom:8px">'+RULE[k]+'</p>'
+     +'<div class="teach">'
+     +'<div class="tr"><span>对的</span><code>'+(t.right||'—')+'</code></div>'
+     +'<div class="tr"><span>错的</span><code class="bad">'+(t.wrong||'—')+'</code></div>'
+     +'<div class="tr"><span>别混</span><b>'+(t.cmp||'—')+'</b></div>'
+     +'<div class="tr"><span>三步判</span><b>'+(t.step||'—')+'</b></div>'
+     +'</div><div class="actions"><button class="btn ghost" data-act="repair:'+k+'">用这组 8 题验一下</button></div></div>';
+  }).join('');
+  return viewHead('语法卡','GRAMMAR','先看上面三组成组辨析，再往下按编号查。讲规则时不举例等于没讲——每张卡都给对错各一句，对着改。')
+   +pairs+'<div class="panel" style="background:transparent;border:0;padding:0 0 4px"><h3 style="font-size:13px;color:var(--sub)">16 个编号</h3></div>'+kps;
+}
+
+/* ===== 学期闸门：期中范围过了才推进下学期 ===== */
+function gatePanel(){
+  const ex=P.exam||{};
+  const a=ex.A,v=ex.V;
+  const aAcc=a?Math.round(a.correct/a.questions*100):null;
+  const vAcc=v?Math.round(v.correct/v.questions*100):null;
+  const badKps={};P.mistakes.filter(m=>/^G\d+$/.test(m.kp)).forEach(m=>{badKps[m.kp]=(badKps[m.kp]||0)+1});
+  const badList=Object.keys(badKps).sort((x,y)=>kpNum(x)-kpNum(y));
+  const passA=aAcc!==null&&aAcc>=90;
+  const passV=vAcc!==null&&vAcc>=85;
+  let verdict,next;
+  if(aAcc===null){verdict='语法段还没测。';next='先做 A 段 24 题。'}
+  else if(!passA){verdict='语法段 '+a.correct+'/'+a.questions+'（'+aAcc+'%），没过 90%。';next='先补 '+(badList.slice(0,2).join('、')||'错的那几个编号')+'（补给页各 8 题），别急着往下学。'}
+  else if(vAcc===null){verdict='语法段过了（'+aAcc+'%），但词汇段还没测。';next='做 V 段 20 题。词汇不过，语法过了也上不去分。'}
+  else if(!passV){verdict='语法 '+aAcc+'%、词汇 '+vAcc+'%，词汇没过 85%。';next='词汇错题在错题本，先把词形那几条重做；选词错的多是搭配没记牢。'}
+  else {verdict='期中范围（Unit 1–5）按这套题过关：语法 '+aAcc+'%、词汇 '+vAcc+'%。';next='advance';}
+  const adv='<div class="teach" style="margin-top:10px">'
+    +'<div class="tr"><span>下一阶段</span><b>一般过去时（规则动词 -ed 与不规则表）、过去时间状语、比较级与最高级、情态动词表推测、宾语从句初步（I think that…）</b></div>'
+    +'<div class="tr"><span>顺序</span><b>先一般过去时，它占七下语法的大头；不规则动词表单独背，别混进规则动词里练</b></div>'
+    +'<div class="tr"><span>现状</span><b>这个页面的题库只写到初一上，七下的题还没写。这批得另开，我不假装现在能出</b></div>'
+    +'</div>';
+  return '<div class="panel"><h3>阶段闸门 · 能不能推进下学期</h3>'
+   +'<p class="hint">判定：A 段（24 题）≥90%（最多错 2 题），V 段（20 题）≥85%（错 3 题以内），两个条件同时满足才叫过关。</p>'
+   +'<p class="hint" style="margin-top:8px"><b style="color:var(--ink);font-weight:500">'+verdict+'</b></p>'
+   +(next==='advance'?adv+'<p class="foot">推进不等于这一批不用管：错的编号还要隔天做一组 8 题验一次。</p>':'<p class="hint" style="margin-top:6px">'+next+'</p>')
+   +'</div>';
+}
+
+/* ===== 诊断扩容：每个语法编号 2 题 ===== */
+const DIAG_EXTRA=['G2','G3','G4','G5','G9','G10','G13','G16'];   // 冠词、三单时态、否定、-ing/-ed、代词、词形、比较、连词：各多 1 题
+function expandDiag(base){
+  const out=[];
+  Object.keys(KPNAME).filter(k=>/^G\d+$/.test(k)).sort((a,b)=>kpNum(a)-kpNum(b)).forEach(k=>{
+    const cur=base.filter(id=>item(id)&&item(id).kp===k);
+    if(cur.length){out.push(cur[0]);return;}
+    const pick=BANK.filter(x=>x.kp===k).map(x=>x.id);
+    if(pick.length)out.push(pick[0]);
+  });
+  DIAG_EXTRA.forEach(k=>{
+    const used=base.filter(id=>item(id)&&item(id).kp===k)[1]||BANK.filter(x=>x.kp===k&&!out.includes(x.id))[0];
+    if(used)out.push(used.id||used);
+  });
+  return out;
+}
+
+/* ===== 补给：错题聚合 → 重讲 + 新题 ===== */
+function weakList(){
+  const cnt={};P.mistakes.forEach(m=>cnt[m.kp]=(cnt[m.kp]||0)+1);
+  const rank={'待巩固':0,'基本掌握':1,'学习中':2,'未学习':3,'稳定掌握':4};
+  return Object.keys(P.kps).filter(k=>/^G\d+$/.test(k))
+    .map(k=>({k:k,n:cnt[k]||0,st:status(k)}))
+    .sort((a,b)=>b.n-a.n||rank[a.st]-rank[b.st]||kpNum(a.k)-kpNum(b.k))
+    .slice(0,2).map(x=>x.k);
+}
+function buildRepair(kp){
+  if(/^P/.test(kp))return BANK.filter(x=>x.kp[0]==='P').map(x=>x.id);
+  if(/^T/.test(kp))return BANK.filter(x=>x.kp===kp).map(x=>x.id);
+  const nw=W2.filter(x=>x.kp===kp).slice(0,4);
+  const old=BANK.filter(x=>x.kp===kp).slice(0,4);
+  return nw.concat(old).map(x=>x.id);
+}
+function gapText(kp){
+  const n=P.kps[kp];
+  if(!n||!n.sessions.length)return '还没测过。先做一组 8 题，样本不够不下结论。';
+  const big=bigSessions(kp);
+  if(!big.length)return '只测过零散几题，样本不够（门槛 8 题）。做一组 8 题的补给，规律才看得出来。';
+  const last=big[big.length-1];
+  const acc=Math.round(last.correct/last.questions*100);
+  if(big.length<2)return '最近一组 8 题，对 '+last.correct+'（'+acc+'%），一次不算数。还差一次隔天的 8 题、过 85%。';
+  const prev=big[big.length-2];
+  const gap=Math.round((new Date(last.date)-new Date(prev.date))/864e5);
+  if(last.correct/last.questions<0.85||prev.correct/prev.questions<0.85)return '有一次低于 85%，规则没吃透。看下面的重讲卡，再做一组。';
+  if(gap<1)return '两次都在同一天，不算间隔复习。明天或后天再测一次。';
+  return '两次都过、间隔也够，已算稳定掌握，可以进下一个编号。';
+}
+function gapTable(){
+  const all=Object.keys(P.kps).filter(k=>/^G\d+$/.test(k)).sort((a,b)=>kpNum(a)-kpNum(b));
+  if(!all.length)return '<p class="empty">还没有记录。做一次诊断就有了。</p>';
+  const cnt={};P.mistakes.forEach(m=>cnt[m.kp]=(cnt[m.kp]||0)+1);
+  const ks=all.filter(k=>{
+    return (cnt[k]||0)>0||bigSessions(k).length>0||status(k)!=='学习中';
+  });
+  const rest=all.length-ks.length;
+  const rows=ks.map(k=>{
+     const big=bigSessions(k),last=big[big.length-1];
+     let seen='样本不足',next='先做一组 8 题';
+     if(last){
+       const acc=Math.round(last.correct/last.questions*100);
+       seen=last.correct+'/'+last.questions+'　'+acc+'%';
+       next='还差 1 次隔天复测';
+     }
+     if(status(k)==='稳定掌握')next='进下一个';
+     return {k:k,seen:seen,next:next};
+   });
+  const mob='<ul class="gapcards">'+rows.map(r=>'<li><b>'+r.k+'　'+KPNAME[r.k]+'</b>'
+     +'<p class="meta">'+r.seen+'</p>'
+     +'<p class="line">'+statBadge(r.k)+'<i>'+r.next+'</i></p></li>').join('')+'</ul>';
+  return '<table class="gaptable" style="table-layout:fixed"><thead><tr><th style="width:32%">编号</th><th style="width:28%">最近一组</th><th style="width:16%">状态</th><th style="width:24%">下一步</th></tr></thead><tbody>'
+   +rows.map(r=>'<tr><td>'+r.k+'　'+KPNAME[r.k]+'</td><td class="num">'+r.seen+'</td><td>'+statBadge(r.k)+'</td><td>'+r.next+'</td></tr>').join('')
+   +'</tbody></table>'+mob
+   +(rest?'<p class="foot">另有 '+rest+' 个编号只测过 1 题，样本不够定论，各做一组 8 题才会进这张表。</p>':'');
+}
+function vRepair(){
+  const ks=weakList();
+  const rx=P.exam&&P.exam.real;
+  if(!ks.length&&rx){
+    const luo=realSum().luo.slice(0,3);
+    return viewHead('补给','REPAIR','这里按真卷失分排。真卷记录：'+rx.date+'，'+rx.got+'/'+rx.max+'（不含作文）。')
+      +'<div class="panel"><h3>真卷丢得最多的三块</h3><p class="hint">按红笔分段的失分排序，先补第一块。补完当天不重测，隔一天再验—同一编号两组都过 85% 才算清干净。</p>'
+      +'<div class="tablewrap"><table class="tbl"><colgroup><col style="width:10%"><col style="width:30%"><col style="width:14%"><col style="width:22%"><col style="width:24%"></colgroup><thead><tr><th>丢分</th><th>题型</th><th>错因</th><th>对应编号</th><th>补这一组</th></tr></thead><tbody>'
+      +luo.map(x=>'<tr><td class="num">'+x.d+'</td><td>'+x.n+'</td><td>'+(x.lost||'—')+'</td><td>'+(x.kp?x.kp+' '+KPNAME[x.kp]:'—')+'</td><td>'+(x.kp?'<button class="btn sm ghost" data-act="repair:'+x.kp+'">补 '+x.kp+'（'+buildRepair(x.kp).length+' 题）</button>':'—')+'</td></tr>').join('')
+      +'</tbody></table></div>'
+      +'<p class="hint">语音这组 15 题（5 个编号各 3 题），够 8 题门槛了：一组全做完，过 85% 才算清。别挑着做，挑着做判不了。</p>'
+      +'<div class="actions"><button class="btn ghost" data-nav="real">回真卷对一遍</button><button class="btn ghost" data-nav="grammar">看语法卡</button></div></div>';
+  }
+  if(!ks.length)return viewHead('补给','REPAIR','还没有档案。先做 A 段 24 题，错题会自动排到这里。')
+    +'<div class="panel"><p class="hint">诊断只回答一个问题：先动哪两个编号。</p><div class="actions"><button class="btn acc" data-act="start:A">开始 A 段 24 题</button></div></div>';
+  const cards=ks.map(k=>{
+    const t=TEACH[k]||{};
+    return '<div class="panel"><h3>'+k+'　'+KPNAME[k]+'　'+statBadge(k)+'</h3>'
+     +'<p class="hint" style="margin-bottom:12px">'+gapText(k)+'</p>'
+     +'<div class="teach">'
+     +'<div class="tr"><span>常见错法</span><b>'+(t.bug||'—')+'</b></div>'
+     +'<div class="tr"><span>对的</span><code>'+(t.right||'—')+'</code></div>'
+     +'<div class="tr"><span>错的</span><code class="bad">'+(t.wrong||'—')+'</code></div>'
+     +'<div class="tr"><span>为什么</span><b>'+(t.why||'—')+'</b></div>'
+     +'<div class="tr"><span>别混</span><b>'+(t.cmp||'—')+'</b></div>'
+     +'<div class="tr"><span>三步判</span><b>'+(t.step||'—')+'</b></div>'
+     +'</div>'
+     +'<p class="foot">本组 8 题：4 道这轮新编的变式（换场景、换题型），+ 4 道之前做过的回炉题。判完自动记档。</p>'
+     +'<div class="actions"><button class="btn acc" data-act="repair:'+k+'">补这个编号（8 题）</button><button class="btn ghost" data-act="train:'+k+'">换成 12 题综合</button></div></div>';
+  }).join('');
+  const vBad=P.mistakes.filter(m=>m.kp==='V').length;
+  return viewHead('补给','REPAIR','从错题里挑两个编号补。一次只补两个，补完当天不重测，隔一天再验——这是间隔复习，不是刷题。')
+   +(vBad?'<div class="panel"><h3>词汇错题 '+vBad+' 条</h3><p class="hint">词汇的变式题还没写，先按错因处理：词形错的，把原词和变形写在一起背（child–children、study–studies）；选词错的多是搭配没记牢，抄下整句比抄单词有用。</p><div class="actions"><button class="btn ghost" data-nav="mistakes">去错题本看</button><button class="btn ghost" data-act="start:V">重做 V 段 20 题</button></div></div>':'')
+   +cards
+   +'<div class="panel"><h3>清账进度</h3><p class="hint" style="margin-bottom:10px">稳定掌握＝两次 8 题都过 85%，中间隔一天。低于 8 题的记录不算判定，只算样本。</p>'+gapTable()+'</div>';
+}
+function startRepair(kp){
+  const ids=buildRepair(kp);
+  const note=ids.length<8
+    ? '题库这一组只有 '+ids.length+' 题，够不着 8 题门槛，所以只验不判“掌握”。做完看错因，别急着换编号。'
+    : (/^P/.test(kp)
+        ? 'P 组五个编号（长短元音、a 的两种读法、-s 尾音、th、不发音字母）共 '+ids.length+' 题，一次做完。过 85%（最多错 '+(ids.length-Math.ceil(ids.length*0.85))+' 题）才算这一组清干净。'
+        : '4 道新编变式 + 4 道之前做过的回炉题。先看规则再动笔，判完记档。');
+  S.paper={title:kp+' '+KPNAME[kp]+' · 补给 '+ids.length+' 题',note:note,ids:ids,kind:'repair',kp:kp,answers:{},graded:false,key:'R:'+kp};
+}
+
+/* ===== 组题与出卷 ===== */
+function buildTrain(kp){
+  const main=BANK.filter(x=>x.kp===kp).slice(0,8);
+  const sib=SIB[kp];let side=BANK.filter(x=>x.kp===sib).slice(0,4);
+  if(side.length<4){side=side.concat(BANK.filter(x=>/^G/.test(x.kp)&&x.kp!==kp).slice(0,4-side.length))}
+  return main.concat(side);
+}
+function start(key){
+  let p;
+  if(key==='train')return;
+  if(/^G\d+$/.test(key)){
+    p={title:key+' '+KPNAME[key]+' · 训练 12 题',note:'主编号 '+key+' 8 题——一个样本门槛；另加 4 题来自相邻编号，混着出，用来检验你是真会还是只认得出题型。',ids:buildTrain(key).map(x=>x.id),kind:'train',kp:key};
+  }else{
+    const d=PAPERS[key];
+    p={title:d.title,note:d.note,ids:(key==='A'?expandDiag(d.ids):d.ids),kind:'diag'};
+    if(key==='B3')p.passage=PASSAGE;
+  }
+  S.paper=Object.assign(p,{answers:{},graded:false,key:key});
+}
+function vPaper(){
+  const p=S.paper;
+  if(!p)return viewHead('没有进行中的卷子','—','回到首页或训练页重新开始。');
+  const items=p.ids.map(item);
+  return viewHead(p.title,'PAPER',p.note)
+   +(p.passage?'<div class="passage"><b>完形短文</b>\n'+p.passage+'</div>':'')
+   +'<div class="panel" id="paperBody">'+items.map((it,i)=>qHTML(it,it.q,i+1)).join('')+'</div>'
+   +'<div class="actions"><button class="btn acc" data-act="grade">交卷判分</button><button class="btn ghost" data-nav="home">退出</button></div>'
+   +'<p class="foot">判分只报题型小分与错因，不报百分制。判完会写进本机档案。</p>';
+}
+function qHTML(it,stem,n){
+  const ans=S.paper.answers[it.id];
+  let body='';
+  if(it.t==='c'){
+    body='<div class="opts">'+it.o.map((o,i)=>{
+      let cls='opt';
+      if(S.paper.graded){if(i===it.a)cls+=' right';else if(Number(ans)===i)cls+=' wrong'}
+      else if(Number(ans)===i)cls+=' sel';
+      return '<button class="'+cls+'" data-opt="'+it.id+'" data-i="'+i+'"><span class="k">'+'ABCD'[i]+'</span><span>'+o+'</span></button>';
+    }).join('')+'</div>';
+  }else{
+    body='<div class="fill"><input data-fill="'+it.id+'" value="'+escAttr(ans||'')+'" placeholder="'+(it.ph||'填写答案')+'" '+(S.paper.graded?'disabled':'')+'></div>';
+  }
+  return '<div class="q"><div class="qno">'+pad(n)+'</div><div class="stem">'+stem+'</div>'+body+'</div>';
+}
+
+/* ===== 判卷 ===== */
+function grade(){
+  const p=S.paper;if(!p||p.graded)return;
+  p.graded=true;
+  const items=p.ids.map(item);
+  let c=0,q=0;const g={};
+  items.forEach(it=>{
+    const ok=isRight(it,p.answers[it.id]);
+    q++;if(ok)c++;
+    g[it.kp]=g[it.kp]||{c:0,q:0};g[it.kp].q++;if(ok)g[it.kp].c++;
+  });
+  p.score={c:c,q:q};
+  Object.keys(g).forEach(k=>addSession(k,g[k].c,g[k].q));
+  save();
+  p.mistakes=items.filter(it=>!isRight(it,p.answers[it.id]));
+  p.mistakes.forEach(it=>{
+    const rec={date:today(),kp:it.kp,type:KPNAME[it.kp],q:it.q,answer:mineOf(it,p),correct:it.t==='c'?'ABCD'[it.a]:it.a[0],reason:KP2REASON[it.kp]||'规则不熟'};
+    P.mistakes.push(rec);it.mi=P.mistakes.length-1;
+  });
+  if(p.key==='A'||p.key==='V'){
+    P.exam=P.exam||{};
+    P.exam[p.key]={date:today(),correct:p.score.c,questions:p.score.q};
+  }
+  save();
+  render();
+}
+function vGraded(){
+  const p=S.paper;if(!p||!p.graded)return vPaper();
+  const items=p.ids.map(item);
+  const acc=Math.round(p.score.c/p.score.q*100);
+  const head='<div class="panel"><h3>判卷卡 · '+p.title+'</h3>'
+   +'<p class="hint">共 '+p.score.q+' 题，对 '+p.score.c+'，错 '+(p.score.q-p.score.c)+'。档案已写入本机。</p>'
+   +'<p class="hint" style="margin-top:6px">对错只报题型小分，不报百分制——总分看多了会麻木，小分才有用。</p></div>';
+  const seen={};const seenOk={};
+  const list=items.map((it,i)=>{
+    const ok=isRight(it,p.answers[it.id]);
+    const mine=mineOf(it,p);
+    const right=it.t==='c'?'ABCD'[it.a]:it.a[0];
+    let extra='';
+    if(!ok){
+      const first=!seen[it.kp];seen[it.kp]=1;
+      extra='<div class="explain">正确答案：'+right+'　你答：'+mine+'<br>'+(first?'依据：'+RULE[it.kp]:'规则同上（'+it.kp+'），这类题先把那条规则默念一遍再选')+(it.x?'<br>'+it.x:'')
+        +'<div class="reason">错因 <select data-mi="'+(it.mi!==undefined?it.mi:'')+'">'+REASONS.map(r=>'<option '+(KP2REASON[it.kp]===r?'selected':'')+'>'+r+'</option>').join('')+'</select></div></div>';
+    }
+    if(ok&&p.kind==='repair'){
+      if(!seenOk[it.kp]){seenOk[it.kp]=1;extra='<div class="explain lite">规则：'+RULE[it.kp]+(TEACH[it.kp]?'　判法：'+TEACH[it.kp].step:'')+'</div>'}
+      else if(TEACH[it.kp])extra='<div class="explain lite">判法：'+TEACH[it.kp].step+'</div>';
+    }
+    return '<div class="q"><div class="qno">'+it.kp+' · '+KPNAME[it.kp]+'</div><div class="stem">'+it.q+'</div>'
+      +'<div class="gradebox"><span class="verdict '+(ok?'ok':'no')+'">'+(ok?'对':'错')+'</span></div>'+extra+'</div>';
+  }).join('');
+  const wrong=p.mistakes.length;
+  const block='<div class="panel"><h3>错题与变式</h3>'
+   +'<p class="hint">'+(wrong?'本次错 '+wrong+' 题。库里这两个编号还有 4 道新编变式 + 4 道回炉题，去补给页直接开练；要换更多场景，再点“复制给教练”。':'全对。可以直接进下一个编号，或者做一次 3 题复查。')+'</p>'
+   +(wrong?'<p class="hint">这批 '+wrong+' 道已经存进错题本，上面改错因会同步更新。</p><div class="actions"><button class="btn acc" data-act="copy-coach">复制给教练（超出题库的深讲）</button><button class="btn ghost" data-nav="repair">去补给页补这两个编号</button></div>':'')
+   +'</div>';
+  const paste='<div class="panel"><h3>档案粘贴块</h3><p class="hint">复制到同一个文本文件里，就是跨会话的档案。新对话读不到历史时，把它贴给教练。</p><div class="txt">'+pasteBlock()+'</div><div class="actions"><button class="btn ghost" data-act="copy-paste">复制粘贴块</button></div></div>';
+    const gate=(p.key==='A'||p.key==='V')?gatePanel():'';
+  const th=p.kind==='repair'?'<div class="panel"><h3>这一组过线了吗</h3><p class="hint">'
+    +(p.score.c/p.score.q>=0.85?'对了 '+p.score.c+'/'+p.score.q+'，过 85% 线。明天或后天再做一组 8 题，验间隔——两次都过才算稳定掌握。':'对了 '+p.score.c+'/'+p.score.q+'，没过 85%。规则还没吃透，先回补给页看那张重讲卡，再重做，别换编号。')
+    +'</p></div>':'';
+  return head+gate+th+'<div class="panel">'+list+'</div>'+block+paste;
+}
+function pasteBlock(){
+  const ks=Object.keys(P.kps).sort((a,b)=>kpNum(a)-kpNum(b)||a.localeCompare(b));
+  if(!ks.length)return '【学习档案】暂无记录';
+  const t=totals();
+  return ['【学习档案 '+today()+'】',
+    (P.student.name?'学生：'+P.student.name+'　':'')+'累计 '+t.q+' 题，正确率 '+(t.q?Math.round(t.c/t.q*100):0)+'%',
+    ks.map(k=>{
+      const n=P.kps[k];const c=n.sessions.reduce((a,s)=>a+s.correct,0);const q=n.sessions.reduce((a,s)=>a+s.questions,0);
+      return k+' '+KPNAME[k]+' | '+c+'/'+q+' | '+n.sessions.length+' 次 | '+status(k);
+    }).join('\n')].join('\n');
+}
+
+/* ===== 错题本 ===== */
+function vMistakes(){
+  const rows=P.mistakes.slice().reverse();
+  const cnt={};P.mistakes.forEach(m=>cnt[m.kp]=(cnt[m.kp]||0)+1);
+  const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
+  return viewHead('错题本','LOG','一行一道。回炉时只看题干，不给答案，重新做一遍。')
+   +'<div class="panel"><h3>共 '+P.mistakes.length+' 条</h3>'
+   +(rows.length?'<table><thead><tr><th style="width:13%">日期</th><th style="width:10%">编号</th><th style="width:22%">知识点</th><th style="width:30%">题干</th><th style="width:12%">错因</th><th style="width:13%"></th></tr></thead><tbody>'
+    +rows.map((m,i)=>'<tr><td>'+m.date+'</td><td>'+m.kp+'</td><td>'+KPNAME[m.kp]+'</td><td>'+(m.q||'').slice(0,44)+((m.q||'').length>44?'…':'')+'</td><td>'+(m.reason||'—')+'</td><td><button class="btn sm ghost" data-act="mdel:'+(P.mistakes.length-1-i)+'">删</button></td></tr>').join('')
+    +'</tbody></table>':'<p class="empty">还没有错题。判完卷自动进来，不用手点。</p>')
+   +'<div class="actions">'+(top&&/^G\d+$/.test(top)?'<button class="btn acc" data-act="train:'+top+'">按错得最多的 '+top+' 重练 12 题</button>':'')+'<button class="btn ghost" data-act="export-csv">导出 CSV</button><button class="btn ghost" data-act="clear-mistakes">清空</button></div></div>';
+}
+
+/* ===== 作文量表 ===== */
+const W_ITEMS=[['内容',4,'要点齐，有 1–2 句自己的话'],['语言',6,'句型有变化，语法错不超过 2 处'],['结构',3,'三段清楚，有连接词'],['规范',2,'拼写、大小写、标点、字数']];
+const W_ERRS=['全篇只有一个句型（I like…）','时态混用，写过去的事却用现在时','三单漏 s','句首没大写、句末没标点','要点漏写','字数不足 40 词','连接词缺失，一段到底','搭配错（be good at doing）'];
+const W_PAT=['I love / enjoy / am interested in + n./v-ing','…because it is + adj.','First…, Second…, and also…','When I am free, I often…','I can + v. / I am good at + v-ing','I like A better than B, because…','Why not + v.? / You should + v.','I am going to + v. next…','It makes me + adj.','For example, …',"In a word, … / That's why…",'I hope you can come. / Best wishes.'];
+function vWriting(){
+  return viewHead('作文量表','RUBRIC','15 分量表自带，不需要家长另外找标准。自评完生成一段批改请求，交给对话里的教练改。')
+   +'<div class="panel"><h3>一、自评</h3>'
+   +W_ITEMS.map((w,i)=>'<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>'+w[0]+'（满分 '+w[1]+'）</span><b id="wv'+i+'" style="font-family:var(--mono)">0</b></div>'
+     +'<input class="range" type="range" min="0" max="'+w[1]+'" value="0" data-w="'+i+'"><p class="hint">'+w[2]+'</p></div>').join('')
+   +'<p style="font-family:var(--serif);font-size:15px">合计 <b id="wtot">0</b> / 15　<b id="wband" style="color:var(--accent-ink)">—</b></p></div>'
+   +'<div class="panel"><h3>二、这篇最像哪几类问题</h3><p class="hint">勾出来的是教练最先要改的，最多勾三处。</p>'
+   +W_ERRS.map((e,i)=>'<label class="chk"><input type="checkbox" data-e="'+i+'"><span>'+e+'</span></label>').join('')
+   +'<div class="actions"><button class="btn acc" data-act="copy-write">生成批改请求</button></div></div>'
+   +'<div class="panel"><h3>三、能直接套的 12 个句型</h3><table><tbody>'
+   +W_PAT.map(p=>'<tr><td style="font-family:var(--mono);font-size:12.5px">'+p+'</td></tr>').join('')
+   +'</tbody></table><p class="foot">给骨架不给范文。70 词、三段、四种句型就能拿 13 分，150 词的范文只会让他觉得自己怎么写都不对。</p></div>';
+}
+
+/* ===== 周报 ===== */
+function vReport(){
+  const since=monday();
+  const ks=Object.keys(P.kps).sort((a,b)=>kpNum(a)-kpNum(b)||a.localeCompare(b));
+  let q=0,c=0;const days={};
+  ks.forEach(k=>P.kps[k].sessions.filter(x=>x.date>=since).forEach(x=>{q+=x.questions;c+=x.correct;days[x.date]=1}));
+  const sess=Object.keys(days).length;
+  const rx=P.exam&&P.exam.real;
+  const realLine=rx?'<p class="hint">真卷（'+rx.date+'）：'+rx.title+'，除作文 '+rx.got+'/'+rx.max+'。</p>':'';
+  const cell=(cc,qq)=>!qq?'—':(qq<8?'样本 '+qq+' 题':cc+'/'+qq+'　'+Math.round(cc/qq*100)+'%');
+  const rows=ks.map(k=>{
+    const n=P.kps[k],w=n.sessions.filter(x=>x.date>=since);
+    if(!n.sessions.length)return '';
+    const wc=w.reduce((a,x)=>a+x.correct,0),wq=w.reduce((a,x)=>a+x.questions,0);
+    const tc=n.sessions.reduce((a,x)=>a+x.correct,0),tq=n.sessions.reduce((a,x)=>a+x.questions,0);
+    return '<tr><td>'+k+' '+KPNAME[k]+'</td><td class="num">'+cell(wc,wq)+'</td><td class="num">'+cell(tc,tq)+'</td><td>'+statBadge(k)+'</td></tr>';
+  }).join('');
+  return viewHead('家长周报','REPORT','五栏，数字全部来自本机记录。没有数据的栏写“暂无记录”，不估、不补。')
+   +'<div class="panel"><h3>本周（自 '+since+'）</h3>'+realLine+'<p class="hint">练了 '+sess+' 天，题量 '+q+'，正确率 '+(q?Math.round(c/q*100):0)+'%。单个编号不足 8 题的只记样本量，不判掌握。</p>'
+   +(rows?'<table style="margin-top:12px"><thead><tr><th style="width:46%">编号</th><th style="width:22%">本周</th><th style="width:18%">累计</th><th style="width:14%">状态</th></tr></thead><tbody>'+rows+'</tbody></table>':'<p class="empty">本周暂无记录</p>')
+   +'<div class="actions"><button class="btn acc" data-act="copy-report">复制周报</button><button class="btn ghost" data-act="export-json">下载档案 JSON</button></div></div>'
+   +'<div class="panel"><h3>设置</h3><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">'
+   +'<input id="sName" value="'+escAttr(P.student.name)+'" placeholder="学生姓名" style="border:1px solid var(--line);background:#fbf7ef;padding:8px 12px;font-family:inherit">'
+   +'<span class="hint">目标分</span><input id="sTarget" type="number" value="'+P.student.target+'" style="width:80px;border:1px solid var(--line);background:#fbf7ef;padding:8px 12px;font-family:inherit">'
+   +'<button class="btn sm ghost" data-act="save-setup">保存</button></div>'
+   +'<p class="foot">清空只删这台浏览器的记录，不影响已经导出的文件。</p><div class="actions"><button class="btn ghost" data-act="reset">清空全部记录</button></div></div>';
+}
+function reportText(since,q,c,sess){
+  const ks=Object.keys(P.kps).sort((a,b)=>a.localeCompare(b));
+  const stable=ks.filter(k=>status(k)==='稳定掌握');
+  const weak=ks.filter(k=>status(k)==='待巩固'||status(k)==='基本掌握');
+  const lines=['【英语周报 '+since+' 至 '+today()+'】','',
+    '一、本周练了什么','练了 '+sess+' 天，题量 '+q+' 题，涉及编号：'+(ks.filter(k=>P.kps[k].sessions.some(s=>s.date>=since)).join('、')||'暂无'),
+    '', '二、正确率','本周 '+(q?Math.round(c/q*100):0)+'%（'+c+'/'+q+'），按题型小分见下表。',
+    '', '三、已稳定掌握',''+(stable.join('、')||'暂无。状态不够门槛的不写“掌握”。'),
+    '', '四、还没过关的编号',''+(weak.map(k=>k+' '+KPNAME[k]+'（'+status(k)+'）').join('；')||'暂无'),
+    '', '五、下周三个动作','周一：'+(weak[0]?weak[0]+' 重讲＋同规则 5 题':'从诊断里挑一个未测的编号')+'；周三：做一次辨音＋语法选择小卷；周日：复查本周编号各 3 题，错 2 题退回待巩固。',
+    '', '（数据来源：本机学习档案，'+today()+'）'];
+  return lines.join('\n');
+}
+
+/* ===== 数据导出 ===== */
+function dl(name,text,type){
+  const b=new Blob([text],{type:type||'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+}
+
+/* ===== 渲染与事件 ===== */
+const S={paper:null};
+function render(){
+  renderNav();
+  const k=location.hash.replace('#','')||'home';
+  let html='';
+  if(k==='paper')html=S.paper&&S.paper.graded?vGraded():vPaper();
+  else if(k==='diagnose')html=vDiagnose();
+  else if(k==='train')html=vTrain();
+  else if(k==='real')html=vReal();
+  else if(k==='explain')html=vExplain();
+  else if(k==='phonics')html=vPhonics();
+  else if(k==='repair')html=vRepair();
+  else if(k==='grammar')html=vGrammar();
+  else if(k==='mistakes')html=vMistakes();
+  else if(k==='writing')html=vWriting();
+  else if(k==='report')html=vReport();
+  else html=vHome();
+  document.getElementById('view').innerHTML=html;
+  if(k==='writing')syncWriting();
+}
+function syncWriting(){
+  let tot=0;
+  W_ITEMS.forEach((w,i)=>{
+    const inp=document.querySelector('input[data-w="'+i+'"]');
+    if(!inp)return;
+    const v=Number(inp.value);tot+=v;
+    document.getElementById('wv'+i).textContent=v;
+  });
+  const t=document.getElementById('wtot');if(!t)return;
+  t.textContent=tot;
+  const band=tot>=13?'优秀（13–15）':tot>=10?'良好（10–12）':tot>=7?'及格（7–9）':'重写（6 分以下）';
+  document.getElementById('wband').textContent=band;
+}
+document.addEventListener('click',function(e){
+  const nav=e.target.closest('[data-nav]');
+  if(nav){location.hash=nav.getAttribute('data-nav');render();return}
+  const opt=e.target.closest('[data-opt]');
+  if(opt){
+    const id=opt.getAttribute('data-opt'),i=Number(opt.getAttribute('data-i'));
+    if(S.paper&&!S.paper.graded){S.paper.answers[id]=i;
+      opt.parentNode.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+      opt.classList.add('sel');}
+    return;
+  }
+  const act=e.target.closest('[data-act]');
+  if(!act)return;
+  const a=act.getAttribute('data-act');
+  if(a==='grade'){grade();location.hash='paper';render();return}
+  if(a==='save-rsn'){
+    const p=S.paper;
+    if(p.saved){toast('这批错题已经存过，别重复入库');return}
+    p.saved=true;
+    p.mistakes.forEach(it=>{
+      const sel=document.querySelector('select[data-rsn="'+it.id+'"]');
+      const reason=sel?sel.value:(KP2REASON[it.kp]||'规则不熟');
+      P.mistakes.push({date:today(),kp:it.kp,type:KPNAME[it.kp],q:it.q,answer:mineOf(it,p),correct:it.t==='c'?'ABCD'[it.a]:it.a[0],reason:reason});
+    });
+    save();toast('已存 '+p.mistakes.length+' 道错题');render();return;
+  }
+  if(a==='real-import'){importReal();return}
+  if(a==='copy-paste'){copy(pasteBlock());return}
+  if(a==='copy-coach'){
+    const p=S.paper;
+    const lines=['【批改与变式请求】','训练：'+p.title+'　'+today(),'共 '+p.score.q+' 题，对 '+p.score.c+'，错 '+(p.score.q-p.score.c)+'。','','错题：'];
+    p.mistakes.forEach((it,i)=>{
+      const sel=document.querySelector('select[data-rsn="'+it.id+'"]');
+      const mine=mineOf(it,p);
+      lines.push((i+1)+'. ['+it.kp+'] '+it.q+'　我答：'+mine+'　正确：'+(it.t==='c'?'ABCD'[it.a]:it.a[0])+'　错因：'+(sel?sel.value:(KP2REASON[it.kp]||'规则不熟')));
+    });
+    lines.push('','请按上面的错因出变式：只给错得最多的两个编号各 5 道，换词换场景，不许只换人名；先讲规则再给题，不要先给答案。');
+    copy(lines.join('\n'));return;
+  }
+  if(a==='copy-write'){
+    let tot=0;W_ITEMS.forEach((w,i)=>{const inp=document.querySelector('input[data-w="'+i+'"]');if(inp)tot+=Number(inp.value)});
+    const errs=W_ERRS.filter((x,i)=>{const c=document.querySelector('input[data-e="'+i+'"]');return c&&c.checked});
+    copy(['【作文批改请求】','自评：'+tot+'/15（内容 '+vis(0)+'，语言 '+vis(1)+'，结构 '+vis(2)+'，规范 '+vis(3)+'）',
+      '最像的问题：'+(errs.length?errs.join('；'):'未勾选'),
+      '请按 15 分量表批改，只改最影响分数的三处，其余标出来让学生自己改；给一版改后稿，长度不超过原稿 1.2 倍；再给下次要练的编号。'].join('\n'));
+    function vis(i){const inp=document.querySelector('input[data-w="'+i+'"]');return inp?inp.value:'0'}
+    return;
+  }
+  if(a.indexOf('mdel:')===0){P.mistakes.splice(Number(a.split(':')[1]),1);save();render();return}
+  if(a==='clear-mistakes'){if(confirm('清空错题本？档案不受影响。')){P.mistakes=[];save();render()}return}
+  if(a==='export-csv'){
+    const head=['日期','题型','知识点','题干摘要','学生答案','正确答案','错因'];
+    const rows=P.mistakes.map(m=>[m.date,m.type,m.kp,(m.q||'').replace(/"/g,''),m.answer,m.correct,m.reason]);
+    dl('错题本.csv','\ufeff'+[head].concat(rows).map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv;charset=utf-8');
+    toast('已导出 CSV');return;
+  }
+  if(a==='export-json'){dl('学习档案.json',JSON.stringify(P,null,2),'application/json');toast('已导出档案');return}
+  if(a==='copy-report'){
+    const since=monday();let q=0,c=0,s=0;const days={};
+    Object.keys(P.kps).forEach(k=>P.kps[k].sessions.filter(x=>x.date>=since).forEach(x=>{q+=x.questions;c+=x.correct;days[x.date]=1}));
+    s=Object.keys(days).length;
+    copy(reportText(since,q,c,s));return;
+  }
+  if(a==='save-setup'){P.student.name=document.getElementById('sName').value.trim();P.student.target=Number(document.getElementById('sTarget').value)||110;save();toast('已保存');render();return}
+  if(a==='reset'){if(confirm('清空本机全部记录？导出过的文件不受影响。')){P={student:{name:'',baseline:95,target:110},kps:{},mistakes:[],created:today()};save();render()}return}
+  if(a.indexOf('repair:')===0){startRepair(a.split(':')[1]);location.hash='paper';render();return}
+  if(a.indexOf('start:')===0){start(a.split(':')[1]);location.hash='paper';render();return}
+  if(a.indexOf('train:')===0){start(a.split(':')[1]);location.hash='paper';render();return}
+});
+document.addEventListener('input',function(e){
+  const f=e.target.closest('[data-fill]');
+  if(f&&S.paper&&!S.paper.graded){S.paper.answers[f.getAttribute('data-fill')]=f.value;return}
+  if(e.target.closest('[data-w]'))syncWriting();
+});
+document.addEventListener('change',function(e){
+  const sel=e.target.closest('select[data-mi]');
+  if(sel){const i=Number(sel.getAttribute('data-mi'));if(P.mistakes[i]){P.mistakes[i].reason=sel.value;save();toast('错因已更新')}}
+});
+window.addEventListener('hashchange',render);
+render();
+
+</script>
+</body>
+</html>

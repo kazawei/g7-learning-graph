@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>七年级上学期英语期中测试卷 · 沪教版 Units 1—4</title>
+<style>
+  @page { size: A4; margin: 15mm 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; background:#e9e6df; color:#111;
+    font-family:"Noto Serif CJK SC","Songti SC",SimSun,serif;
+    font-size:10.5pt; line-height:1.75;
+  }
+  .sheet{
+    width:210mm; min-height:297mm; margin:0 auto; background:#fff;
+    padding:15mm 16mm 14mm;
+  }
+  .paper{ counter-reset: page 1; }
+
+  /* 页头 */
+  .examhead{ text-align:center; border-bottom:2px solid #111; padding-bottom:8mm; margin-bottom:6mm; }
+  .examhead .line1{ font-size:9.5pt; letter-spacing:.08em; color:#333; }
+  .examhead h1{ font-size:17pt; margin:3mm 0 1.5mm; letter-spacing:.06em; font-weight:700; }
+  .examhead .line2{ font-size:10.5pt; color:#222; }
+  .examhead .line3{ font-size:9.5pt; color:#444; margin-top:1.5mm; letter-spacing:.04em; }
+  .info{ display:flex; justify-content:space-between; font-size:9.5pt; margin:4mm 0 1mm; border-bottom:1px dashed #999; padding-bottom:2.5mm; }
+  .info span{ white-space:nowrap; }
+  .notice{ font-size:9pt; color:#333; background:#f6f5f1; border-left:3px solid #8a3f22; padding:3mm 4mm; margin:3mm 0 7mm; line-height:1.7; }
+  .notice b{ color:#8a3f22; }
+
+  /* 大题 */
+  h2.part{
+    font-size:11.5pt; margin:7mm 0 2mm; padding:1.6mm 3mm; background:#111; color:#fff;
+    letter-spacing:.04em; font-weight:700; break-after:avoid;
+  }
+  h2.part small{ font-weight:400; font-size:9pt; opacity:.85; margin-left:4px; }
+  h3.sub{ font-size:10.5pt; margin:5mm 0 1.5mm; font-weight:700; break-after:avoid; }
+  h3.sub em{ font-style:normal; font-weight:400; color:#555; font-size:9pt; margin-left:6px; }
+  .dir{ font-size:9.5pt; color:#333; margin:1.5mm 0 3mm; }
+  .passage{ text-indent:1.9em; text-align:justify; margin:0 0 2.5mm; }
+  .passage .bn{ font-weight:700; }
+  .passage-title{ text-align:center; font-weight:700; margin:2mm 0 2.5mm; font-size:10.5pt; }
+
+  /* 题目 */
+  .q{ margin:0 0 2.6mm; break-inside:avoid; }
+  .q .stem{ text-indent:0; display:flex; gap:5px; align-items:baseline; }
+  .q .num{ font-weight:700; flex:0 0 auto; min-width:1.6em; }
+  .q .body{ flex:1; }
+  .opts{ display:flex; flex-wrap:wrap; gap:2mm 8mm; margin:0.6mm 0 0 1.9em; font-size:10pt; }
+  .opts span{ white-space:nowrap; }
+  .blank{ display:inline-block; min-width:7em; border-bottom:1px solid #111; transform:translateY(1px); }
+  .blank.s{ min-width:4em; }
+  .blank.l{ min-width:14em; }
+  .inline-opts{ letter-spacing:.02em; }
+
+  /* 表格类阅读 */
+  table.info-tb{ width:100%; border-collapse:collapse; font-size:9.5pt; margin:2mm 0 3mm; }
+  table.info-tb th, table.info-tb td{ border:1px solid #777; padding:1.4mm 2mm; text-align:left; vertical-align:top; }
+  table.info-tb th{ background:#efeee9; font-weight:700; }
+  .poster{ border:1.5px solid #111; padding:4mm 5mm; margin:2mm 0 3mm; }
+  .poster h4{ margin:0 0 2mm; text-align:center; font-size:11pt; letter-spacing:.08em; }
+  .poster p{ margin:1mm 0; font-size:9.5pt; }
+  .match-opt{ font-size:9.5pt; margin:0 0 1.6mm; padding-left:1.2em; text-indent:-1.2em; }
+
+  /* 答题线 */
+  .ansline{ border-bottom:1px solid #111; display:block; height:6.5mm; margin:1mm 0 1.5mm; }
+
+  /* 写作 */
+  .writing-box{ border:1px solid #999; padding:4mm; margin-top:2mm; }
+  .writing-box{ padding:2mm 4mm 3mm; }
+  .wline{ border-bottom:1px solid #c2c2c2; height:6.1mm; }
+
+    /* 答案页 */
+  .key{ break-before:page; }
+  .keyhead{ text-align:center; border-bottom:2px solid #111; padding-bottom:4mm; margin-bottom:4mm; }
+  .keyhead h2{ margin:0; font-size:15pt; letter-spacing:.1em; }
+  .keyhead p{ margin:1.5mm 0 0; font-size:9pt; color:#555; }
+  table.keytb{ width:100%; border-collapse:collapse; font-size:9.5pt; margin:2mm 0 4mm; }
+  table.keytb th, table.keytb td{ border:1px solid #999; padding:1.3mm 1.8mm; vertical-align:top; }
+  table.keytb th{ background:#efeee9; }
+  table.keytb td.c{ text-align:center; white-space:nowrap; }
+  .expl{ font-size:9pt; color:#222; line-height:1.7; }
+  .expl b{ color:#8a3f22; }
+  .model{ background:#f7f6f2; border:1px solid #ddd; padding:4mm; font-size:9.5pt; text-indent:1.9em; margin:2mm 0; }
+  .diag{ font-size:9pt; }
+  .diag table{ width:100%; border-collapse:collapse; margin-top:2mm; }
+  .diag th,.diag td{ border:1px solid #aaa; padding:1.4mm 2mm; }
+  .diag th{ background:#efeee9; }
+  .foot{ margin-top:8mm; text-align:center; font-size:8.5pt; color:#777; letter-spacing:.06em; }
+
+  .tight{ break-inside:avoid; }
+  .pagebreak{ break-before:page; }
+  .toolbar{ max-width:210mm; margin:0 auto; padding:3mm 16mm; font-size:9pt; color:#555; display:flex; justify-content:space-between; }
+  .toolbar button{ font-family:inherit; font-size:9pt; padding:1.5mm 4mm; border:1px solid #999; background:#fff; cursor:pointer; }
+  @media print{
+    body{ background:#fff; font-size:10.5pt; }
+    .sheet{ width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
+    .toolbar{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span>打印建议：A4、单面、100% 比例；答案与诊断在最后，可单独撕下。</span>
+  <button onclick="window.print()">打印 / 存为 PDF</button>
+</div>
+
+<div class="sheet paper">
+
+  <div class="examhead">
+    <div class="line1">2026—2027 学年第一学期 · 阶段性检测</div>
+    <h1>七年级英语期中测试卷</h1>
+    <div class="line2">沪教版（牛津）2024 七年级上册　Units 1—4</div>
+    <div class="line3">满分 110 分　　考试时间 100 分钟　　闭卷笔试（听说部分另测）</div>
+  </div>
+
+  <div class="info">
+    <span>学校：____________</span>
+    <span>班级：__________</span>
+    <span>姓名：__________</span>
+    <span>得分：__________</span>
+  </div>
+
+  <div class="notice">
+    <b>考生须知：</b>1. 答案必须写在答题线或括号内，写在题目旁无效。2. 选择题只有一个正确选项，多选、不选均不得分。3. 语篇填词每空只写一词，注意首字母提示。4. 书面表达不得出现真实的人名、校名。<br>
+    <b>覆盖范围：</b>Unit 1 Friendship（疑问词、a/an、人称代词）｜Unit 2 School life（一般现在时、三单、频率副词）｜Unit 3 The seasons（形容词、-ed/-ing、感叹与描写）｜Unit 4 The Earth（There be、some/any、环境保护词汇）。
+  </div>
+
+  <!-- ================= 一、语言知识及运用 ================= -->
+  <h2 class="part">一、语言知识及运用<small>共 20 小题，满分 25 分</small></h2>
+
+  <h3 class="sub">第一节　语法选择<em>共 10 小题，每小题 1.5 分，满分 15 分</em></h3>
+  <p class="dir">阅读下面短文，按照句子结构的语法性和上下文连贯的要求，从 1—10 各题所给的 A、B、C、D 项中选出最佳选项。</p>
+
+  <p class="passage">My name is Li Hua. I am a new student at Sunshine Middle School. <span class="bn">(1)</span> ____ do I like my new school? Very much! Our school is big and beautiful. There <span class="bn">(2)</span> ____ a library, two playgrounds and many classrooms in it. Every morning, we <span class="bn">(3)</span> ____ to school at seven thirty. I have <span class="bn">(4)</span> ____ e&#8209;dictionary in my schoolbag. It helps me a lot with my English. My favourite subject is English because <span class="bn">(5)</span> ____ teacher is kind and humorous. After class, I often play basketball <span class="bn">(6)</span> ____ my new friends. Tom is <span class="bn">(7)</span> ____ honest boy. He always helps me when I am in trouble. He <span class="bn">(8)</span> ____ like playing computer games. He thinks reading is more <span class="bn">(9)</span> ____. On weekends, we sometimes visit the city library together. — <span class="bn">(10)</span> ____ is it? — It's next to the park, not far from our school.</p>
+
+  <div class="q"><div class="stem"><span class="num">1.</span><div class="body">____ do I like my new school?
+    <div class="opts"><span>A. What</span><span>B. How</span><span>C. Why</span><span>D. When</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">2.</span><div class="body">There ____ a library, two playgrounds and many classrooms in it.
+    <div class="opts"><span>A. is</span><span>B. are</span><span>C. have</span><span>D. has</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">3.</span><div class="body">Every morning, we ____ to school at seven thirty.
+    <div class="opts"><span>A. go</span><span>B. goes</span><span>C. going</span><span>D. went</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">4.</span><div class="body">I have ____ e&#8209;dictionary in my schoolbag.
+    <div class="opts"><span>A. a</span><span>B. an</span><span>C. the</span><span>D. /</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">5.</span><div class="body">My favourite subject is English because ____ teacher is kind and humorous.
+    <div class="opts"><span>A. us</span><span>B. we</span><span>C. our</span><span>D. ours</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">6.</span><div class="body">After class, I often play basketball ____ my new friends.
+    <div class="opts"><span>A. and</span><span>B. with</span><span>C. for</span><span>D. of</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">7.</span><div class="body">Tom is ____ honest boy.
+    <div class="opts"><span>A. a</span><span>B. an</span><span>C. the</span><span>D. /</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">8.</span><div class="body">He ____ like playing computer games.
+    <div class="opts"><span>A. don't</span><span>B. doesn't</span><span>C. isn't</span><span>D. aren't</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">9.</span><div class="body">He thinks reading is more ____.
+    <div class="opts"><span>A. interest</span><span>B. interested</span><span>C. interesting</span><span>D. interests</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">10.</span><div class="body">— ____ is the city library? — It's next to the park.
+    <div class="opts"><span>A. Where</span><span>B. When</span><span>C. Who</span><span>D. What</span></div></div></div></div>
+
+  <h3 class="sub">第二节　完形填空<em>共 10 小题，每小题 1 分，满分 10 分</em></h3>
+  <p class="dir">阅读下面短文，掌握大意，然后从 11—20 各题所给的 A、B、C、D 项中选出最佳选项。</p>
+
+  <p class="passage">Guangzhou has four seasons, but they are not very <span class="bn">(11)</span> ____. Spring comes in March. The weather is warm and <span class="bn">(12)</span> ____. Flowers open everywhere and the air is fresh. In summer, it is very <span class="bn">(13)</span> ____. Many people go swimming or <span class="bn">(14)</span> ____ kites in the park. Autumn is the best season for <span class="bn">(15)</span> ____ activities. The sky is blue and the wind is cool. We often go hiking <span class="bn">(16)</span> ____ our families. Winter is short and not very cold. We <span class="bn">(17)</span> ____ wear thick coats. The Spring Festival comes in winter or early spring. We visit our grandparents and <span class="bn">(18)</span> ____ dumplings together. I love Guangzhou <span class="bn">(19)</span> ____ I can enjoy different weather and activities. Every season has its own <span class="bn">(20)</span> ____.</p>
+
+  <div class="q"><div class="stem"><span class="num">11.</span><div class="body">they are not very ____
+    <div class="opts"><span>A. clear</span><span>B. same</span><span>C. long</span><span>D. special</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">12.</span><div class="body">The weather is warm and ____.
+    <div class="opts"><span>A. wet</span><span>B. dry</span><span>C. cold</span><span>D. snowy</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">13.</span><div class="body">In summer, it is very ____.
+    <div class="opts"><span>A. hot</span><span>B. cool</span><span>C. warm</span><span>D. cold</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">14.</span><div class="body">Many people go swimming or ____ kites in the park.
+    <div class="opts"><span>A. fly</span><span>B. flies</span><span>C. flying</span><span>D. flew</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">15.</span><div class="body">Autumn is the best season for ____ activities.
+    <div class="opts"><span>A. outdoor</span><span>B. indoor</span><span>C. classroom</span><span>D. online</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">16.</span><div class="body">We often go hiking ____ our families.
+    <div class="opts"><span>A. with</span><span>B. from</span><span>C. about</span><span>D. for</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">17.</span><div class="body">We ____ wear thick coats.
+    <div class="opts"><span>A. often</span><span>B. always</span><span>C. don't often</span><span>D. never</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">18.</span><div class="body">We visit our grandparents and ____ dumplings together.
+    <div class="opts"><span>A. eat</span><span>B. eats</span><span>C. eating</span><span>D. to eat</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">19.</span><div class="body">I love Guangzhou ____ I can enjoy different weather and activities.
+    <div class="opts"><span>A. so</span><span>B. because</span><span>C. but</span><span>D. or</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">20.</span><div class="body">Every season has its own ____.
+    <div class="opts"><span>A. beauty</span><span>B. beauties</span><span>C. beautiful</span><span>D. beautifully</span></div></div></div></div>
+
+  <!-- ================= 二、阅读 ================= -->
+  <h2 class="part">二、阅读<small>共 20 小题，满分 35 分</small></h2>
+
+  <h3 class="sub">第一节　阅读理解<em>共 15 小题，每小题 2 分，满分 30 分</em></h3>
+  <p class="dir">阅读下列材料，从 21—35 各题所给的 A、B、C、D 项中选出最佳选项。</p>
+
+  <p class="dir" style="font-weight:700;margin-bottom:1mm">（A）</p>
+  <div class="poster">
+    <h4>SUNSHINE MIDDLE SCHOOL · AFTER-SCHOOL CLUBS</h4>
+    <table class="info-tb">
+      <tr><th style="width:21%">Club</th><th style="width:22%">Day</th><th style="width:19%">Time</th><th style="width:15%">Place</th><th>Activity</th></tr>
+      <tr><td>Reading Club</td><td>Monday &amp; Wednesday</td><td>4:30—5:30</td><td>Library</td><td>Share stories, write book reviews</td></tr>
+      <tr><td>Basketball Club</td><td>Tuesday &amp; Thursday</td><td>4:30—6:00</td><td>Playground</td><td>Practise and play matches</td></tr>
+      <tr><td>Nature Club</td><td>Friday</td><td>4:30—5:30</td><td>School garden</td><td>Watch birds and plants, keep a notebook</td></tr>
+      <tr><td>Art Club</td><td>Wednesday</td><td>4:30—5:30</td><td>Art room</td><td>Draw and paint posters</td></tr>
+      <tr><td>Music Club</td><td>Friday</td><td>5:00—6:00</td><td>Music room</td><td>Sing and play the piano</td></tr>
+    </table>
+    <p>Come and join us! Sign up at the school office before 20 September. Each student can join two clubs.</p>
+  </div>
+
+  <div class="q"><div class="stem"><span class="num">21.</span><div class="body">When does the Reading Club meet?
+    <div class="opts"><span>A. On Monday and Wednesday.</span><span>B. On Tuesday and Thursday.</span><span>C. On Wednesday and Friday.</span><span>D. On Friday only.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">22.</span><div class="body">Where do students in the Nature Club go?
+    <div class="opts"><span>A. The library.</span><span>B. The playground.</span><span>C. The school garden.</span><span>D. The music room.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">23.</span><div class="body">Tom wants to play basketball matches after school. Which club should he join?
+    <div class="opts"><span>A. The Reading Club.</span><span>B. The Basketball Club.</span><span>C. The Art Club.</span><span>D. The Music Club.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">24.</span><div class="body">What can students do in the Art Club?
+    <div class="opts"><span>A. Sing and dance.</span><span>B. Draw and paint posters.</span><span>C. Write book reviews.</span><span>D. Watch birds.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">25.</span><div class="body">Which club starts at 5:00 on Friday afternoon?
+    <div class="opts"><span>A. The Nature Club.</span><span>B. The Reading Club.</span><span>C. The Music Club.</span><span>D. The Basketball Club.</span></div></div></div></div>
+
+  <p class="dir" style="font-weight:700;margin:4mm 0 1mm">（B）</p>
+  <p class="passage">At my old school, I was very shy. I had only one friend, and I never put up my hand in class. This September, I came to a new school in Guangzhou. Everything was new: the buildings, the teachers and even the food.</p>
+  <p class="passage">On my first day, I sat alone at lunch. A girl with short hair came over and put her tray (餐盘) next to mine. "Hi, I'm Chen Jie. You're new, right?" she said. Before I could answer, she began to tell me about her favourite teachers and the best food in the dining hall. I laughed for the first time that week.</p>
+  <p class="passage">After lunch, Chen Jie showed me around the school. She took me to the library, the playground and the art room. She also invited me to the Reading Club. On Wednesday, I had to read a story aloud in front of the club. My hands were cold and my voice was low. Chen Jie looked at me and smiled. "Take your time," she said quietly. I finished the story. Some students <u>clapped</u> (鼓掌).</p>
+  <p class="passage">Now I am not afraid of speaking in class. I have five good friends, and Chen Jie is one of them. I learn from her that a true friend does not just wait for you. She walks to you first.</p>
+
+  <div class="q"><div class="stem"><span class="num">26.</span><div class="body">How was the writer at the old school?
+    <div class="opts"><span>A. Shy and quiet.</span><span>B. Loud and funny.</span><span>C. Busy and tired.</span><span>D. Brave and active.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">27.</span><div class="body">What did Chen Jie do first on the writer's first day?
+    <div class="opts"><span>A. She read a story aloud.</span><span>B. She sat next to the writer and talked to her.</span><span>C. She took her to the library.</span><span>D. She gave her a new tray.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">28.</span><div class="body">How did the writer feel before reading aloud in the Reading Club?
+    <div class="opts"><span>A. Excited.</span><span>B. Angry.</span><span>C. Nervous.</span><span>D. Bored.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">29.</span><div class="body">What does the underlined word "clapped" probably mean?
+    <div class="opts"><span>A. 举手</span><span>B. 鼓掌</span><span>C. 大笑</span><span>D. 起立</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">30.</span><div class="body">What does the writer want to tell us?
+    <div class="opts"><span>A. New school life is always easy.</span><span>B. Reading aloud is important.</span><span>C. A true friend walks to you first.</span><span>D. It is hard to make friends.</span></div></div></div></div>
+
+  <p class="dir" style="font-weight:700;margin:4mm 0 1mm">（C）</p>
+  <p class="passage">The Earth is about 4.6 billion years old. It is the only planet we know that has life. From space, it looks like a blue ball, because about 71% of it is covered by water.</p>
+  <p class="passage">The Earth gives us everything we need. Forests give us clean air and homes for animals. Rivers and lakes give us fresh water. Soil (土壤) helps plants grow, and plants give us food. Without these, people cannot live.</p>
+  <p class="passage">But the Earth is facing problems. Factories and cars make the air and water dirty. People cut down too many trees. Every year, millions of plastic bags go into the sea, and fish eat them by mistake. The weather is also changing. Summers are getting hotter, and rains are getting heavier.</p>
+  <p class="passage">However, small actions can make a big difference. We can turn off the lights when we leave a room. We can reuse bottles and paper. We can ride a bike or take a bus to school. We can also plant a tree on Tree Planting Day. If everyone does a little, the Earth will be a better place for all living things.</p>
+
+  <div class="q"><div class="stem"><span class="num">31.</span><div class="body">Why does the Earth look like a blue ball from space?
+    <div class="opts"><span>A. Because it is very old.</span><span>B. Because most of it is covered by water.</span><span>C. Because it has many forests.</span><span>D. Because people paint it blue.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">32.</span><div class="body">What do forests give us according to the passage?
+    <div class="opts"><span>A. Fresh water and soil.</span><span>B. Plastic bags and paper.</span><span>C. Clean air and homes for animals.</span><span>D. Cars and factories.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">33.</span><div class="body">Which problem is NOT mentioned in the passage?
+    <div class="opts"><span>A. Dirty air and water.</span><span>B. Too many plastic bags in the sea.</span><span>C. Cutting down too many trees.</span><span>D. Too many cars on the moon.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">34.</span><div class="body">What can we do to help the Earth?
+    <div class="opts"><span>A. Leave the lights on all day.</span><span>B. Throw bottles into the sea.</span><span>C. Ride a bike to school.</span><span>D. Cut down more trees.</span></div></div></div></div>
+  <div class="q"><div class="stem"><span class="num">35.</span><div class="body">What is the best title for the passage?
+    <div class="opts"><span>A. A Blue Planet in Danger</span><span>B. How to Plant a Tree</span><span>C. The Life of a Fish</span><span>D. Water in the Sea</span></div></div></div></div>
+
+  <h3 class="sub">第二节　信息匹配<em>共 5 小题，每小题 1 分，满分 5 分</em></h3>
+  <p class="dir">学校俱乐部正在招新。请根据 36—40 五位同学的兴趣，为他们匹配最合适的俱乐部，并将选项字母填在括号内。选项中有一项是多余的。</p>
+
+  <p class="match-opt"><b>A.</b> In this club, you read books and share stories with others. You can also write your own story and put it in the school magazine.</p>
+  <p class="match-opt"><b>B.</b> This club is for students who love ball games. You practise after school and play matches against other classes.</p>
+  <p class="match-opt"><b>C.</b> If you enjoy nature, join us. We watch birds and plants in the school garden and keep a notebook about them.</p>
+  <p class="match-opt"><b>D.</b> In this club, you draw and paint. You also make posters for school events.</p>
+  <p class="match-opt"><b>E.</b> Do you like music? Come and sing with us. You can also learn to play the piano.</p>
+  <p class="match-opt"><b>F.</b> This club is for students who like cooking. You learn to make simple dishes and talk about healthy food.</p>
+
+  <div class="q"><div class="stem"><span class="num">36.</span><div class="body">Amy likes drawing very much. She wants to make posters for the school English Day.　（　　）</div></div></div>
+  <div class="q"><div class="stem"><span class="num">37.</span><div class="body">Bill is good at basketball. He wants to play matches with other classes after school.　（　　）</div></div></div>
+  <div class="q"><div class="stem"><span class="num">38.</span><div class="body">Cindy loves singing and she wants to learn to play the piano.　（　　）</div></div></div>
+  <div class="q"><div class="stem"><span class="num">39.</span><div class="body">Daniel reads a lot and hopes to write his own story for the school magazine.　（　　）</div></div></div>
+  <div class="q"><div class="stem"><span class="num">40.</span><div class="body">Eric is interested in plants and birds. He wants to keep a notebook about them.　（　　）</div></div></div>
+
+  <!-- ================= 三、读写综合 ================= -->
+  <h2 class="part">三、读写综合<small>共 5 小题，满分 10 分</small></h2>
+  <h3 class="sub">阅读回答问题<em>每小题 2 分</em></h3>
+  <p class="dir">阅读短文，用英语回答 41—45 题，答案写在答题线上。</p>
+
+  <p class="passage">Many people love bright lights at night. They think lights make cities beautiful. But too much light is bad for animals. Baby sea turtles (海龟) are a good example. They are born on beaches at night. They need to find the sea. They use the bright moon and stars to guide them. But if there are many bright lights from buildings near the beach, the baby turtles become confused (困惑的). They go the wrong way. They may walk onto the road and be killed. This is a big problem in some places.</p>
+  <p class="passage">We can help. We can turn off some lights near the beach at night. We can use yellow lights. They are not as bright as white lights. We can also tell people about this problem. Small changes can save many baby turtles. The Earth is our home. We should care for all living things.</p>
+
+  <div class="q"><div class="stem"><span class="num">41.</span><div class="body">When are baby sea turtles born?<span class="ansline"></span></div></div></div>
+  <div class="q"><div class="stem"><span class="num">42.</span><div class="body">What do baby sea turtles use to guide them to the sea?<span class="ansline"></span></div></div></div>
+  <div class="q"><div class="stem"><span class="num">43.</span><div class="body">Why do baby sea turtles go the wrong way?<span class="ansline"></span></div></div></div>
+  <div class="q"><div class="stem"><span class="num">44.</span><div class="body">What kind of lights can we use near the beach?<span class="ansline"></span></div></div></div>
+  <div class="q"><div class="stem"><span class="num">45.</span><div class="body">What is the main idea of the passage?<span class="ansline"></span></div></div></div>
+
+  <!-- ================= 四、写作 ================= -->
+  <h2 class="part">四、写作<small>共 11 小题，满分 30 分</small></h2>
+
+  <h3 class="sub">第一节　语篇填词<em>共 5 小题，每小题 1 分，满分 5 分</em></h3>
+  <p class="dir">根据短文内容和首字母提示，写出所缺单词，每空只写一词。</p>
+  <p class="passage">Last Friday, our class went on a school <span class="bn">(46) t______</span> to the Guangzhou Museum. We met at the school gate at 8:00 and took a bus. The museum was big and <span class="bn">(47) q______</span>, so we could hear the guide clearly. We saw many old things and learned about the <span class="bn">(48) h______</span> of our city. At noon, we had lunch in a park nearby. The weather was <span class="bn">(49) s______</span> and warm. We took a lot of photos. On the way back, everyone was tired but <span class="bn">(50) h______</span>. It was a wonderful day.</p>
+
+  <h3 class="sub">第二节　语法填空<em>共 5 小题，每小题 1 分，满分 5 分</em></h3>
+  <p class="dir">阅读短文，在空白处填入一个适当的单词，或用括号内单词的正确形式填空。</p>
+  <p class="passage">My best friend is Tom. He is a <span class="bn">(51) ______ (friend)</span> boy and he often <span class="bn">(52) ______ (help)</span> me with my English. There <span class="bn">(53) ______ (be)</span> a lot of books in his room. Last Saturday, we <span class="bn">(54) ______ (go)</span> to the city library together. I am <span class="bn">(55) ______ (interest)</span> in science, so he lent me a science book. We read for two hours and felt very happy.</p>
+
+  <h3 class="sub">第三节　书面表达<em>满分 20 分</em></h3>
+  <p class="dir">学校英语俱乐部正在举办 "My Favourite Season" 征文活动。请你根据以下提示，用英语写一篇短文投稿。</p>
+  <p class="dir" style="margin-left:2em">
+    1. Which season do you like best?<br>
+    2. What is the weather like in that season?<br>
+    3. What do you usually do in that season?<br>
+    4. Why do you like it?
+  </p>
+  <p class="dir"><b>要求：</b>（1）包含全部提示内容，可适当发挥；（2）词数 80 左右（开头已给出，不计入总词数）；（3）不得出现真实的人名、校名；（4）语句通顺，语法正确，书写规范。</p>
+  <p class="passage" style="text-indent:0;font-weight:700;margin-top:3mm">My Favourite Season</p>
+  <p class="passage" style="text-indent:0">My favourite season is </p>
+  <div class="writing-box"><div class="wline"></div><div class="wline"></div><div class="wline"></div><div class="wline"></div><div class="wline"></div><div class="wline"></div><div class="wline"></div><div class="wline"></div><div class="wline"></div></div>
+
+  
+
+  <!-- ================= 参考答案 ================= -->
+  <div class="key">
+    <div class="keyhead">
+      <h2>参考答案与解析</h2>
+      <p>家长用页 · 建议孩子做完并自查后，再对照批改</p>
+    </div>
+
+    <h3 class="sub">一、语言知识及运用<em>25 分</em></h3>
+    <table class="keytb">
+      <tr><th style="width:9%">题号</th><th style="width:9%">答案</th><th>解析</th></tr>
+      <tr><td class="c">1</td><td class="c">B</td><td>How do you like ...? 是“你觉得……怎么样”，回答 Very much。What 问内容，Why 问原因，When 问时间，都不接 like 的答语。</td></tr>
+      <tr><td class="c">2</td><td class="c">A</td><td>There be 就近原则：离 be 最近的是 a library（单数），用 is。后面虽有 two playgrounds，也先看最近的名词。</td></tr>
+      <tr><td class="c">3</td><td class="c">A</td><td>主语 we 不是三单，一般现在时用原形 go。every morning 是频率标志，不用过去时。</td></tr>
+      <tr><td class="c">4</td><td class="c">B</td><td>e&#8209;dictionary 以元音音素 /iː/ 开头，用 an；不是看首字母 e，而是看读音。</td></tr>
+      <tr><td class="c">5</td><td class="c">C</td><td>空后是名词 teacher，需要形容词性物主代词 our。ours 是名词性，后面不能再跟名词。</td></tr>
+      <tr><td class="c">6</td><td class="c">B</td><td>play ... with sb. “和某人一起玩”，with 表伴随。and 连接并列成分，这里后面是名词短语，不成立。</td></tr>
+      <tr><td class="c">7</td><td class="c">B</td><td>honest 的 h 不发音，首音是元音 /ɒ/，用 an。同类还有 an hour, an honour。</td></tr>
+      <tr><td class="c">8</td><td class="c">B</td><td>主语 He 是三单，实义动词 like 的否定借 doesn't，后面 like 回原形。</td></tr>
+      <tr><td class="c">9</td><td class="c">C</td><td>reading 是物，物令人感兴趣用 -ing：interesting。interested 说人“感到有兴趣”。</td></tr>
+      <tr><td class="c">10</td><td class="c">A</td><td>答语 next to the park 是地点，问地点用 Where。Where is ...? 对地点提问。</td></tr>
+    </table>
+
+    <h3 class="sub">二、完形填空<em>10 分</em></h3>
+    <table class="keytb">
+      <tr><th style="width:9%">题号</th><th style="width:9%">答案</th><th>解析</th></tr>
+      <tr><td class="c">11</td><td class="c">A</td><td>后文写广州四季都有但不算分明，not very clear “不是很分明”。same 与文意相反。</td></tr>
+      <tr><td class="c">12</td><td class="c">A</td><td>广州春天温暖潮湿，warm and wet。dry 是干燥，cold/snowy 与 warm 矛盾。</td></tr>
+      <tr><td class="c">13</td><td class="c">A</td><td>夏天炎热，go swimming 对应 hot。</td></tr>
+      <tr><td class="c">14</td><td class="c">A</td><td>go swimming or fly kites：or 连接两个并列的动词原形，主语 people 不是三单。</td></tr>
+      <tr><td class="c">15</td><td class="c">A</td><td>秋天适合户外活动，outdoor activities。indoor 室内，与 go hiking 不符。</td></tr>
+      <tr><td class="c">16</td><td class="c">A</td><td>go hiking with our families “和家人一起徒步”。</td></tr>
+      <tr><td class="c">17</td><td class="c">C</td><td>冬天短且不冷，所以“不常穿厚外套”。never 太绝对，always 与文意相反。</td></tr>
+      <tr><td class="c">18</td><td class="c">A</td><td>We visit ... and eat ...：and 连接两个并列谓语，主语 we 用原形。</td></tr>
+      <tr><td class="c">19</td><td class="c">B</td><td>前后是因果关系，“我喜欢广州，因为能享受不同的天气和活动”。</td></tr>
+      <tr><td class="c">20</td><td class="c">A</td><td>its own 后接名词，beauty “美”。beautiful 是形容词，不能作宾语。</td></tr>
+    </table>
+
+    <h3 class="sub">二（一）阅读理解<em>30 分</em></h3>
+    <table class="keytb">
+      <tr><th style="width:9%">题号</th><th style="width:9%">答案</th><th>依据</th></tr>
+      <tr><td class="c">21</td><td class="c">A</td><td>表格 Reading Club 一行：Monday &amp; Wednesday。</td></tr>
+      <tr><td class="c">22</td><td class="c">C</td><td>Nature Club 的 Place 是 School garden。</td></tr>
+      <tr><td class="c">23</td><td class="c">B</td><td>Basketball Club 的活动是 practise and play matches。</td></tr>
+      <tr><td class="c">24</td><td class="c">B</td><td>Art Club：Draw and paint posters。</td></tr>
+      <tr><td class="c">25</td><td class="c">C</td><td>Music Club：Friday, 5:00—6:00。</td></tr>
+      <tr><td class="c">26</td><td class="c">A</td><td>第一段 I was very shy ... never put up my hand。</td></tr>
+      <tr><td class="c">27</td><td class="c">B</td><td>第二段：Chen Jie 端着餐盘坐到她旁边并主动说话。</td></tr>
+      <tr><td class="c">28</td><td class="c">C</td><td>第三段 hands were cold, voice was low，是紧张的表现。</td></tr>
+      <tr><td class="c">29</td><td class="c">B</td><td>她读完故事，同学“鼓掌”，clapped 意为鼓掌。</td></tr>
+      <tr><td class="c">30</td><td class="c">C</td><td>末段主旨句：a true friend ... walks to you first。</td></tr>
+      <tr><td class="c">31</td><td class="c">B</td><td>第一段 about 71% of it is covered by water。</td></tr>
+      <tr><td class="c">32</td><td class="c">C</td><td>第二段 Forests give us clean air and homes for animals。</td></tr>
+      <tr><td class="c">33</td><td class="c">D</td><td>文中谈空气水污染、塑料袋、砍树；没有“月球上的车”。</td></tr>
+      <tr><td class="c">34</td><td class="c">C</td><td>第四段 We can ride a bike or take a bus to school。</td></tr>
+      <tr><td class="c">35</td><td class="c">A</td><td>全文写地球之美与危机，A 项最全面。</td></tr>
+    </table>
+
+    <h3 class="sub">二（二）信息匹配<em>5 分</em></h3>
+    <p class="expl"><b>36. D</b>（drawing / posters）　<b>37. B</b>（basketball / matches）　<b>38. E</b>（singing / piano）　<b>39. A</b>（reads / write a story）　<b>40. C</b>（plants and birds / notebook）　F  cooking 为多余项。</p>
+
+    <h3 class="sub">三、读写综合<em>10 分</em></h3>
+    <p class="expl">
+      <b>41.</b> They are born on beaches at night. / At night on beaches.<br>
+      <b>42.</b> They use the bright moon and stars (to guide them).<br>
+      <b>43.</b> Because there are many bright lights from buildings near the beach, and they become confused.<br>
+      <b>44.</b> We can use yellow lights.<br>
+      <b>45.</b> Too much light is bad for baby sea turtles, and we should care for all living things (by making small changes).
+    </p>
+    <p class="dir" style="margin-top:2mm">评分口径：意思正确、语法基本无误即可得分；只写单词短语不扣分，但不写成句最多得 1 分；第 45 题答出“光污染危害海龟 / 应保护地球生物”任一要点即可。</p>
+
+    <h3 class="sub">四、写作 · 第一节　语篇填词<em>5 分</em></h3>
+    <p class="expl"><b>46.</b> trip　<b>47.</b> quiet　<b>48.</b> history　<b>49.</b> sunny　<b>50.</b> happy</p>
+    <p class="dir">常见错误：47 写成 quite（quite 是副词，且首字母不符）；48 写成 historic（词性不对）；50 写成 happily（系动词 was 后接形容词）。</p>
+
+    <h3 class="sub">四、写作 · 第二节　语法填空<em>5 分</em></h3>
+    <p class="expl"><b>51.</b> friendly　<b>52.</b> helps　<b>53.</b> are　<b>54.</b> went　<b>55.</b> interested</p>
+    <p class="dir">考点：51 名词 friend → 形容词 friendly（构词）；52 三单 helps；53 There be 后接 a lot of books，用 are；54 Last Saturday 提示一般过去时 went；55 人作主语用 -ed 形式 interested。</p>
+
+    <h3 class="sub">四、写作 · 第三节　书面表达<em>20 分</em></h3>
+    <p class="dir"><b>评分建议：</b>内容 8 分（四点提示是否齐全、细节是否具体）；语言 8 分（时态、三单、形容词、There be 是否正确）；结构书写 4 分（分段、连接词、拼写与卷面）。</p>
+    <p class="dir"><b>参考范文（约 85 词）：</b></p>
+    <div class="model">
+      My favourite season is autumn. The weather is cool and dry, and the sky is often blue. It is the best time for outdoor activities. I usually go hiking with my parents on weekends. Sometimes I fly kites in the park with my friends. My grandmother makes apple pie, and it smells wonderful. I like autumn because it is neither too hot nor too cold, and I can enjoy the beautiful colours of the trees. Autumn makes me feel calm and happy.
+    </div>
+
+    <h3 class="sub">五、错题诊断表<em>家长用</em></h3>
+    <div class="diag">
+      <p class="dir">把错题号填进对应行，就能看出漏洞在哪一块；括号内是 App「初一英语语法通关」里的对应训练组。</p>
+      <table>
+        <tr><th style="width:30%">错题集中在</th><th style="width:38%">对应考点</th><th>下一步练什么</th></tr>
+        <tr><td>1、10</td><td>疑问词（How / Where）</td><td>Q 组 冠词与疑问词</td></tr>
+        <tr><td>2、53</td><td>There be 就近原则</td><td>T 组 There be</td></tr>
+        <tr><td>3、8、52</td><td>一般现在时、三单、do/does</td><td>R 组 一般现在时</td></tr>
+        <tr><td>4、7</td><td>a / an 看音不看字母</td><td>Q 组 + 对比 H1</td></tr>
+        <tr><td>5</td><td>物主代词 our / ours</td><td>X 组 人称与物主代词</td></tr>
+        <tr><td>9、55</td><td>-ing / -ed 形容词</td><td>S 组 形容词 + 对比 H3</td></tr>
+        <tr><td>26—30</td><td>记叙文细节与主旨</td><td>文章阅读 + 错题本回顾</td></tr>
+        <tr><td>31—35</td><td>说明文细节、否定项、标题</td><td>文章阅读（说明文）</td></tr>
+        <tr><td>41—45</td><td>用完整句回答问题</td><td>读写综合：先划关键词再作答</td></tr>
+        <tr><td>46—50</td><td>首字母拼写、词性判断</td><td>Unit 1—4 词表听写</td></tr>
+        <tr><td>51—55</td><td>构词、时态、There be</td><td>语法填空专项</td></tr>
+        <tr><td>写作失分</td><td>要点遗漏 / 时态混用</td><td>背 1 篇季节范文，仿写 2 篇</td></tr>
+      </table>
+      <p class="dir" style="margin-top:3mm">建议：先按错题表补 2—3 个专题，隔 3 天再做一套同范围卷子；分数不是重点，错题类型是否减少才是。</p>
+    </div>
+
+    <div class="foot">参考答案与解析 · Units 1—4 · 满分 110 分</div>
+  </div>
+
+</div>
+</body>
+</html>
